@@ -1,11 +1,11 @@
-import React from "react";
 import { Link } from "react-router-dom";
+import { FcGoogle } from "react-icons/fc";
 
 export const Login = () => {
   return (
     <div className="h-full p-2">
-      <div className="mx-auto mt-24 flex w-full flex-col gap-4 rounded-md border-2 p-8 sm:w-2/3 lg:w-1/3">
-        <h1 className="mb-1 text-2xl">Login</h1>
+      <div className="mx-auto mt-24 flex w-full flex-col gap-4 rounded-md border-2 p-8 sm:w-2/3 lg:w-1/4">
+        <h1 className="text-bold mb-1 text-xl">Sign in to Virtual Lab</h1>
         <label className="block">
           <span className="text-gray-700">Email</span>
           <input
@@ -25,7 +25,7 @@ export const Login = () => {
           />
         </label>
 
-        <button className="rounded-full bg-blue-200 px-4 py-2">Login</button>
+        <button className="rounded-full bg-blue-200 px-4 py-2">Sign in</button>
         <Link to="forgot password" className="text-sm">
           Forgot password?
         </Link>
@@ -34,8 +34,9 @@ export const Login = () => {
           <span>Or</span>
           <hr className="flex-1" />
         </div>
-        <button className="rounded-full border-2 px-4 py-2">
-          Login with Google
+        <button className="flex items-center justify-center gap-2 rounded-full border-2 px-4 py-2">
+          <FcGoogle className="text-xl" />
+          Sign in with Google
         </button>
         <div className="mx-auto">
           <span className="text-sm">Don't have an account?</span>
