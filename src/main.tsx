@@ -3,13 +3,19 @@ import ReactDOM from "react-dom"
 import "./index.css"
 import App from "./App"
 import "./userWorker"
+import { ChakraProvider } from "@chakra-ui/react"
+
 import { BrowserRouter } from "react-router-dom"
+
+import { app } from "firebase"
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <ChakraProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ChakraProvider>
   </React.StrictMode>,
-  document.getElementById("root"),
+  document.getElementById("root")
 )
