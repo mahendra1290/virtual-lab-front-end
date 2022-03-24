@@ -1,7 +1,11 @@
+import { Avatar, Button } from "@chakra-ui/react"
 import React from "react"
 import { Link } from "react-router-dom"
+import { useAuthContext } from "../../providers/AuthProvider"
 
 export const Navbar = () => {
+  const { user, signOut, authLoading } = useAuthContext()
+
   return (
     <>
       <nav className="flex items-center justify-between bg-gray-100 p-4 px-8 shadow-sm">
@@ -19,6 +23,18 @@ export const Navbar = () => {
           <li>
             <Link to="/sign-up">Sign up</Link>
           </li>
+          {user && <Avatar size="sm" name={user.name} />}
+          {user && (
+            <li>
+              <Button
+                isLoading={authLoading}
+                onClick={signOut}
+                colorScheme="teal"
+              >
+                Log out
+              </Button>
+            </li>
+          )}
         </ul>
       </nav>
     </>
