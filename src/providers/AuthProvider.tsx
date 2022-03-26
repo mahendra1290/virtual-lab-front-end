@@ -161,11 +161,11 @@ const AuthProvider = ({ children }: Props) => {
       return true
     } catch (err: any) {
       console.log(err)
-      let title = ""
+      let title = err.code
       if (err.code === "auth/user-not-found") {
         title = "User not found"
       } else if (err.code === "auth/wrong-password") {
-        title = "Username / password mismatch"
+        title = "Username or password not correct"
       }
       toast({
         title,

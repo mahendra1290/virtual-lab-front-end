@@ -14,16 +14,20 @@ export const Navbar = () => {
             Virtual Lab
           </h1>
         </Link>
-        <ul className="flex gap-2">
+        <ul className="flex items-center gap-2">
           <li>About</li>
           <li>Contact Us</li>
-          <li>
-            <Link to="/login">Login</Link>
-          </li>
-          <li>
-            <Link to="/sign-up">Sign up</Link>
-          </li>
-          {user && <Avatar size="sm" name={user.name} />}
+          {!user && (
+            <li>
+              <Link to="/login">Login</Link>
+            </li>
+          )}
+          {!user && (
+            <li>
+              <Link to="/sign-up">Sign up</Link>
+            </li>
+          )}
+          {user && <Avatar size="sm" name={user.name || ""} src="" />}
           {user && (
             <li>
               <Button

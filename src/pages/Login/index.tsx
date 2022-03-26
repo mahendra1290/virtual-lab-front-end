@@ -55,6 +55,7 @@ export const Login = () => {
         </label>
 
         <Button
+          borderRadius="full"
           isLoading={authLoading}
           loadingText="Signing In"
           type="submit"
