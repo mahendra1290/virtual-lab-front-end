@@ -1,53 +1,68 @@
 import { Link } from "react-router-dom"
 import { FcGoogle } from "react-icons/fc"
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth"
-import { app } from "../../firebase"
-
-const provider = new GoogleAuthProvider()
-const auth = getAuth(app)
+import { useAuthContext } from "../../providers/AuthProvider"
+import { Button } from "@chakra-ui/react"
+import { useForm } from "react-hook-form"
 
 export const Login = () => {
-  const handleSignIn = () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result)
-        const token = credential?.accessToken
-        const user = result.user
-        console.log(user, token)
-      })
-      .catch((error) => {
-        const errorCode = error.code
-        const errorMessage = error.message
-        const email = error.email
-        const credential = GoogleAuthProvider.credentialFromError(error)
-        console.log(errorCode, errorMessage, email, credential)
-      })
+  const { signInWithEmailPassword, authLoading, signInWithGoogle } =
+    useAuthContext()
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  })
+
+  const handleSignIn = (data: { email: string; password: string }) => {
+    signInWithEmailPassword(data.email, data.password)
   }
 
   return (
     <div className="h-full p-2">
-      <div className="mx-auto mt-24 flex w-full flex-col gap-4 rounded-md border-2 p-8 sm:w-2/3 lg:w-1/4">
+      <form
+        onSubmit={handleSubmit(handleSignIn)}
+        className="mx-auto mt-24 flex w-full flex-col gap-4 rounded-md border-2 p-8 sm:w-2/3 lg:w-1/4"
+      >
         <h1 className="text-bold mb-1 text-xl">Sign in to Virtual Lab</h1>
         <label className="block">
           <span className="text-gray-700">Email</span>
           <input
+            {...register("email", { required: "Email is required" })}
             className="mt-1 block w-full rounded-sm"
             type="text"
             name="email"
             id="email"
           />
+          <p className="mt-2 text-xs text-red-600">{errors.email?.message}</p>
         </label>
         <label className="block">
           <span className="text-gray-700">Password</span>
           <input
+            {...register("password", { required: "Password is required" })}
             className="mt-1 block w-full rounded-sm"
-            type="text"
+            type="password"
             name="password"
             id="password"
           />
+          <p className="mt-2 text-xs text-red-600">
+            {errors.password?.message}
+          </p>
         </label>
 
-        <button className="rounded-full bg-blue-200 px-4 py-2">Sign in</button>
+        <Button
+          borderRadius="full"
+          isLoading={authLoading}
+          loadingText="Signing In"
+          type="submit"
+          className="rounded-full bg-blue-200 px-4 py-2"
+        >
+          Sign in
+        </Button>
         <Link to="forgot password" className="text-sm">
           Forgot password?
         </Link>
@@ -57,7 +72,8 @@ export const Login = () => {
           <hr className="flex-1" />
         </div>
         <button
-          onClick={handleSignIn}
+          type="button"
+          onClick={signInWithGoogle}
           className="flex items-center justify-center gap-2 rounded-full border-2 px-4 py-2"
         >
           <FcGoogle className="text-xl" />
@@ -71,7 +87,7 @@ export const Login = () => {
             </Link>
           </span>
         </div>
-      </div>
+      </form>
     </div>
   )
 }

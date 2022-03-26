@@ -1,47 +1,118 @@
-import { Link } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc";
+import { Link, useNavigate } from "react-router-dom"
+import { FcGoogle } from "react-icons/fc"
+import {
+  Button,
+  FormControl,
+  FormErrorMessage,
+  FormHelperText,
+  FormLabel,
+  Input,
+} from "@chakra-ui/react"
+import { PasswordInput } from "../../components/forms/PasswordInput"
+import { useForm } from "react-hook-form"
+import { createUserWithEmailAndPassword } from "firebase/auth"
+import { auth } from "../../firebase"
+import { useState } from "react"
+import { useAuthContext } from "../../providers/AuthProvider"
+import { ProfileForm } from "./ProfileForm"
 
 export const Signup = () => {
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
+  const { signInWithGoogle, signUpWithEmailPassword, authLoading } =
+    useAuthContext()
+
+  const {
+    handleSubmit,
+    register,
+    getValues,
+    formState: { errors, isSubmitting },
+  } = useForm()
+
+  const onSubmit = async (data: any) => {
+    setLoading(true)
+    await signUpWithEmailPassword(data.email, data.password)
+    setLoading(false)
+  }
+
+  const validateConfirmPassword = (confirmPassword: string): boolean => {
+    return getValues("password") === confirmPassword
+  }
+
   return (
     <div className="h-full p-2">
-      <div className="mx-auto mt-24 flex w-full flex-col gap-4 rounded-md border-2 p-8 sm:w-2/3 lg:w-1/4">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="mx-auto mt-12 flex w-full flex-col gap-4 rounded-md border-2 p-8 sm:w-2/3 lg:w-1/4"
+      >
         <h1 className="text-bold mb-1 text-xl">Sign up to Virtual Lab</h1>
-        <label className="block">
-          <span className="text-gray-700">Email</span>
-          <input
-            className="mt-1 block w-full rounded-sm"
-            type="text"
-            name="email"
-            id="email"
-          />
-        </label>
-        <label className="block">
-          <span className="text-gray-700">Password</span>
-          <input
-            className="mt-1 block w-full rounded-sm"
-            type="text"
-            name="password"
-            id="password"
-          />
-        </label>
-        <label className="block">
-          <span className="text-gray-700">Confirm password</span>
-          <input
-            className="mt-1 block w-full rounded-sm"
-            type="text"
-            name="password"
-            id="password"
-          />
-        </label>
 
-        <button className="rounded-full bg-blue-200 px-4 py-2">Sign up</button>
+        <FormControl isInvalid={errors.email}>
+          <FormLabel htmlFor="email">Email</FormLabel>
+          <Input
+            {...register("email", { required: "Email required" })}
+            type="email"
+            id="email"
+            placeholder="Enter email"
+          />
+          <FormErrorMessage>
+            {errors.email && errors.email.message}
+          </FormErrorMessage>
+        </FormControl>
+        <FormControl isInvalid={errors.password}>
+          <FormLabel htmlFor="password">Password</FormLabel>
+          <PasswordInput
+            register={register("password", {
+              required: "Password required",
+              minLength: { value: 6, message: "Min 6 characters required" },
+            })}
+          />
+          <FormErrorMessage>
+            {errors.password && errors.password.message}
+          </FormErrorMessage>
+        </FormControl>
+
+        <FormControl isInvalid={errors.confirmPassword}>
+          <FormLabel htmlFor="confirmPassword">Confirm Password</FormLabel>
+          <PasswordInput
+            register={register("confirmPassword", {
+              required: "Confirm password required",
+              minLength: { value: 6, message: "Min 6 characters required" },
+              validate: validateConfirmPassword,
+            })}
+            // type="password"
+            // id="confirmPassword"
+            // placeholder="Enter confirm password"
+          />
+          <FormErrorMessage>
+            {errors.confirmPassword && errors.confirmPassword.message}
+            {errors.confirmPassword &&
+              errors.confirmPassword.type === "validate" &&
+              "Confirm password didn't match"}
+          </FormErrorMessage>
+        </FormControl>
+
+        <Button
+          isLoading={authLoading}
+          loadingText="Signing Up"
+          colorScheme="teal"
+          variant="solid"
+          type="submit"
+          className="rounded-full bg-blue-200 px-4 py-2"
+        >
+          Sign up
+        </Button>
 
         <div className="flex items-center gap-2">
           <hr className="flex-1" />
           <span>Or</span>
           <hr className="flex-1" />
         </div>
-        <button className="flex items-center justify-center gap-2 rounded-full border-2 px-4 py-2">
+        <button
+          type="button"
+          onClick={signInWithGoogle}
+          className="flex items-center justify-center gap-2 rounded-full border-2 px-4 py-2"
+        >
           <FcGoogle className="text-xl" />
           Sign up with Google
         </button>
@@ -53,7 +124,7 @@ export const Signup = () => {
             </Link>
           </span>
         </div>
-      </div>
+      </form>
     </div>
-  );
-};
+  )
+}

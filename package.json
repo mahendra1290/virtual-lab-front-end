@@ -11,6 +11,8 @@
     "@chakra-ui/react": "^1.8.6",
     "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.8.1",
+    "@fontsource/open-sans": "^4.5.8",
+    "@fontsource/raleway": "^4.5.5",
     "firebase": "^9.6.9",
     "framer-motion": "^6.2.8",
     "monaco-editor": "^0.33.0",
