@@ -9,6 +9,7 @@ import {
   Input,
 } from "@chakra-ui/react"
 import { useForm } from "react-hook-form"
+import { FormField } from "../../components/forms/FormField"
 
 export const Login = () => {
   const { signInWithEmailPassword, authLoading, signInWithGoogle } =
@@ -36,30 +37,24 @@ export const Login = () => {
       >
         <h1 className="text-bold mb-1 text-xl">Sign in to Virtual Lab</h1>
         <FormControl isInvalid={!!errors.email}>
-          <FormLabel htmlFor="email">Email</FormLabel>
-          <Input
+          <FormField
+            label="Email"
             {...register("email", { required: "Email is required" })}
-            className="mt-1 block w-full rounded-sm"
+            error={errors.email}
             type="text"
-            name="email"
             id="email"
             placeholder="Enter you email"
           />
-          <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
         </FormControl>
         <FormControl isInvalid={!!errors.password}>
-          <FormLabel htmlFor="password">Password</FormLabel>
-          <Input
+          <FormField
+            label="Password"
+            error={errors.password}
             {...register("password", { required: "Password is required" })}
-            className="mt-1 block w-full rounded-sm"
             type="password"
-            name="password"
             id="password"
             placeholder="Enter your password"
           />
-          <FormErrorMessage>
-            {errors.password && errors.password.message}
-          </FormErrorMessage>
         </FormControl>
 
         <Button

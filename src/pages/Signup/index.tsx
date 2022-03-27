@@ -15,6 +15,7 @@ import { auth } from "../../firebase"
 import { useState } from "react"
 import { useAuthContext } from "../../providers/AuthProvider"
 import { ProfileForm } from "./ProfileForm"
+import { FormField } from "../../components/forms/FormField"
 
 export const Signup = () => {
   const [loading, setLoading] = useState(false)
@@ -47,37 +48,33 @@ export const Signup = () => {
         <h1 className="text-bold mb-1 text-xl">Sign up for Virtual Lab</h1>
 
         <FormControl isInvalid={errors.email}>
-          <FormLabel htmlFor="email">Email</FormLabel>
-          <Input
+          <FormField
+            label="Email"
             {...register("email", { required: "Email required" })}
             type="email"
             id="email"
+            error={errors.email}
             placeholder="Enter email"
           />
-          <FormErrorMessage>
-            {errors.email && errors.email.message}
-          </FormErrorMessage>
         </FormControl>
         <FormControl isInvalid={errors.password}>
-          <FormLabel htmlFor="password">Password</FormLabel>
-          <Input
+          <FormField
             id="password"
             type="password"
+            label="Password"
             {...register("password", {
               required: "Password required",
               minLength: { value: 6, message: "Min 6 characters required" },
             })}
+            error={errors.password}
             placeholder="Enter your password"
           />
           <FormHelperText>Min 6 charater required</FormHelperText>
-          <FormErrorMessage>
-            {errors.password && errors.password.message}
-          </FormErrorMessage>
         </FormControl>
 
         <FormControl isInvalid={errors.confirmPassword}>
-          <FormLabel htmlFor="confirmPassword">Confirm Password</FormLabel>
-          <Input
+          <FormField
+            label="Confirm Password"
             id="confirmPassword"
             type="password"
             {...register("confirmPassword", {
@@ -85,10 +82,10 @@ export const Signup = () => {
               minLength: { value: 6, message: "Min 6 characters required" },
               validate: validateConfirmPassword,
             })}
+            error={errors.confirmPassword}
             placeholder="Enter password, again"
           />
           <FormErrorMessage>
-            {errors.confirmPassword && errors.confirmPassword.message}
             {errors.confirmPassword &&
               errors.confirmPassword.type === "validate" &&
               "Confirm password didn't match"}
