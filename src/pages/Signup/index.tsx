@@ -18,7 +18,6 @@ import { ProfileForm } from "./ProfileForm"
 
 export const Signup = () => {
   const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
   const { signInWithGoogle, signUpWithEmailPassword, authLoading } =
     useAuthContext()
 
@@ -43,9 +42,9 @@ export const Signup = () => {
     <div className="h-full p-2">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="mx-auto mt-12 flex w-full flex-col gap-4 rounded-md border-2 p-8 sm:w-2/3 lg:w-1/4"
+        className="mx-auto mt-12 flex w-full flex-col gap-4 rounded-lg border border-gray-100 p-8 shadow-lg sm:w-2/3 lg:w-1/4"
       >
-        <h1 className="text-bold mb-1 text-xl">Sign up to Virtual Lab</h1>
+        <h1 className="text-bold mb-1 text-xl">Sign up for Virtual Lab</h1>
 
         <FormControl isInvalid={errors.email}>
           <FormLabel htmlFor="email">Email</FormLabel>
@@ -61,12 +60,16 @@ export const Signup = () => {
         </FormControl>
         <FormControl isInvalid={errors.password}>
           <FormLabel htmlFor="password">Password</FormLabel>
-          <PasswordInput
-            register={register("password", {
+          <Input
+            id="password"
+            type="password"
+            {...register("password", {
               required: "Password required",
               minLength: { value: 6, message: "Min 6 characters required" },
             })}
+            placeholder="Enter your password"
           />
+          <FormHelperText>Min 6 charater required</FormHelperText>
           <FormErrorMessage>
             {errors.password && errors.password.message}
           </FormErrorMessage>
@@ -74,15 +77,15 @@ export const Signup = () => {
 
         <FormControl isInvalid={errors.confirmPassword}>
           <FormLabel htmlFor="confirmPassword">Confirm Password</FormLabel>
-          <PasswordInput
-            register={register("confirmPassword", {
+          <Input
+            id="confirmPassword"
+            type="password"
+            {...register("confirmPassword", {
               required: "Confirm password required",
               minLength: { value: 6, message: "Min 6 characters required" },
               validate: validateConfirmPassword,
             })}
-            // type="password"
-            // id="confirmPassword"
-            // placeholder="Enter confirm password"
+            placeholder="Enter password, again"
           />
           <FormErrorMessage>
             {errors.confirmPassword && errors.confirmPassword.message}
@@ -93,11 +96,12 @@ export const Signup = () => {
         </FormControl>
 
         <Button
-          isLoading={authLoading}
+          isLoading={loading}
           loadingText="Signing Up"
           colorScheme="teal"
           variant="solid"
           type="submit"
+          rounded="full"
           className="rounded-full bg-blue-200 px-4 py-2"
         >
           Sign up

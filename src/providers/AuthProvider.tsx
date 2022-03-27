@@ -108,7 +108,10 @@ const AuthProvider = ({ children }: Props) => {
   }
 
   useEffect(() => {
+    console.log("user effect run")
+
     onAuthStateChanged(auth, (user) => {
+      console.log("auth state changed", user)
       if (user) {
         setUser({ ...user, name: user.displayName })
         getDoc(doc(db, "users", user.uid)).then((doc) => {
@@ -118,7 +121,6 @@ const AuthProvider = ({ children }: Props) => {
         })
         setLoggedIn(true)
         setLoading(false)
-        navigate("/")
       } else {
         setUser(null)
         setLoading(false)
@@ -139,6 +141,7 @@ const AuthProvider = ({ children }: Props) => {
       if (user.email) {
         await createUserIfNotPresent(user.uid, user.email)
       }
+      navigate("/initial-profile?password=true")
       setLoading(false)
       return true
     } catch (err) {
@@ -146,8 +149,6 @@ const AuthProvider = ({ children }: Props) => {
       return false
     }
   }
-
-  const signUpUserWithGoogle = () => {}
 
   const signInWithEmailPassword = async (email: string, password: string) => {
     setLoading(true)
@@ -158,6 +159,7 @@ const AuthProvider = ({ children }: Props) => {
         password
       )
       setLoading(false)
+      navigate("/")
       return true
     } catch (err: any) {
       console.log(err)

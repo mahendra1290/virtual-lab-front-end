@@ -28,7 +28,7 @@ export const ProfileForm = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      fullName: "",
+      fullName: user?.name,
       email: user?.email,
     },
   })
@@ -36,6 +36,7 @@ export const ProfileForm = () => {
   useEffect(() => {
     if (user) {
       setValue("email", user.email)
+      setValue("fullName", user.name)
     }
   }, [user])
 
@@ -52,7 +53,7 @@ export const ProfileForm = () => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="mx-auto mt-5 w-1/3 space-y-5 rounded-sm p-4 shadow-md"
+      className="mx-auto mt-5 w-1/3 space-y-5 rounded-sm p-6 shadow-lg"
     >
       <h1 className="text-xl">Complete your profile</h1>
       <FormControl isRequired isInvalid={!!errors.fullName}>

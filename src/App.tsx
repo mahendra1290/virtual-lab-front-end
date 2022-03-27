@@ -5,7 +5,9 @@ import { Navbar } from "./components/Navbar/Navbar"
 import { CreateLab } from "./pages/CreateLab/CreateLab"
 import { Login } from "./pages/Login"
 import { Signup } from "./pages/Signup"
+import { ProfileForm } from "./pages/Signup/ProfileForm"
 import { Teacher } from "./pages/Teacher/Teacher"
+import { LabPage } from "./pages/Lab/LabPage"
 import { useAuthContext } from "./providers/AuthProvider"
 
 function App() {
@@ -21,6 +23,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<Signup />} />
         <Route path="/labs/create" element={<CreateLab />} />
+        <Route path="/initial-profile" element={<ProfileForm />} />
+        <Route path="/labs/:id" element={<LabPage />} />
       </Routes>
     </div>
   )
