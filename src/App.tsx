@@ -9,6 +9,7 @@ import { ProfileForm } from "./pages/Signup/ProfileForm"
 import { Teacher } from "./pages/Teacher/Teacher"
 import { LabPage } from "./pages/Lab/LabPage"
 import { useAuthContext } from "./providers/AuthProvider"
+import ExperimentPage from "./pages/Experiment/ExperimentPage"
 
 function App() {
   const { authLoading } = useAuthContext()
@@ -22,9 +23,13 @@ function App() {
         <Route path="/" element={<Teacher />} />
         <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<Signup />} />
-        <Route path="/labs/create" element={<CreateLab />} />
         <Route path="/initial-profile" element={<ProfileForm />} />
         <Route path="/labs/:id" element={<LabPage />} />
+        <Route path="/labs/create" element={<CreateLab />} />
+        <Route
+          path="/labs/:labId/experiments/:expId"
+          element={<ExperimentPage />}
+        />
       </Routes>
     </div>
   )

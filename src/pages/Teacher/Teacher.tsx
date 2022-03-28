@@ -30,6 +30,7 @@ import {
 import moment from "moment"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { CreateExperment } from "../../components/experiment/CreateExperiment"
 import { db } from "../../firebase"
 import { useAuthContext } from "../../providers/AuthProvider"
 import { ProfileForm } from "../Signup/ProfileForm"
