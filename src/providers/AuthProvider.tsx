@@ -11,16 +11,10 @@ import { getAuth, onAuthStateChanged } from "firebase/auth"
 import { collection, doc, getDoc, setDoc } from "firebase/firestore"
 import React, { useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { auth, db } from "../firebase"
+import { auth, db, usersCol } from "../firebase"
+import { User } from "../shared/types/User"
 
 const provider = new GoogleAuthProvider()
-
-type User = {
-  uid: string | null
-  email: string | null
-  name: string | null
-  role?: string | null
-}
 
 interface AuthProviderValue {
   user: User | null
@@ -53,8 +47,6 @@ const useAuthContext = () => {
   return useContext(AuthContext)
 }
 
-const usersRef = collection(db, "users")
-
 const AuthProvider = ({ children }: Props) => {
   const navigate = useNavigate()
   const toast = useToast()
@@ -67,14 +59,16 @@ const AuthProvider = ({ children }: Props) => {
   const createUserIfNotPresent = async (
     uid: string,
     email: string,
+    name: string,
     profileCompleted: boolean = false
   ) => {
     try {
       const docSnap = await getDoc(doc(db, "users", uid))
       if (!docSnap.exists()) {
-        await setDoc(doc(usersRef, uid), {
+        await setDoc(doc(usersCol, uid), {
           uid: uid,
           email: email,
+          name,
           profileCompleted,
         })
       }
@@ -91,7 +85,7 @@ const AuthProvider = ({ children }: Props) => {
       const docSnap = await getDoc(doc(db, "users", uid))
       if (docSnap.exists()) {
         await setDoc(
-          doc(usersRef, uid),
+          doc(usersCol, uid),
           {
             role,
             name,
@@ -116,7 +110,7 @@ const AuthProvider = ({ children }: Props) => {
         setUser({ ...user, name: user.displayName })
         getDoc(doc(db, "users", user.uid)).then((doc) => {
           if (doc.exists()) {
-            setUser(doc.data() as User)
+            setUser((prevUser) => ({ ...prevUser, ...(doc.data() as User) }))
           }
         })
         setLoggedIn(true)
@@ -139,7 +133,7 @@ const AuthProvider = ({ children }: Props) => {
       )
       const user = userCredential.user
       if (user.email) {
-        await createUserIfNotPresent(user.uid, user.email)
+        await createUserIfNotPresent(user.uid, user.email, "")
       }
       navigate("/initial-profile?password=true")
       setLoading(false)
@@ -187,7 +181,11 @@ const AuthProvider = ({ children }: Props) => {
       const userCredential = await signInWithPopup(auth, provider)
       const user = userCredential.user
       if (user.email) {
-        await createUserIfNotPresent(user.uid, user.email)
+        await createUserIfNotPresent(
+          user.uid,
+          user.email,
+          user.displayName || ""
+        )
       }
       setLoading(false)
       console.log(userCredential)
