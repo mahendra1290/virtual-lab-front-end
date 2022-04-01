@@ -2,6 +2,7 @@ import { Avatar, Button } from "@chakra-ui/react"
 import React from "react"
 import { Link } from "react-router-dom"
 import { useAuthContext } from "../../providers/AuthProvider"
+import ProfileMenu from "./ProfileMenu"
 
 export const Navbar = () => {
   const { user, signOut, authLoading } = useAuthContext()
@@ -27,8 +28,9 @@ export const Navbar = () => {
               <Link to="/sign-up">Sign up</Link>
             </li>
           )}
-          {user && <Avatar size="sm" name={user.name || ""} src="" />}
-          {user && (
+          {/* {user && <Avatar size="sm" name={user.name || ""} src="" />} */}
+          {user && <ProfileMenu />}
+          {/* {user && (
             <li>
               <Button
                 isLoading={authLoading}
@@ -38,7 +40,7 @@ export const Navbar = () => {
                 Log out
               </Button>
             </li>
-          )}
+          )} */}
         </ul>
       </nav>
     </>

@@ -11,25 +11,21 @@ import { getAuth, onAuthStateChanged } from "firebase/auth"
 import { collection, doc, getDoc, setDoc } from "firebase/firestore"
 import React, { useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { auth, db } from "../firebase"
+import { auth, db, usersCol } from "../firebase"
+import { User } from "../shared/types/User"
 
 const provider = new GoogleAuthProvider()
-
-type User = {
-  uid: string | null
-  email: string | null
-  name: string | null
-  role?: string | null
-}
 
 interface AuthProviderValue {
   user: User | null
   loggedIn: boolean
   role?: string
   authLoading: boolean
+  signInLoading: boolean
+  signUpLoading: boolean
   updateUser: (uid: string, name: string, role: string) => Promise<boolean>
   signInWithEmailPassword: (email: string, password: string) => Promise<boolean>
-  signInWithGoogle: () => void
+  signInWithGoogle: (login: boolean) => void
   signUpWithEmailPassword: (email: string, password: string) => Promise<boolean>
   signOut: () => void
 }
@@ -38,10 +34,12 @@ const AuthContext = React.createContext<AuthProviderValue>({
   user: null,
   loggedIn: false,
   authLoading: true,
+  signInLoading: false,
+  signUpLoading: false,
   updateUser: async (uid, name, role) => true,
   signInWithEmailPassword: async (email, password) => true,
   signUpWithEmailPassword: async (email, password) => true,
-  signInWithGoogle: () => {},
+  signInWithGoogle: (login) => {},
   signOut: () => {},
 })
 
@@ -53,8 +51,6 @@ const useAuthContext = () => {
   return useContext(AuthContext)
 }
 
-const usersRef = collection(db, "users")
-
 const AuthProvider = ({ children }: Props) => {
   const navigate = useNavigate()
   const toast = useToast()
@@ -62,19 +58,23 @@ const AuthProvider = ({ children }: Props) => {
   const [user, setUser] = useState<User | null>(null)
   const [loggedIn, setLoggedIn] = useState(false)
   const [role, setRole] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [signInLoading, setSignInLoading] = useState(false)
+  const [signUpLoading, setSignUpLoading] = useState(false)
 
   const createUserIfNotPresent = async (
     uid: string,
     email: string,
+    name: string,
     profileCompleted: boolean = false
   ) => {
     try {
       const docSnap = await getDoc(doc(db, "users", uid))
       if (!docSnap.exists()) {
-        await setDoc(doc(usersRef, uid), {
+        await setDoc(doc(usersCol, uid), {
           uid: uid,
           email: email,
+          name,
           profileCompleted,
         })
       }
@@ -91,7 +91,7 @@ const AuthProvider = ({ children }: Props) => {
       const docSnap = await getDoc(doc(db, "users", uid))
       if (docSnap.exists()) {
         await setDoc(
-          doc(usersRef, uid),
+          doc(usersCol, uid),
           {
             role,
             name,
@@ -113,12 +113,11 @@ const AuthProvider = ({ children }: Props) => {
         setUser({ ...user, name: user.displayName })
         getDoc(doc(db, "users", user.uid)).then((doc) => {
           if (doc.exists()) {
-            setUser(doc.data() as User)
+            setUser((prevUser) => ({ ...prevUser, ...(doc.data() as User) }))
           }
         })
         setLoggedIn(true)
         setLoading(false)
-        navigate("/")
       } else {
         setUser(null)
         setLoading(false)
@@ -129,7 +128,7 @@ const AuthProvider = ({ children }: Props) => {
 
   const signUpWithEmailPassword = async (email: string, password: string) => {
     try {
-      setLoading(true)
+      setSignUpLoading(true)
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -137,27 +136,27 @@ const AuthProvider = ({ children }: Props) => {
       )
       const user = userCredential.user
       if (user.email) {
-        await createUserIfNotPresent(user.uid, user.email)
+        await createUserIfNotPresent(user.uid, user.email, "")
       }
-      setLoading(false)
+      navigate("/initial-profile?password=true")
+      setSignUpLoading(false)
       return true
     } catch (err) {
-      setLoading(false)
+      setSignUpLoading(false)
       return false
     }
   }
 
-  const signUpUserWithGoogle = () => {}
-
   const signInWithEmailPassword = async (email: string, password: string) => {
-    setLoading(true)
+    setSignInLoading(true)
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
         password
       )
-      setLoading(false)
+      setSignInLoading(false)
+      navigate("/")
       return true
     } catch (err: any) {
       console.log(err)
@@ -174,25 +173,32 @@ const AuthProvider = ({ children }: Props) => {
         duration: 9000,
         isClosable: true,
       })
-      setLoading(false)
+      setSignInLoading(false)
       return false
     }
   }
 
-  const signInWithGoogle = async () => {
-    setLoading(true)
+  const signInWithGoogle = async (login: boolean) => {
+    setSignInLoading(true)
     try {
       const userCredential = await signInWithPopup(auth, provider)
       const user = userCredential.user
       if (user.email) {
-        await createUserIfNotPresent(user.uid, user.email)
+        await createUserIfNotPresent(
+          user.uid,
+          user.email,
+          user.displayName || ""
+        )
       }
-      setLoading(false)
-      console.log(userCredential)
-      navigate("/")
+      setSignInLoading(false)
+      if (!login) {
+        navigate("/initial-profile")
+      } else {
+        navigate("/")
+      }
     } catch (err) {
       console.log(err)
-      setLoading(false)
+      setSignInLoading(false)
     }
   }
 
@@ -212,6 +218,8 @@ const AuthProvider = ({ children }: Props) => {
     user,
     loggedIn,
     role,
+    signInLoading,
+    signUpLoading,
     signInWithEmailPassword,
     signInWithGoogle,
     signOut: logOut,

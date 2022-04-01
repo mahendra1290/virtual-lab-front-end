@@ -1,11 +1,18 @@
 import { Link } from "react-router-dom"
 import { FcGoogle } from "react-icons/fc"
 import { useAuthContext } from "../../providers/AuthProvider"
-import { Button } from "@chakra-ui/react"
+import {
+  Button,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Input,
+} from "@chakra-ui/react"
 import { useForm } from "react-hook-form"
+import { FormField } from "../../components/forms/FormField"
 
 export const Login = () => {
-  const { signInWithEmailPassword, authLoading, signInWithGoogle } =
+  const { signInWithEmailPassword, signInLoading, signInWithGoogle } =
     useAuthContext()
   const {
     register,
@@ -26,37 +33,33 @@ export const Login = () => {
     <div className="h-full p-2">
       <form
         onSubmit={handleSubmit(handleSignIn)}
-        className="mx-auto mt-24 flex w-full flex-col gap-4 rounded-md border-2 p-8 sm:w-2/3 lg:w-1/4"
+        className="mx-auto mt-24 flex w-full flex-col gap-4 rounded-lg border border-gray-100 p-8 shadow-lg sm:w-2/3 lg:w-1/4"
       >
         <h1 className="text-bold mb-1 text-xl">Sign in to Virtual Lab</h1>
-        <label className="block">
-          <span className="text-gray-700">Email</span>
-          <input
+        <FormControl isInvalid={!!errors.email}>
+          <FormField
+            label="Email"
             {...register("email", { required: "Email is required" })}
-            className="mt-1 block w-full rounded-sm"
+            error={errors.email}
             type="text"
-            name="email"
             id="email"
+            placeholder="Enter you email"
           />
-          <p className="mt-2 text-xs text-red-600">{errors.email?.message}</p>
-        </label>
-        <label className="block">
-          <span className="text-gray-700">Password</span>
-          <input
+        </FormControl>
+        <FormControl isInvalid={!!errors.password}>
+          <FormField
+            label="Password"
+            error={errors.password}
             {...register("password", { required: "Password is required" })}
-            className="mt-1 block w-full rounded-sm"
             type="password"
-            name="password"
             id="password"
+            placeholder="Enter your password"
           />
-          <p className="mt-2 text-xs text-red-600">
-            {errors.password?.message}
-          </p>
-        </label>
+        </FormControl>
 
         <Button
           borderRadius="full"
-          isLoading={authLoading}
+          isLoading={signInLoading}
           loadingText="Signing In"
           type="submit"
           className="rounded-full bg-blue-200 px-4 py-2"
@@ -73,7 +76,7 @@ export const Login = () => {
         </div>
         <button
           type="button"
-          onClick={signInWithGoogle}
+          onClick={() => signInWithGoogle(true)}
           className="flex items-center justify-center gap-2 rounded-full border-2 px-4 py-2"
         >
           <FcGoogle className="text-xl" />
