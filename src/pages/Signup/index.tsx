@@ -18,8 +18,7 @@ import { ProfileForm } from "./ProfileForm"
 import { FormField } from "../../components/forms/FormField"
 
 export const Signup = () => {
-  const [loading, setLoading] = useState(false)
-  const { signInWithGoogle, signUpWithEmailPassword, authLoading } =
+  const { signInWithGoogle, signUpWithEmailPassword, signUpLoading } =
     useAuthContext()
 
   const {
@@ -30,9 +29,7 @@ export const Signup = () => {
   } = useForm()
 
   const onSubmit = async (data: any) => {
-    setLoading(true)
     await signUpWithEmailPassword(data.email, data.password)
-    setLoading(false)
   }
 
   const validateConfirmPassword = (confirmPassword: string): boolean => {
@@ -93,7 +90,7 @@ export const Signup = () => {
         </FormControl>
 
         <Button
-          isLoading={loading}
+          isLoading={signUpLoading}
           loadingText="Signing Up"
           colorScheme="teal"
           variant="solid"
@@ -111,7 +108,7 @@ export const Signup = () => {
         </div>
         <button
           type="button"
-          onClick={signInWithGoogle}
+          onClick={() => signInWithGoogle(false)}
           className="flex items-center justify-center gap-2 rounded-full border-2 px-4 py-2"
         >
           <FcGoogle className="text-xl" />

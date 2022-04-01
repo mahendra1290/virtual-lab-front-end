@@ -25,8 +25,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app)
 const auth = getAuth(app)
-connectAuthEmulator(auth, "http://localhost:9099");
-connectFirestoreEmulator(db, "localhost", 8080)
+// connectAuthEmulator(auth, "http://localhost:9099");
+// connectFirestoreEmulator(db, "localhost", 8080)
 const analytics = getAnalytics(app);
 
 const createCollection = <T = DocumentData>(collectionName: string) => {

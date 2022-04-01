@@ -22,6 +22,7 @@ import {
 import { db } from "../../firebase"
 import { CreateExperment } from "../../components/experiment/CreateExperiment"
 import { ExperimentCard } from "../../components/experiment/ExperimentCard"
+import { useAuthContext } from "../../providers/AuthProvider"
 
 interface Lab {
   id: string
@@ -31,6 +32,7 @@ interface Lab {
 }
 
 export const LabPage = () => {
+  const { user } = useAuthContext()
   const { id } = useParams()
   const [lab, setLab] = useState<Lab>()
   const [error, setError] = useState("")
@@ -91,11 +93,13 @@ export const LabPage = () => {
   return (
     <div className="p-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-4xl capitalize">{lab?.name}</h1>
-        <Button onClick={openModal}>Create Experiment</Button>
+        <h1 className="text-3xl capitalize">{lab?.name}</h1>
+        {user?.role === "teacher" && (
+          <Button onClick={openModal}>Create Experiment</Button>
+        )}
       </div>
-      <h2 className="mt-4 text-2xl">Experiments: </h2>
-      <VStack spacing={4} align={"strecth"} className="w-1/2">
+      <h2 className="mt-4 text-xl">Experiments: </h2>
+      <VStack spacing={4} align={"strecth"} className="mt-4 w-1/2">
         {experiments.map((item) => (
           <Link key={item.id} to={`experiments/${item.id}`}>
             <ExperimentCard {...item} key={item.id} />

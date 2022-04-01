@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form"
 import { FormField } from "../../components/forms/FormField"
 
 export const Login = () => {
-  const { signInWithEmailPassword, authLoading, signInWithGoogle } =
+  const { signInWithEmailPassword, signInLoading, signInWithGoogle } =
     useAuthContext()
   const {
     register,
@@ -59,7 +59,7 @@ export const Login = () => {
 
         <Button
           borderRadius="full"
-          isLoading={authLoading}
+          isLoading={signInLoading}
           loadingText="Signing In"
           type="submit"
           className="rounded-full bg-blue-200 px-4 py-2"
@@ -76,7 +76,7 @@ export const Login = () => {
         </div>
         <button
           type="button"
-          onClick={signInWithGoogle}
+          onClick={() => signInWithGoogle(true)}
           className="flex items-center justify-center gap-2 rounded-full border-2 px-4 py-2"
         >
           <FcGoogle className="text-xl" />

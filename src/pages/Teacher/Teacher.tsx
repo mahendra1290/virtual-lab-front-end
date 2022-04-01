@@ -1,6 +1,7 @@
 import {
   Button,
   FormControl,
+  FormHelperText,
   FormLabel,
   Grid,
   GridItem,
@@ -13,6 +14,8 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Select,
+  Spinner,
 } from "@chakra-ui/react"
 import { async } from "@firebase/util"
 import {
@@ -39,6 +42,7 @@ interface Lab {
   id: string
   name: string
   userId: string
+  visibility: string
   createdAt: Timestamp | string | Date
 }
 
@@ -46,8 +50,10 @@ export const Teacher = () => {
   const { user } = useAuthContext()
   const [addLabModalOpen, setAddModalOpen] = useState(false)
   const [name, setName] = useState("")
+  const [labVisibility, setLabVisibility] = useState("public")
   const [loading, setLoading] = useState(false)
   const [labs, setLabs] = useState<Lab[]>([])
+  const [empty, setEmpty] = useState(false)
 
   const createLab = async () => {
     setLoading(true)
@@ -55,10 +61,12 @@ export const Teacher = () => {
       await setDoc(doc(collection(db, "labs")), {
         userUid: user?.uid,
         name: name,
+        visibility: labVisibility,
         createdAt: new Date(),
       })
       setAddModalOpen(false)
       setName("")
+      setLabVisibility("public")
     } catch (err) {
       console.log(err)
     }
@@ -70,6 +78,11 @@ export const Teacher = () => {
     const fetchLabs = async () => {
       const q = query(collection(db, "labs"), where("userUid", "==", user?.uid))
       unsubscribe = onSnapshot(q, (querySnapshot) => {
+        if (querySnapshot.empty) {
+          setEmpty(true)
+        } else {
+          setEmpty(false)
+        }
         const labDocs = querySnapshot.docs
           .map((doc) => ({ id: doc.id, ...doc.data() } as Lab))
           .map((item) => ({
@@ -78,17 +91,13 @@ export const Teacher = () => {
               "DD-MM-YYYY"
             ),
           }))
-
         setLabs(labDocs)
-        console.log(labDocs)
       })
     }
     if (user) {
       fetchLabs()
     }
     return () => {
-      console.log("called")
-
       if (unsubscribe) {
         unsubscribe()
       }
@@ -96,11 +105,23 @@ export const Teacher = () => {
   }, [user])
 
   return (
-    <div>
-      <Button onClick={() => setAddModalOpen(true)}>Create Lab</Button>
-      <p>{user?.email}</p>
-      <p>{user?.role}</p>
-      <Grid templateColumns="repeat(4, 1fr)" gap={4} padding="4">
+    <div className="p-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl">Labs</h1>
+        <Button onClick={() => setAddModalOpen(true)}>Create Lab</Button>
+      </div>
+      {!labs.length && !empty && (
+        <div className="mt-12 flex flex-col items-center justify-center">
+          <Spinner />
+          <h1>Fetching your labs...</h1>
+        </div>
+      )}
+      {!labs.length && empty && (
+        <div className="mt-4 py-2 text-xl text-gray-600">
+          No labs found. Please create new
+        </div>
+      )}
+      <Grid templateColumns="repeat(4, 1fr)" gap={4} marginTop={4}>
         {labs.map((item) => (
           <GridItem
             key={item.id}
@@ -112,6 +133,7 @@ export const Teacher = () => {
                 {item.name}
               </h1>
               <p className="mt-2">Created At: {item.createdAt}</p>
+              {item.visibility === "public" && <p>Public</p>}
             </Link>
           </GridItem>
         ))}
@@ -137,6 +159,20 @@ export const Teacher = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
+              </FormControl>
+              <FormControl className="mt-4">
+                <FormLabel htmlFor="labVisibility">Lab Visibility</FormLabel>
+                <Select
+                  value={labVisibility}
+                  onChange={(e) => setLabVisibility(e.target.value)}
+                  defaultValue="public"
+                >
+                  <option value="public">Public</option>
+                  <option value="private">Private</option>
+                </Select>
+                <FormHelperText>
+                  Public labs are accessible by everyone.
+                </FormHelperText>
               </FormControl>
               <HStack
                 paddingTop="1rem"
