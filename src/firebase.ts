@@ -1,8 +1,7 @@
-import { collection, CollectionReference, connectFirestoreEmulator, DocumentData } from 'firebase/firestore';
+import { collection, CollectionReference, connectFirestoreEmulator, DocumentData, getFirestore } from 'firebase/firestore';
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore } from "firebase/firestore"
 import { connectAuthEmulator, getAuth } from "firebase/auth";
 import { User } from './shared/types/User';
 import { Lab } from './shared/types/Lab';
@@ -29,9 +28,7 @@ const auth = getAuth(app)
 // connectFirestoreEmulator(db, "localhost", 8080)
 const analytics = getAnalytics(app);
 
-const createCollection = <T = DocumentData>(collectionName: string) => {
-    return collection(db, collectionName) as CollectionReference<T>
-}
+const createCollection = <T = DocumentData>(collectionName: string) => collection(db, collectionName) as CollectionReference<T>
 
 const usersCol = createCollection<User>("users")
 const labsCol = createCollection<Lab>("labs")

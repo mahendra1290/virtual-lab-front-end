@@ -1,15 +1,17 @@
 import { useToast } from "@chakra-ui/react"
-import { async } from "@firebase/util"
+import axios from "axios"
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
+  onAuthStateChanged,
+  getIdToken,
+  getIdTokenResult,
 } from "firebase/auth"
-import { getAuth, onAuthStateChanged } from "firebase/auth"
-import { collection, doc, getDoc, setDoc } from "firebase/firestore"
-import React, { useContext, useEffect, useState } from "react"
+import { doc, getDoc, setDoc } from "firebase/firestore"
+import React, { useContext, useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { auth, db, usersCol } from "../firebase"
 import { User } from "../shared/types/User"
@@ -36,20 +38,18 @@ const AuthContext = React.createContext<AuthProviderValue>({
   authLoading: true,
   signInLoading: false,
   signUpLoading: false,
-  updateUser: async (uid, name, role) => true,
-  signInWithEmailPassword: async (email, password) => true,
-  signUpWithEmailPassword: async (email, password) => true,
-  signInWithGoogle: (login) => {},
-  signOut: () => {},
+  updateUser: async () => true,
+  signInWithEmailPassword: async () => true,
+  signUpWithEmailPassword: async () => true,
+  signInWithGoogle: () => null,
+  signOut: () => null,
 })
 
 type Props = {
   children: React.ReactChild | React.ReactChildren
 }
 
-const useAuthContext = () => {
-  return useContext(AuthContext)
-}
+const useAuthContext = () => useContext(AuthContext)
 
 const AuthProvider = ({ children }: Props) => {
   const navigate = useNavigate()
@@ -66,14 +66,14 @@ const AuthProvider = ({ children }: Props) => {
     uid: string,
     email: string,
     name: string,
-    profileCompleted: boolean = false
+    profileCompleted = false
   ) => {
     try {
       const docSnap = await getDoc(doc(db, "users", uid))
       if (!docSnap.exists()) {
         await setDoc(doc(usersCol, uid), {
-          uid: uid,
-          email: email,
+          uid,
+          email,
           name,
           profileCompleted,
         })
@@ -108,17 +108,25 @@ const AuthProvider = ({ children }: Props) => {
   }
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
-        setUser({ ...user, name: user.displayName })
+        axios.defaults.headers.common["authorization"] =
+          `Bearer ` + (await getIdToken(user))
+        const idTokenResult = await getIdTokenResult(user)
+        let role = idTokenResult.claims.role as string
+        setUser({ ...user, name: user.displayName, role })
         getDoc(doc(db, "users", user.uid)).then((doc) => {
           if (doc.exists()) {
-            setUser((prevUser) => ({ ...prevUser, ...(doc.data() as User) }))
+            setUser((prevUser) => ({
+              ...prevUser,
+              ...(doc.data() as User),
+            }))
           }
         })
         setLoggedIn(true)
         setLoading(false)
       } else {
+        delete axios.defaults.headers.common["authorization"]
         setUser(null)
         setLoading(false)
         setLoggedIn(false)
@@ -214,6 +222,7 @@ const AuthProvider = ({ children }: Props) => {
     }
   }
 
+  // eslint-disable-next-line react/jsx-no-constructed-context-values
   const value = {
     user,
     loggedIn,
@@ -227,6 +236,7 @@ const AuthProvider = ({ children }: Props) => {
     updateUser,
     authLoading: loading,
   }
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 

@@ -7,6 +7,7 @@ import {
   getDocs,
   onSnapshot,
   query,
+  Timestamp,
   Unsubscribe,
 } from "firebase/firestore"
 import { useEffect, useState } from "react"
@@ -21,8 +22,9 @@ export const LabSessionPage = () => {
 
   const handleEndSession = async () => {
     try {
-      const res = await axios.post("/end-experiment-session", {
-        sessionId: id,
+      const res = await axios.put(`/lab-sessions/${id}`, {
+        active: false,
+        endedAt: Timestamp.fromDate(new Date()),
       })
       console.log(res.data)
     } catch (err) {

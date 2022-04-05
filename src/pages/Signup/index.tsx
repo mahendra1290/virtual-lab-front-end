@@ -1,20 +1,13 @@
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { FcGoogle } from "react-icons/fc"
 import {
   Button,
   FormControl,
   FormErrorMessage,
   FormHelperText,
-  FormLabel,
-  Input,
 } from "@chakra-ui/react"
-import { PasswordInput } from "../../components/forms/PasswordInput"
 import { useForm } from "react-hook-form"
-import { createUserWithEmailAndPassword } from "firebase/auth"
-import { auth } from "../../firebase"
-import { useState } from "react"
 import { useAuthContext } from "../../providers/AuthProvider"
-import { ProfileForm } from "./ProfileForm"
 import { FormField } from "../../components/forms/FormField"
 
 export const Signup = () => {
@@ -25,16 +18,15 @@ export const Signup = () => {
     handleSubmit,
     register,
     getValues,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm()
 
   const onSubmit = async (data: any) => {
     await signUpWithEmailPassword(data.email, data.password)
   }
 
-  const validateConfirmPassword = (confirmPassword: string): boolean => {
-    return getValues("password") === confirmPassword
-  }
+  const validateConfirmPassword = (confirmPassword: string): boolean =>
+    getValues("password") === confirmPassword
 
   return (
     <div className="h-full p-2">

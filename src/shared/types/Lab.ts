@@ -10,3 +10,11 @@ export type Experiment = {
   description?: string,
   problemStatement: string,
 }
+
+export interface LabSession {
+  id: string,
+  labId: string,
+  expId: string,
+  uid: string,
+  active: boolean,
+}

@@ -2,6 +2,7 @@ import { Avatar, Button } from "@chakra-ui/react"
 import React from "react"
 import { Link } from "react-router-dom"
 import { useAuthContext } from "../../providers/AuthProvider"
+import Header from "../header/header"
 import ProfileMenu from "./ProfileMenu"
 
 export const Navbar = () => {

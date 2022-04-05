@@ -9,6 +9,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
+import axios from "axios"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
@@ -28,7 +29,7 @@ export const ProfileForm = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      fullName: user?.name,
+      displayName: user?.name,
       email: user?.email,
     },
   })
@@ -36,14 +37,24 @@ export const ProfileForm = () => {
   useEffect(() => {
     if (user) {
       setValue("email", user.email)
-      setValue("fullName", user.name)
+      setValue("displayName", user.name)
     }
   }, [user])
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: {
+    email?: string | null
+    displayName?: string | null
+  }) => {
     if (user?.uid) {
       setLoading(true)
-      await updateUser(user.uid, data.fullName, role)
+      try {
+        await axios.post(`/users/${user.uid}`, {
+          role: role,
+          displayName: data.displayName,
+        })
+      } catch (err) {
+        console.log(err)
+      }
       setLoading(false)
       navigate("/")
     }
@@ -56,16 +67,16 @@ export const ProfileForm = () => {
       className="mx-auto mt-5 w-1/3 space-y-5 rounded-sm p-6 shadow-lg"
     >
       <h1 className="text-xl">Complete your profile</h1>
-      <FormControl isRequired isInvalid={!!errors.fullName}>
+      <FormControl isRequired isInvalid={!!errors.displayName}>
         <FormLabel htmlFor="fullName">Full Name</FormLabel>
         <Input
-          {...register("fullName", { required: "Full name is required" })}
+          {...register("displayName", { required: "Display name is required" })}
           type="text"
           id="fullName"
           placeholder="Enter you full name"
         />
         <FormErrorMessage>
-          {errors.fullName && errors.fullName.message}
+          {errors.displayName && errors.displayName.message}
         </FormErrorMessage>
       </FormControl>
       <FormControl isDisabled>

@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/react"
+import { Button, VStack } from "@chakra-ui/react"
 import axios from "axios"
 import {
   collection,
@@ -10,10 +10,10 @@ import {
   Unsubscribe,
 } from "firebase/firestore"
 import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import { db } from "../../firebase"
 import { useAuthContext } from "../../providers/AuthProvider"
-import { Experiment, Lab } from "../../shared/types/Lab"
+import { Experiment, Lab, LabSession } from "../../shared/types/Lab"
 
 const ExperimentPage = () => {
   const { user } = useAuthContext()
@@ -22,12 +22,13 @@ const ExperimentPage = () => {
   const [experiment, setExperiment] = useState<Experiment>()
   const [sessionData, setSessionData] = useState<any>()
   const [loading, setLoading] = useState(false)
+  const [labSessions, setLabSessions] = useState<LabSession[]>([])
 
   const navigate = useNavigate()
 
   const handleStartExperimentSession = async () => {
     setLoading(true)
-    const res = await axios.post("/experiment-sessions", {
+    const res = await axios.post("/lab-sessions", {
       expId,
       labId,
     })
@@ -53,6 +54,16 @@ const ExperimentPage = () => {
         }
       })
     }
+    ;(async () => {
+      const result = await axios.get<LabSession[]>("lab-sessions", {
+        params: {
+          labId,
+          expId,
+        },
+      })
+      console.log(result, "res")
+      setLabSessions(result.data)
+    })()
   }, [labId, expId])
 
   useEffect(() => {
@@ -84,6 +95,19 @@ const ExperimentPage = () => {
       <h3 className="text-xl">
         <b>Problem Statement:</b> {experiment?.problemStatement}
       </h3>
+      <h1>Sessions</h1>
+      <VStack align="flex-start">
+        {labSessions
+          .filter((val) => val.active)
+          .map((val) => (
+            <Link
+              className="rounded border-2 p-4"
+              to={`/t/lab-session/${val.id}`}
+            >
+              {val.id}
+            </Link>
+          ))}
+      </VStack>
       {user?.role === "teacher" && (
         <Button
           isLoading={loading}

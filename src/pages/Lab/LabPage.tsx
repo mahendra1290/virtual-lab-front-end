@@ -23,6 +23,8 @@ import { db } from "../../firebase"
 import { CreateExperment } from "../../components/experiment/CreateExperiment"
 import { ExperimentCard } from "../../components/experiment/ExperimentCard"
 import { useAuthContext } from "../../providers/AuthProvider"
+import axios from "axios"
+import { LabSession } from "../../shared/types/Lab"
 
 interface Lab {
   id: string
@@ -38,8 +40,8 @@ export const LabPage = () => {
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
-
   const [experiments, setExperiments] = useState<any[]>([])
+  const [labSessions, setLabSessions] = useState<LabSession[]>([])
 
   const handleModalClose = () => {
     setModalOpen(false)
@@ -68,6 +70,10 @@ export const LabPage = () => {
   }, [])
 
   useEffect(() => {
+    ;(async () => {
+      const labSessions = await axios.get<LabSession[]>("/lab-sessions")
+      setLabSessions(labSessions.data)
+    })()
     if (lab) {
       const docRef = collection(db, "labs", lab.id, "experiments")
       onSnapshot(docRef, (snapShot) => {
