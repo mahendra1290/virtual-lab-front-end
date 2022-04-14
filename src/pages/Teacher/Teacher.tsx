@@ -19,6 +19,7 @@ import {
 import {
   collection,
   doc,
+  getDocs,
   onSnapshot,
   query,
   setDoc,
@@ -26,6 +27,7 @@ import {
   Unsubscribe,
   where,
 } from "firebase/firestore"
+import { sortBy } from "lodash"
 import moment from "moment"
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
@@ -74,24 +76,29 @@ export const Teacher = () => {
     let unsubscribe: Unsubscribe
     const fetchLabs = async () => {
       const q = query(collection(db, "labs"), where("userUid", "==", user?.uid))
-      unsubscribe = onSnapshot(q, (querySnapshot) => {
-        if (querySnapshot.empty) {
-          setEmpty(true)
-        } else {
-          setEmpty(false)
-        }
-        const labDocs = querySnapshot.docs
-          .map((doc) => ({ id: doc.id, ...doc.data() } as Lab))
-          .map((item) => ({
-            ...item,
-            createdAt: moment((item.createdAt as Timestamp).toDate()).format(
-              "DD-MM-YYYY"
-            ),
-          }))
-        setLabs(labDocs)
-      })
+      const snapshot = await getDocs(q)
+      if (snapshot.empty) {
+        setEmpty(true)
+      } else {
+        setEmpty(false)
+      }
+      let labDocs = snapshot.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() } as Lab))
+        .map((item) => ({
+          ...item,
+          createdAt: moment((item.createdAt as Timestamp).toDate()).format(
+            "DD-MM-YYYY"
+          ),
+        }))
+      labDocs = sortBy(labDocs, "name")
+      sessionStorage.setItem("LABS", JSON.stringify(labDocs))
+      setLabs(labDocs)
     }
     if (user) {
+      const cachedLabs = sessionStorage.getItem("LABS")
+      if (cachedLabs) {
+        setLabs(JSON.parse(cachedLabs))
+      }
       fetchLabs()
     }
     return () => {

@@ -10,7 +10,7 @@ import {
   getIdToken,
   getIdTokenResult,
 } from "firebase/auth"
-import { doc, getDoc, setDoc } from "firebase/firestore"
+import { doc, collection, getDoc, setDoc } from "firebase/firestore"
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { auth, db, usersCol } from "../firebase"
@@ -61,6 +61,25 @@ const AuthProvider = ({ children }: Props) => {
   const [loading, setLoading] = useState(true)
   const [signInLoading, setSignInLoading] = useState(false)
   const [signUpLoading, setSignUpLoading] = useState(false)
+
+  const createUserInFirestore = async (
+    uid: string,
+    email: string,
+    provider: string
+  ) => {
+    try {
+      await setDoc(doc(collection(db, "/users"), uid), {
+        uid,
+        email,
+        provider,
+        profileCompleted: false,
+      })
+      return true
+    } catch (err: any) {
+      console.log("Err", err)
+    }
+    return false
+  }
 
   const createUserIfNotPresent = async (
     uid: string,
@@ -114,15 +133,16 @@ const AuthProvider = ({ children }: Props) => {
           `Bearer ` + (await getIdToken(user))
         const idTokenResult = await getIdTokenResult(user)
         let role = idTokenResult.claims.role as string
-        setUser({ ...user, name: user.displayName, role })
-        getDoc(doc(db, "users", user.uid)).then((doc) => {
-          if (doc.exists()) {
-            setUser((prevUser) => ({
-              ...prevUser,
-              ...(doc.data() as User),
-            }))
+        const userDoc = await getDoc(doc(db, "users", user.uid))
+        if (userDoc.exists()) {
+          setUser({
+            ...user,
+            ...(userDoc.data() as User),
+          })
+          if (!userDoc.data().role) {
+            navigate("/initial-profile")
           }
-        })
+        }
         setLoggedIn(true)
         setLoading(false)
       } else {
@@ -144,7 +164,7 @@ const AuthProvider = ({ children }: Props) => {
       )
       const user = userCredential.user
       if (user.email) {
-        await createUserIfNotPresent(user.uid, user.email, "")
+        await createUserInFirestore(user.uid, user.email, "email")
       }
       navigate("/initial-profile?password=true")
       setSignUpLoading(false)

@@ -2,7 +2,7 @@ import React from "react"
 import ReactDOM from "react-dom"
 import "./index.css"
 import App from "./App"
-import "./userWorker"
+// import "./userWorker"
 import { ChakraProvider, withDefaultColorScheme } from "@chakra-ui/react"
 import axios from "axios"
 

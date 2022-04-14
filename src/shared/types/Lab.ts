@@ -1,7 +1,12 @@
+import { RawDraftContentState } from "react-draft-wysiwyg"
+
 export type Lab = {
   id: string,
   name: string,
   userUid: string,
+  visibility: string,
+  createdAt: Date,
+  sectionData?: { [key: string]: RawDraftContentState }
 }
 
 export type Experiment = {

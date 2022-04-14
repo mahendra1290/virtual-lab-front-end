@@ -17,6 +17,7 @@ import TeachersBasePage from "./pages/Teacher/TeacherBasePage"
 import NotFoundPage from "./pages/404/NotFoundPage"
 import { PrivateRoute } from "./routes/PrivateRoute"
 import axios from "axios"
+import ConfirmationModal from "./components/modals/ConfirmationModal"
 
 function App() {
   const { authLoading, user } = useAuthContext()
@@ -87,6 +88,12 @@ function App() {
         <Route path="/s/lab-session/:id" element={<JoinedLabSessionPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      {/* <ConfirmationModal
+        header={"Are you sure"}
+        body={"You wont be able to undo this action"}
+        isOpen={true}
+        onClose={() => {}}
+      /> */}
     </div>
   )
 }
