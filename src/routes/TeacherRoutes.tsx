@@ -6,16 +6,14 @@ const CreateLab = React.lazy(() => import("../pages/CreateLab/CreateLab"))
 const ExperimentPage = React.lazy(
   () => import("../pages/Experiment/ExperimentPage")
 )
-const LabPage = React.lazy(() => import("../pages/Lab/LabPage"))
+const LabPage = React.lazy(() => import("../pages/LabPage"))
 const LabSessionPage = React.lazy(
   () => import("../pages/LabSession/LabSessionPage")
 )
-const Teacher = React.lazy(() => import("../pages/Teacher/Teacher"))
-const TeachersBasePage = React.lazy(
-  () => import("../pages/Teacher/TeacherBasePage")
-)
+const Teacher = React.lazy(() => import("../pages/TeachersPage"))
+const TeachersBasePage = React.lazy(() => import("../pages/TeacherBasePage"))
 const CreateExperimentPage = React.lazy(
-  () => import("../pages/CreateExperimentPage/CreateExperimentPage")
+  () => import("../pages/CreateExperimentPage")
 )
 
 const TeacherRoutes = (

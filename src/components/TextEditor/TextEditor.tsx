@@ -11,7 +11,7 @@ const TextEditor = ({ value, onChange }: TextEditorProps) => {
     <Editor
       editorState={value}
       onEditorStateChange={onChange}
-      wrapperClassName="min-h-[20rem] flex flex-col"
+      wrapperClassName="min-h-[20rem] flex flex-col reset-tailwindcss"
       editorClassName="flex-grow border rounded p-2"
       placeholder="Write here..."
       toolbarClassName="p-4"

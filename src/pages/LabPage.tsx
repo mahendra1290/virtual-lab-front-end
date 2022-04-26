@@ -23,21 +23,21 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import draftToHtml from "draftjs-to-html"
-import { db } from "../../firebase"
-import { CreateExperment } from "../../components/experiment/CreateExperiment"
-import { ExperimentCard } from "../../components/experiment/ExperimentCard"
-import { useAuthContext } from "../../providers/AuthProvider"
+import { db } from "../firebase"
+import { CreateExperment } from "../components/experiment/CreateExperiment"
+import { ExperimentCard } from "../components/experiment/ExperimentCard"
+import { useAuthContext } from "../providers/AuthProvider"
 import axios from "axios"
-import { Lab, LabSession } from "../../shared/types/Lab"
-import LabSectionMenu from "../../components/labs/LabSectionMenu"
-import LabMenuPanel from "../../components/labs/LabMenuPanel"
+import { Lab, LabSession } from "../shared/types/Lab"
+import LabSectionMenu from "../components/labs/LabSectionMenu"
+import LabMenuPanel from "../components/labs/LabMenuPanel"
 import { RawDraftContentState } from "react-draft-wysiwyg"
-import Header from "../../components/header/header"
-import LabOptionMenu from "../../components/labs/LabOptionMenu"
-import { useConfirmationModal } from "../../hooks/useConfirmationModal"
-import ConfirmationModal from "../../components/modals/ConfirmationModal"
-import LabSettings from "../../components/labs/LabSettings"
-import { useLabContext } from "../../providers/LabProvider"
+import Header from "../components/header/header"
+import LabOptionMenu from "../components/labs/LabOptionMenu"
+import { useConfirmationModal } from "../hooks/useConfirmationModal"
+import ConfirmationModal from "../components/modals/ConfirmationModal"
+import LabSettings from "../components/labs/LabSettings"
+import { useLabContext } from "../providers/LabProvider"
 
 const LabPage = () => {
   const { user } = useAuthContext()
@@ -157,7 +157,10 @@ const LabPage = () => {
       )
     } else {
       return (
-        <div dangerouslySetInnerHTML={{ __html: sectionData[activeSection] }} />
+        <div
+          className="reset-tailwindcss"
+          dangerouslySetInnerHTML={{ __html: sectionData[activeSection] }}
+        />
       )
     }
   }, [activeSection, experiments])
@@ -182,7 +185,8 @@ const LabPage = () => {
         rightContent={
           <div className="space-x-4">
             <Button onClick={handleAddExperiment}>Add Experiment</Button>
-            <Button
+            <Button colorScheme="blue">Start Lab Session</Button>
+            {/* <Button
               isLoading={deleteLoading}
               loadingText={"Deleting..."}
               variant="outline"
@@ -190,7 +194,7 @@ const LabPage = () => {
               onClick={showDeleteLabConfirmation}
             >
               Delete
-            </Button>
+            </Button> */}
             <LabOptionMenu />
           </div>
         }

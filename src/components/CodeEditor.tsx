@@ -46,7 +46,7 @@ export const CodeEditor = () => {
       setRes("")
       setError("")
       axios
-        .post("/code/run/js", { code })
+        .post("/code/run/python", { code })
         .then((res) => {
           if (res.status == 400) {
             stopLoading()
@@ -55,7 +55,7 @@ export const CodeEditor = () => {
             setError(res.data.error)
             setRes("")
           } else {
-            setRes(res.data.out)
+            setRes(res.data.output)
             setError("")
           }
           stopLoading()

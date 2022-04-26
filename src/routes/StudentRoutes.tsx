@@ -1,5 +1,5 @@
 import { Outlet, Route } from "react-router-dom"
-import LabPage from "../pages/Lab/LabPage"
+import LabPage from "../pages/LabPage"
 import { StudentPage } from "../pages/Student/StudentPage"
 import { LabProvider } from "../providers/LabProvider"
 import PrivateRoute from "./PrivateRoute"

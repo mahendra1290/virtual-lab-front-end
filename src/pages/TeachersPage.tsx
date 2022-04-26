@@ -31,9 +31,9 @@ import { sortBy } from "lodash"
 import moment from "moment"
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import Header from "../../components/header/header"
-import { db } from "../../firebase"
-import { useAuthContext } from "../../providers/AuthProvider"
+import Header from "../components/header/header"
+import { db } from "../firebase"
+import { useAuthContext } from "../providers/AuthProvider"
 
 interface Lab {
   id: string

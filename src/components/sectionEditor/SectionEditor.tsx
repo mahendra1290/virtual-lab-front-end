@@ -3,6 +3,7 @@ import React, {
   ChangeEventHandler,
   Children,
   useEffect,
+  useMemo,
   useReducer,
   useState,
 } from "react"
@@ -32,7 +33,7 @@ import {
 import { EditorState } from "react-draft-wysiwyg"
 import { ACTIONS } from "./actions"
 
-type SectionEditorValue = {
+export type SectionEditorValue = {
   id: string
   name: string
   editorState: EditorState
@@ -44,11 +45,9 @@ type LabMenuPanelProps = {
   onChange?: (value: SectionEditorValue[]) => void
 }
 
-const activeMenuStyle =
-  "bg-slate-100 text-teal-700 font-bold border-2 border-black"
+const activeMenuStyle = "bg-slate-200 text-teal-700 font-bold"
 
-const unactiveMenuStyle =
-  "bg-slate-50 text-black border border-slate-50 border-2"
+const unactiveMenuStyle = "bg-slate-50 text-black"
 
 const SectionEditor = ({
   className,
@@ -105,9 +104,15 @@ const SectionEditor = ({
     }
   }, [state.sectionData])
 
+  const activeMenuItem = useMemo(() => {
+    return menus.find((item) => item.id === activeMenu)
+  }, [activeMenu, menus])
+
   return (
-    <div className="flex gap-4 p-8">
-      <div className={`${className} flex w-1/5 flex-col gap-2 rounded-md`}>
+    <div className="flex h-[calc(100vh-130px)] gap-4 p-8">
+      <div
+        className={`${className} flex w-1/5 flex-col gap-2 overflow-y-auto overflow-x-hidden rounded-md border border-slate-200 p-2 shadow-sm`}
+      >
         {menus.length === 0 && <h2 className="mx-auto">No sections added</h2>}
         {menus.map((menu) => (
           <div
@@ -152,11 +157,14 @@ const SectionEditor = ({
           width="fit-content"
           onClick={handleMenuAdd}
           marginInline="auto"
+          colorScheme="cyan"
+          size="sm"
         >
           New Section
         </Button>
       </div>
-      <div className="flex-grow">
+      <div className="flex-grow rounded border py-2 px-4">
+        <h1 className="mb-4 text-xl capitalize">{activeMenuItem?.name}</h1>
         <TextEditor
           value={activeEditorState}
           onChange={(editorState) => {
