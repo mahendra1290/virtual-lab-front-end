@@ -19,6 +19,7 @@ import {
 import {
   collection,
   doc,
+  getDocs,
   onSnapshot,
   query,
   setDoc,
@@ -26,6 +27,7 @@ import {
   Unsubscribe,
   where,
 } from "firebase/firestore"
+import { sortBy } from "lodash"
 import moment from "moment"
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
@@ -41,57 +43,42 @@ interface Lab {
   createdAt: Timestamp | string | Date
 }
 
-export const Teacher = () => {
+const Teacher = () => {
   const navigate = useNavigate()
 
   const { user } = useAuthContext()
-  const [addLabModalOpen, setAddModalOpen] = useState(false)
   const [name, setName] = useState("")
   const [labVisibility, setLabVisibility] = useState("public")
-  const [loading, setLoading] = useState(false)
   const [labs, setLabs] = useState<Lab[]>([])
   const [empty, setEmpty] = useState(false)
-
-  const createLab = async () => {
-    setLoading(true)
-    try {
-      await setDoc(doc(collection(db, "labs")), {
-        userUid: user?.uid,
-        name: name,
-        visibility: labVisibility,
-        createdAt: new Date(),
-      })
-      setAddModalOpen(false)
-      setName("")
-      setLabVisibility("public")
-    } catch (err) {
-      console.log(err)
-    }
-    setLoading(false)
-  }
 
   useEffect(() => {
     let unsubscribe: Unsubscribe
     const fetchLabs = async () => {
       const q = query(collection(db, "labs"), where("userUid", "==", user?.uid))
-      unsubscribe = onSnapshot(q, (querySnapshot) => {
-        if (querySnapshot.empty) {
-          setEmpty(true)
-        } else {
-          setEmpty(false)
-        }
-        const labDocs = querySnapshot.docs
-          .map((doc) => ({ id: doc.id, ...doc.data() } as Lab))
-          .map((item) => ({
-            ...item,
-            createdAt: moment((item.createdAt as Timestamp).toDate()).format(
-              "DD-MM-YYYY"
-            ),
-          }))
-        setLabs(labDocs)
-      })
+      const snapshot = await getDocs(q)
+      if (snapshot.empty) {
+        setEmpty(true)
+      } else {
+        setEmpty(false)
+      }
+      let labDocs = snapshot.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() } as Lab))
+        .map((item) => ({
+          ...item,
+          createdAt: moment((item.createdAt as Timestamp).toDate()).format(
+            "DD-MM-YYYY"
+          ),
+        }))
+      labDocs = sortBy(labDocs, "name")
+      sessionStorage.setItem("LABS", JSON.stringify(labDocs))
+      setLabs(labDocs)
     }
     if (user) {
+      const cachedLabs = sessionStorage.getItem("LABS")
+      if (cachedLabs) {
+        setLabs(JSON.parse(cachedLabs))
+      }
       fetchLabs()
     }
     return () => {
@@ -110,9 +97,9 @@ export const Teacher = () => {
       <Header
         title="Labs"
         pathList={["labs"]}
-        rightContent={<Button onClick={handleCreateLab}>Create Lab</Button>}
+        rightContent={<Button onClick={handleCreateLab}>Create new lab</Button>}
       />
-      <div className="p-4">
+      <div className="px-8">
         {!labs.length && !empty && (
           <div className="mt-12 flex flex-col items-center justify-center">
             <Spinner />
@@ -141,68 +128,9 @@ export const Teacher = () => {
             </GridItem>
           ))}
         </Grid>
-        <Modal isOpen={addLabModalOpen} onClose={() => setAddModalOpen(false)}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Create Lab</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  createLab()
-                }}
-              >
-                <FormControl>
-                  <FormLabel htmlFor="name">Name</FormLabel>
-                  <Input
-                    autoFocus
-                    id="name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl className="mt-4">
-                  <FormLabel htmlFor="labVisibility">Lab Visibility</FormLabel>
-                  <Select
-                    value={labVisibility}
-                    onChange={(e) => setLabVisibility(e.target.value)}
-                    defaultValue="public"
-                  >
-                    <option value="public">Public</option>
-                    <option value="private">Private</option>
-                  </Select>
-                  <FormHelperText>
-                    Public labs are accessible by everyone.
-                  </FormHelperText>
-                </FormControl>
-                <HStack
-                  paddingTop="1rem"
-                  justify="end"
-                  marginBottom="1.5"
-                  spacing="1rem"
-                >
-                  <Button
-                    isLoading={loading}
-                    loadingText="Creating"
-                    isDisabled={name === ""}
-                    type="submit"
-                  >
-                    Create
-                  </Button>
-                  <Button
-                    colorScheme="red"
-                    onClick={() => setAddModalOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                </HStack>
-              </form>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
       </div>
     </>
   )
 }
+
+export default Teacher

@@ -9,11 +9,11 @@ import { HiArrowLeft } from "react-icons/hi"
 import { Link, useNavigate } from "react-router-dom"
 
 type HeaderProps = {
-  title: string
-  pathList?: (string | [string, string])[]
+  title?: string | React.ReactElement
+  pathList?: (string | [string, string | undefined])[]
   onBackClick?: () => void
   showBackButton?: boolean
-  rightContent?: React.ReactChild | React.ReactChildren
+  rightContent?: React.ReactChild | React.ReactChildren | boolean
 }
 
 const Header = ({
@@ -42,29 +42,25 @@ const Header = ({
             role="button"
             className="m-0 text-2xl"
           />
-          <h1 className="text-3xl capitalize text-gray-800">{title}</h1>
+          <h1 className="text-2xl capitalize text-gray-800">{title}</h1>
         </div>
         <Breadcrumb className="text-sm capitalize text-gray-700">
-          <BreadcrumbItem>
-            <BreadcrumbLink>
-              <Link to="/">home</Link>
-            </BreadcrumbLink>
+          <BreadcrumbItem key="home-crumb">
+            <Link to="/">home</Link>
           </BreadcrumbItem>
           {pathList.map((item) => {
-            console.log(typeof item, item, "type")
-
             if (typeof item === "string") {
               return (
-                <BreadcrumbItem>
+                <BreadcrumbItem key={item}>
                   <BreadcrumbLink>{item}</BreadcrumbLink>
                 </BreadcrumbItem>
               )
             } else {
               return (
-                <BreadcrumbItem>
-                  <BreadcrumbLink>
-                    <Link to={item[0]}>{item[1]}</Link>
-                  </BreadcrumbLink>
+                <BreadcrumbItem key={item[0]}>
+                  {/* <BreadcrumbLink> */}
+                  <Link to={item[0]}>{item[1]}</Link>
+                  {/* </BreadcrumbLink> */}
                 </BreadcrumbItem>
               )
             }

@@ -10,10 +10,12 @@ import {
   Unsubscribe,
 } from "firebase/firestore"
 import { useEffect, useState } from "react"
-import { Link, useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { db } from "../../firebase"
 import { useAuthContext } from "../../providers/AuthProvider"
 import { Experiment, Lab, LabSession } from "../../shared/types/Lab"
+import Header from "../../components/header/header"
+import { nanoid } from "nanoid"
 
 const ExperimentPage = () => {
   const { user } = useAuthContext()
@@ -23,18 +25,13 @@ const ExperimentPage = () => {
   const [sessionData, setSessionData] = useState<any>()
   const [loading, setLoading] = useState(false)
   const [labSessions, setLabSessions] = useState<LabSession[]>([])
-
+  const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
 
   const handleStartExperimentSession = async () => {
-    setLoading(true)
-    const res = await axios.post("/lab-sessions", {
-      expId,
-      labId,
-    })
-    console.log(res)
-    setLoading(false)
-    setSessionData(res.data)
+    if (lab && experiment) {
+      navigate(`/t/lab-session/${nanoid()}?labId=${labId}&expId=${expId}`)
+    }
   }
 
   useEffect(() => {
@@ -86,38 +83,39 @@ const ExperimentPage = () => {
   }, [sessionData])
 
   return (
-    <div className="space-y-2 p-4">
-      <h1 className="text-2xl  capitalize">
-        {lab?.name} / {experiment?.title}
-      </h1>
-      <h2>{experiment?.description}</h2>
-      <p>{experiment?.id}</p>
-      <h3 className="text-xl">
-        <b>Problem Statement:</b> {experiment?.problemStatement}
-      </h3>
-      <h1>Sessions</h1>
-      <VStack align="flex-start">
-        {labSessions
-          .filter((val) => val.active)
-          .map((val) => (
-            <Link
-              className="rounded border-2 p-4"
-              to={`/t/lab-session/${val.id}`}
-            >
-              {val.id}
-            </Link>
-          ))}
-      </VStack>
-      {user?.role === "teacher" && (
-        <Button
-          isLoading={loading}
-          loadingText={"Starting Session"}
-          onClick={handleStartExperimentSession}
-        >
-          Start Experiment Session
-        </Button>
-      )}
-    </div>
+    <>
+      <Header
+        title={experiment?.title || ""}
+        pathList={[[`/t/labs/${lab?.id}`, lab?.name], experiment?.title || ""]}
+      />
+      <div className="mt-4 space-y-2 px-8">
+        <h3 className="text-xl">
+          <b>Problem Statement:</b> {experiment?.problemStatement}
+        </h3>
+        <h1>Sessions</h1>
+        <VStack align="flex-start">
+          {labSessions
+            .filter((val) => val.active)
+            .map((val) => (
+              <Link
+                className="rounded border-2 p-4"
+                to={`/t/lab-session/${val.id}`}
+              >
+                {val.id}
+              </Link>
+            ))}
+        </VStack>
+        {user?.role === "teacher" && (
+          <Button
+            isLoading={loading}
+            loadingText={"Starting Session"}
+            onClick={handleStartExperimentSession}
+          >
+            Start Experiment Session
+          </Button>
+        )}
+      </div>
+    </>
   )
 }
 

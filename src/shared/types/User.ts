@@ -6,4 +6,5 @@ export type User = {
   name: string | null
   role?: string | null
   profileCompleted?: boolean
+  provider?: string | null
 }

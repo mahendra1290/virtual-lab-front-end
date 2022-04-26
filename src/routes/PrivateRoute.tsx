@@ -27,4 +27,4 @@ const PrivateRoute = ({ children, roles = [] }: Props) => {
   return <h1>Access Denied</h1>
 }
 
-export { PrivateRoute }
+export default PrivateRoute

@@ -1,22 +1,23 @@
 import { Spinner } from "@chakra-ui/react"
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { Navigate, Route, Routes } from "react-router-dom"
 import { Navbar } from "./components/Navbar/Navbar"
-import { CreateLab } from "./pages/CreateLab/CreateLab"
 import { Login } from "./pages/Login"
 import { Signup } from "./pages/Signup"
 import { ProfileForm } from "./pages/Signup/ProfileForm"
-import { Teacher } from "./pages/Teacher/Teacher"
-import { LabPage } from "./pages/Lab/LabPage"
 import { useAuthContext } from "./providers/AuthProvider"
 import ExperimentPage from "./pages/Experiment/ExperimentPage"
-import { LabSessionPage } from "./pages/LabSession/LabSessionPage"
 import { JoinedLabSessionPage } from "./pages/JoinedLabSession/JoinedLabSessionPage"
 import { StudentPage } from "./pages/Student/StudentPage"
 import TeachersBasePage from "./pages/Teacher/TeacherBasePage"
 import NotFoundPage from "./pages/404/NotFoundPage"
-import { PrivateRoute } from "./routes/PrivateRoute"
 import axios from "axios"
+import ConfirmationModal from "./components/modals/ConfirmationModal"
+import JoinLabPage from "./pages/JoinLabPage/JoinLabPage"
+import TeacherRoutes from "./routes/TeacherRoutes"
+import PrivateRoute from "./routes/PrivateRoute"
+import CodeEditorPage from "./pages/CodeEditorPage/CodeEditorPage"
+import StudentLabSessionView from "./pages/StudentLabSessionView/StudentLabSessionView"
 
 function App() {
   const { authLoading, user } = useAuthContext()
@@ -37,56 +38,60 @@ function App() {
   return (
     <div className="App relative min-h-screen">
       <Navbar />
-      <Routes>
-        <Route
-          path="/t"
-          element={
-            <PrivateRoute roles={["teacher"]}>
-              <TeachersBasePage />
-            </PrivateRoute>
-          }
-        >
-          <Route index element={<Teacher />} />
-          <Route path="/t/labs/:id" element={<LabPage />} />
-          <Route path="/t/labs/create" element={<CreateLab />} />
+      <Suspense fallback={<Spinner />}>
+        <Routes>
+          {TeacherRoutes}
+          <Route path="/s">
+            <Route
+              index
+              element={
+                <PrivateRoute roles={["student"]}>
+                  <StudentPage />
+                </PrivateRoute>
+              }
+            />
+          </Route>
           <Route
-            path="/t/labs/:labId/experiments/:expId"
-            element={<ExperimentPage />}
-          />
-          <Route path="/t/lab-session/:id" element={<LabSessionPage />} />
-        </Route>
-        <Route path="/s">
-          <Route
-            index
+            path="join-lab"
             element={
               <PrivateRoute roles={["student"]}>
-                <StudentPage />
+                <JoinLabPage />
               </PrivateRoute>
             }
           />
-        </Route>
-        <Route
-          path="/"
-          element={
-            user?.role === "teacher" ? (
-              <Navigate to="/t" />
-            ) : (
-              <Navigate to="/s" />
-            )
-          }
-        />
-        <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
-        <Route
-          path="/sign-up"
-          element={user ? <Navigate to="/" /> : <Signup />}
-        />
-        <Route
-          path="/initial-profile"
-          element={user ? <ProfileForm /> : <Navigate to="/login" />}
-        />
-        <Route path="/s/lab-session/:id" element={<JoinedLabSessionPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+          <Route
+            path="/"
+            element={
+              user?.role === "teacher" ? (
+                <Navigate to="/t" />
+              ) : (
+                <Navigate to="/s" />
+              )
+            }
+          />
+          <Route
+            path="/login"
+            element={user ? <Navigate to="/" /> : <Login />}
+          />
+          <Route
+            path="/sign-up"
+            element={user ? <Navigate to="/" /> : <Signup />}
+          />
+          <Route
+            path="/initial-profile"
+            element={user ? <ProfileForm /> : <Navigate to="/login" />}
+          />
+          <Route path="/s/lab-session/:id" element={<JoinedLabSessionPage />} />
+          <Route path="/editor" element={<CodeEditorPage />} />
+          <Route path="/student-view/:id" element={<StudentLabSessionView />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
+      {/* <ConfirmationModal
+        body={"You wont be able to undo this action"}
+        isOpen={true}
+        onClose={() => {}}
+      /> */}
     </div>
   )
 }
