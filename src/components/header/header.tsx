@@ -9,8 +9,8 @@ import { HiArrowLeft } from "react-icons/hi"
 import { Link, useNavigate } from "react-router-dom"
 
 type HeaderProps = {
-  title: string
-  pathList?: (string | [string, string])[]
+  title?: string | React.ReactElement
+  pathList?: (string | [string, string | undefined])[]
   onBackClick?: () => void
   showBackButton?: boolean
   rightContent?: React.ReactChild | React.ReactChildren | boolean

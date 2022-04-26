@@ -129,10 +129,6 @@ const AuthProvider = ({ children }: Props) => {
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        axios.defaults.headers.common["authorization"] =
-          `Bearer ` + (await getIdToken(user))
-        const idTokenResult = await getIdTokenResult(user)
-        let role = idTokenResult.claims.role as string
         const userDoc = await getDoc(doc(db, "users", user.uid))
         if (userDoc.exists()) {
           setUser({
@@ -146,7 +142,6 @@ const AuthProvider = ({ children }: Props) => {
         setLoggedIn(true)
         setLoading(false)
       } else {
-        delete axios.defaults.headers.common["authorization"]
         setUser(null)
         setLoading(false)
         setLoggedIn(false)

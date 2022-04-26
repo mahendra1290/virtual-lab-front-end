@@ -36,10 +36,13 @@ import Header from "../../components/header/header"
 import LabOptionMenu from "../../components/labs/LabOptionMenu"
 import { useConfirmationModal } from "../../hooks/useConfirmationModal"
 import ConfirmationModal from "../../components/modals/ConfirmationModal"
+import LabSettings from "../../components/labs/LabSettings"
+import { useLabContext } from "../../providers/LabProvider"
 
-export const LabPage = () => {
+const LabPage = () => {
   const { user } = useAuthContext()
   const { id } = useParams()
+  const { lab } = useLabContext()
 
   const { makeModal, modalProps } = useConfirmationModal()
   const navigate = useNavigate()
@@ -50,7 +53,6 @@ export const LabPage = () => {
     isClosable: true,
   })
 
-  const [lab, setLab] = useState<Lab>()
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
@@ -65,6 +67,10 @@ export const LabPage = () => {
 
   const openModal = () => {
     setModalOpen(true)
+  }
+
+  const handleAddExperiment = () => {
+    navigate(`/t/experiments/create?lab=${lab?.id}`)
   }
 
   const showDeleteLabConfirmation = () => {
@@ -92,28 +98,6 @@ export const LabPage = () => {
   }
 
   useEffect(() => {
-    const fetchLab = async () => {
-      try {
-        setLoading(true)
-        const docSnap = await getDoc(doc(collection(db, "labs"), id))
-        if (docSnap.exists()) {
-          setLab({ ...docSnap.data(), id: docSnap.id } as Lab)
-        } else {
-          setError("404: Lab not found...")
-        }
-      } catch (err) {
-        console.log(err)
-      }
-      setLoading(false)
-    }
-    fetchLab()
-  }, [])
-
-  useEffect(() => {
-    ;(async () => {
-      const labSessions = await axios.get<LabSession[]>("/lab-sessions")
-      setLabSessions(labSessions.data)
-    })()
     if (lab) {
       const docRef = collection(db, "labs", lab.id, "experiments")
       onSnapshot(docRef, (snapShot) => {
@@ -136,13 +120,47 @@ export const LabPage = () => {
 
   const sections = useMemo(() => {
     const arr = Object.keys(sectionData).map((sectionName) => sectionName)
-    arr.push("Experiments")
+    arr.push("Experiments", "Settings", "Students")
     return arr
   }, [sectionData])
 
   if (!activeSection && sections.length > 0) {
     setActiveSection(sections[0])
   }
+
+  const RightSection = useMemo(() => {
+    if (activeSection === "Experiments") {
+      return (
+        <VStack spacing={4} align={"strecth"} className="mt-4 w-1/2">
+          {experiments.map((item) => (
+            <Link key={item.id} to={`experiments/${item.id}`}>
+              <ExperimentCard {...item} key={item.id} />
+            </Link>
+          ))}
+        </VStack>
+      )
+    } else if (activeSection === "Settings") {
+      return <LabSettings lab={lab} />
+    } else if (activeSection === "Students") {
+      return (
+        <VStack align="strecth">
+          {lab?.students?.map((student) => (
+            <div
+              key={student.uid}
+              className="rounded border bg-blue-100 px-4 py-2 text-gray-800"
+            >
+              <h2 className="text-lg">{student.name}</h2>
+              <p className="text-sm">{student.email}</p>
+            </div>
+          ))}
+        </VStack>
+      )
+    } else {
+      return (
+        <div dangerouslySetInnerHTML={{ __html: sectionData[activeSection] }} />
+      )
+    }
+  }, [activeSection, experiments])
 
   if (loading) {
     return <Spinner size="xl" />
@@ -163,7 +181,7 @@ export const LabPage = () => {
         pathList={[["/t/labs", "labs"], lab?.name || ""]}
         rightContent={
           <div className="space-x-4">
-            <Button onClick={openModal}>Create Experiment</Button>
+            <Button onClick={handleAddExperiment}>Add Experiment</Button>
             <Button
               isLoading={deleteLoading}
               loadingText={"Deleting..."}
@@ -187,19 +205,7 @@ export const LabPage = () => {
           />
           <div className="w-3/4 rounded-md border p-4">
             <h1 className="mb-4 text-xl">{activeSection}</h1>
-            {activeSection === "Experiments" ? (
-              <VStack spacing={4} align={"strecth"} className="mt-4 w-1/2">
-                {experiments.map((item) => (
-                  <Link key={item.id} to={`experiments/${item.id}`}>
-                    <ExperimentCard {...item} key={item.id} />
-                  </Link>
-                ))}
-              </VStack>
-            ) : (
-              <div
-                dangerouslySetInnerHTML={{ __html: sectionData[activeSection] }}
-              />
-            )}
+            {RightSection}
           </div>
         </div>
 
@@ -222,3 +228,5 @@ export const LabPage = () => {
     </>
   )
 }
+
+export default LabPage

@@ -45,7 +45,7 @@ interface SectionData {
   [key: string]: EditorState
 }
 
-export const CreateLab = () => {
+const CreateLab = () => {
   const {
     handleSubmit,
     reset,
@@ -243,3 +243,5 @@ export const CreateLab = () => {
     </>
   )
 }
+
+export default CreateLab
