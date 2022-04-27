@@ -33,9 +33,13 @@ const ExperimentPage = () => {
   const navigate = useNavigate()
 
   const handleStartExperimentSession = async () => {
-    if (lab && experiment) {
-      navigate(`/t/lab-session/${nanoid()}?labId=${labId}&expId=${expId}`)
-    }
+    setLoading(true)
+    const res = await axios.post("/lab-sessions", {
+      expId,
+      labId,
+    })
+    setLoading(false)
+    setSessionData(res.data)
   }
 
   useEffect(() => {
@@ -94,6 +98,8 @@ const ExperimentPage = () => {
     return obj
   }, [experiment])
 
+  const handleStartSession = () => {}
+
   return (
     <>
       <Header
@@ -101,7 +107,14 @@ const ExperimentPage = () => {
         pathList={[[`/t/labs/${lab?.id}`, lab?.name], experiment?.title || ""]}
         rightContent={
           <HStack>
-            <Button colorScheme={"blue"}>Start Session</Button>
+            <Button
+              colorScheme={"blue"}
+              isLoading={loading}
+              loadingText={"Starting..."}
+              onClick={handleStartExperimentSession}
+            >
+              Start Session
+            </Button>
             <Button colorScheme={"green"}>Edit</Button>
             <Button colorScheme={"red"}>Delete</Button>
           </HStack>

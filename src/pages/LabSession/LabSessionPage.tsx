@@ -1,4 +1,12 @@
-import { Button, VStack } from "@chakra-ui/react"
+import {
+  Button,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  VStack,
+} from "@chakra-ui/react"
 import { async } from "@firebase/util"
 import axios from "axios"
 import {
@@ -15,44 +23,45 @@ import {
 import { useEffect, useState } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
 import Header from "../../components/header/header"
+import SectionViewer from "../../components/SectionViewer"
 import { db } from "../../firebase"
-import { Experiment, Lab } from "../../shared/types/Lab"
+import { Experiment, Lab, LabSession } from "../../shared/types/Lab"
+
+interface ILabSession {
+  uid: string
+  startedAt: Timestamp
+  lab: Lab
+  exp: Experiment
+  labId: string
+  expId: string
+  active: boolean
+}
 
 const LabSessionPage = () => {
   const { id } = useParams()
   const [searchParams] = useSearchParams()
-  const [session, setSession] = useState<any>()
-  const [students, setStudents] = useState<any>()
-  const [experiment, setExperiment] = useState<Experiment>()
-  const [lab, setLab] = useState<Lab>()
+  const [session, setSession] = useState<ILabSession>()
 
   const handleEndSession = async () => {
-    try {
-      const res = await axios.put(`/lab-sessions/${id}`, {
-        active: false,
-        endedAt: Timestamp.fromDate(new Date()),
-      })
-      console.log(res.data)
-    } catch (err) {
-      console.log(err)
-    }
+    // try {
+    //   const res = await axios.put(`/lab-sessions/${id}`, {
+    //     active: false,
+    //     endedAt: Timestamp.fromDate(new Date()),
+    //   })
+    //   console.log(res.data)
+    // } catch (err) {
+    //   console.log(err)
+    // }
   }
 
   const handleStartSession = async () => {}
 
   useEffect(() => {
-    ;(async () => {
-      const labId = searchParams.get("labId")
-      const expId = searchParams.get("expId")
-      if (labId && expId) {
-        const labRef = doc(db, `labs/${labId}`)
-        const expRef = doc(db, `labs/${labId}/experiments/${expId}`)
-        const labDoc = await getDoc(labRef)
-        const expDoc = await getDoc(expRef)
-        setLab(labDoc.data() as Lab)
-        setExperiment(expDoc.data() as Experiment)
-      }
-    })()
+    const fetchLabSessionDetails = async () => {
+      const res = await axios.get(`/lab-sessions/${id}`)
+      setSession(res.data as ILabSession)
+    }
+    fetchLabSessionDetails()
   }, [])
 
   // useEffect(() => {
@@ -84,30 +93,50 @@ const LabSessionPage = () => {
   //   }
   // }, [])
 
-  console.log(experiment, lab)
+  const { exp, lab } = session || {}
 
   return (
     <>
       <Header
-        title={experiment?.title}
-        pathList={["lab", "random", "experi one"]}
+        title={`${exp?.title}`}
+        pathList={lab && exp ? [lab?.name, exp?.title] : []}
         rightContent={
-          <Button onClick={handleEndSession} colorScheme="green">
-            Start Session
+          <Button onClick={handleEndSession} colorScheme="red">
+            Stop Session
           </Button>
         }
       />
+      <div className="py-4 px-8">
+        <Tabs className="min-h-screen rounded-lg border p-2">
+          <TabList>
+            <Tab>Experiment</Tab>
+            <Tab>Submission</Tab>
+            <Tab>Students</Tab>
+            <Tab>Settings</Tab>
+          </TabList>
+
+          <TabPanels>
+            <TabPanel>
+              <SectionViewer sections={exp?.sections || []} />
+            </TabPanel>
+            <TabPanel>
+              <p>two!</p>
+            </TabPanel>
+            <TabPanel>
+              <p>three!</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </div>
       <div className="px-8 py-4">
-        <h1>{experiment?.title}</h1>
-        <p>{experiment?.problemStatement}</p>
         <h1 className="mb-2 text-2xl">Students: </h1>
         <VStack align="stretch">
-          {students?.map((stud: any) => (
+          {/* {students?.map((stud: any) => (
             <div className="rounded border-2  p-2 shadow-md">
               {stud.name}
               <p className="font-mono">Code: {stud.code}</p>
             </div>
-          ))}
+          ))} */}
         </VStack>
       </div>
     </>
