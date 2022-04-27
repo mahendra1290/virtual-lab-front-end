@@ -138,6 +138,9 @@ const AuthProvider = ({ children }: Props) => {
           if (!userDoc.data().role) {
             navigate("/initial-profile")
           }
+        } else {
+          navigate("/initial-profile")
+
         }
         setLoggedIn(true)
         setLoading(false)

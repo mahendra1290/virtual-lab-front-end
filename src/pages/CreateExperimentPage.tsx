@@ -2,7 +2,7 @@ import { FormControl, Input } from "@chakra-ui/react"
 import React, { useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import Header from "../components/header/header"
-import { Button, FormErrorMessage, FormLabel, Textarea } from "@chakra-ui/react"
+import { Button, FormErrorMessage, FormLabel, Textarea, useToast } from "@chakra-ui/react"
 import { collection, doc, setDoc } from "firebase/firestore"
 import { useForm } from "react-hook-form"
 import { convertToRaw } from "draft-js"
@@ -12,6 +12,8 @@ import SectionEditor, {
   SectionEditorValue,
 } from "../components/sectionEditor/SectionEditor"
 import useLoading from "../hooks/useLoading"
+import { nanoid } from "nanoid"
+import { Link, useNavigate } from "react-router-dom"
 
 type ExperimentFormInput = {
   title: string
@@ -33,6 +35,9 @@ const CreateExperimentPage = () => {
   const [sectionData, setSectionData] = useState<SectionEditorValue[]>([])
 
   const { loading, startLoading, stopLoading } = useLoading()
+  const toast = useToast()
+
+  const navigate = useNavigate()
 
   const {
     handleSubmit,
@@ -58,12 +63,22 @@ const CreateExperimentPage = () => {
 
     if (labId) {
       startLoading()
-      await setDoc(doc(collection(db, "labs", labId, "experiments")), {
+      const id = nanoid()
+      await setDoc(doc(collection(db, "labs", labId, "experiments"), id), {
+        id,
         title: expName,
         labId: labId,
         sections: mappedSectionData,
       })
+
       stopLoading()
+      toast({
+        position: 'top',
+        title: "New experiment created",
+        status: "success",
+        duration: 2000,
+      })
+      navigate(`/t/labs/${labId}/experiments/${id}`)
     }
   }
 
