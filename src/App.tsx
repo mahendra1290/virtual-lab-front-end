@@ -18,6 +18,7 @@ import TeacherRoutes from "./routes/TeacherRoutes"
 import PrivateRoute from "./routes/PrivateRoute"
 import CodeEditorPage from "./pages/CodeEditorPage/CodeEditorPage"
 import StudentLabSessionView from "./pages/StudentLabSessionView/StudentLabSessionView"
+import StudentRoutes from "./routes/StudentRoutes"
 
 function App() {
   const { authLoading, user } = useAuthContext()
@@ -41,16 +42,7 @@ function App() {
       <Suspense fallback={<Spinner />}>
         <Routes>
           {TeacherRoutes}
-          <Route path="/s">
-            <Route
-              index
-              element={
-                <PrivateRoute roles={["student"]}>
-                  <StudentPage />
-                </PrivateRoute>
-              }
-            />
-          </Route>
+          {StudentRoutes}
           <Route
             path="join-lab"
             element={

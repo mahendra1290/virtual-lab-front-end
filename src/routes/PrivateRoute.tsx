@@ -10,8 +10,6 @@ type Props = {
 const PrivateRoute = ({ children, roles = [] }: Props) => {
   const { user, authLoading } = useAuthContext()
 
-  console.log("user", user, "private route")
-
   if (roles.includes(user?.role || "")) {
     return children as JSX.Element
   }
