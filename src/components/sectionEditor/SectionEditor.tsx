@@ -11,6 +11,7 @@ import { FiDelete } from "react-icons/fi"
 import { BiRename } from "react-icons/bi"
 import {
   Button,
+  Divider,
   Editable,
   EditableInput,
   EditablePreview,
@@ -32,6 +33,7 @@ import {
 } from "draft-js"
 import { EditorState } from "react-draft-wysiwyg"
 import { ACTIONS } from "./actions"
+import FileUpload from "../file-uploader/FileUpload"
 
 export type SectionEditorValue = {
   id: string
@@ -163,20 +165,22 @@ const SectionEditor = ({
           New Section
         </Button>
       </div>
-      <div className="flex-grow rounded border py-2 px-4">
-        <h1 className="mb-4 text-xl capitalize">{activeMenuItem?.name}</h1>
-        <TextEditor
-          value={activeEditorState}
-          onChange={(editorState) => {
-            dispatch({
-              type: ACTIONS.EDITOR_STATE_CHANGE,
-              payload: { editorState, sectionId: activeMenu },
-            })
-          }}
-        />
-        <Button colorScheme="linkedin" className="mt-4">
-          Upload Files
-        </Button>
+      <div className="flex-grow overflow-y-auto overflow-x-hidden rounded border py-2 px-4">
+        <h1 className="text-xl capitalize">{activeMenuItem?.name}</h1>
+        <Divider />
+        <div className="mt-4">
+          <TextEditor
+            value={activeEditorState}
+            onChange={(editorState) => {
+              dispatch({
+                type: ACTIONS.EDITOR_STATE_CHANGE,
+                payload: { editorState, sectionId: activeMenu },
+              })
+            }}
+          />
+        </div>
+
+        <FileUpload onFilesSelect={(files) => console.log(files)} />
         <Button colorScheme="linkedin" className="mt-4 ml-4">
           Add Links
         </Button>

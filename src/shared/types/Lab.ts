@@ -28,6 +28,7 @@ export type Experiment = {
   title: string,
   description?: string,
   problemStatement: string,
+  sections?: { id: string, name: string, editorState: RawDraftContentState }[]
 }
 
 export interface LabSession {

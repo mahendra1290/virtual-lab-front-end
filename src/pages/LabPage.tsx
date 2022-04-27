@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore"
 import {
   Button,
+  Divider,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -208,7 +209,8 @@ const LabPage = () => {
             menus={sections}
           />
           <div className="w-3/4 rounded-md border p-4">
-            <h1 className="mb-4 text-xl">{activeSection}</h1>
+            <h1 className="mb-2 text-xl">{activeSection}</h1>
+            <Divider />
             {RightSection}
           </div>
         </div>
