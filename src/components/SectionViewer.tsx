@@ -4,14 +4,14 @@ import React, { useEffect, useMemo, useState } from "react"
 import { RawDraftContentState } from "react-draft-wysiwyg"
 import LabMenuPanel from "./labs/LabMenuPanel"
 
-interface SectionMenu {
+export interface SectionViewerItem {
   id: string
   name: string
   editorState: RawDraftContentState
 }
 
 interface SectionViewerProps {
-  sections: SectionMenu[]
+  sections: SectionViewerItem[]
 }
 
 const SectionViewer = ({ sections }: SectionViewerProps) => {

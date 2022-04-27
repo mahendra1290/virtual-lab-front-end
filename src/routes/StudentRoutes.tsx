@@ -1,10 +1,11 @@
 import { Outlet, Route } from "react-router-dom"
 import LabPage from "../pages/LabPage"
 import { StudentPage } from "../pages/Student/StudentPage"
+import StudentLabPage from "../pages/StudentLabPage"
 import { LabProvider } from "../providers/LabProvider"
 import PrivateRoute from "./PrivateRoute"
 
-const TeacherRoutes = (
+const StudentRoutes = (
   <>
     <Route
       path="/s"
@@ -19,7 +20,7 @@ const TeacherRoutes = (
         path="/s/labs/:id"
         element={
           <LabProvider>
-            <LabPage />
+            <StudentLabPage />
           </LabProvider>
         }
       />
@@ -32,4 +33,4 @@ const TeacherRoutes = (
   </>
 )
 
-export default TeacherRoutes
+export default StudentRoutes

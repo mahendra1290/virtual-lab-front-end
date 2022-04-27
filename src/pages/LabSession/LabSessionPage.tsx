@@ -1,10 +1,13 @@
 import {
   Button,
+  Spinner,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
+  toast,
+  useToast,
   VStack,
 } from "@chakra-ui/react"
 import { async } from "@firebase/util"
@@ -23,8 +26,10 @@ import {
 import { useEffect, useState } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
 import Header from "../../components/header/header"
+import Loading from "../../components/Loading"
 import SectionViewer from "../../components/SectionViewer"
 import { db } from "../../firebase"
+import useLoading from "../../hooks/useLoading"
 import { Experiment, Lab, LabSession } from "../../shared/types/Lab"
 
 interface ILabSession {
@@ -39,27 +44,54 @@ interface ILabSession {
 
 const LabSessionPage = () => {
   const { id } = useParams()
-  const [searchParams] = useSearchParams()
   const [session, setSession] = useState<ILabSession>()
+  const toast = useToast()
+  const [dataLoading, setDataLoading] = useState(false)
+  const { loading, startLoading, stopLoading } = useLoading()
 
   const handleEndSession = async () => {
-    // try {
-    //   const res = await axios.put(`/lab-sessions/${id}`, {
-    //     active: false,
-    //     endedAt: Timestamp.fromDate(new Date()),
-    //   })
-    //   console.log(res.data)
-    // } catch (err) {
-    //   console.log(err)
-    // }
+    try {
+      startLoading()
+      const res = await axios.post(`/lab-sessions/${id}/end`)
+      if (session) {
+        setSession({ ...session, ...(res.data as ILabSession) })
+      }
+      toast({
+        title: "Session ended successfully",
+        status: "success",
+        duration: 2000,
+        position: "top",
+      })
+      stopLoading()
+    } catch (err) {
+      stopLoading()
+      toast({
+        title: "Unable to stop session",
+        description: "Something went wrong",
+        duration: 2000,
+        status: "error",
+        position: "top",
+      })
+      console.log(err)
+    }
   }
 
   const handleStartSession = async () => {}
 
   useEffect(() => {
     const fetchLabSessionDetails = async () => {
-      const res = await axios.get(`/lab-sessions/${id}`)
-      setSession(res.data as ILabSession)
+      try {
+        setDataLoading(true)
+        const res = await axios.get(`/lab-sessions/${id}`)
+        setSession(res.data as ILabSession)
+        setDataLoading(false)
+      } catch (err) {
+        toast({
+          title: "Not found",
+          duration: 2000,
+        })
+        setDataLoading(false)
+      }
     }
     fetchLabSessionDetails()
   }, [])
@@ -95,14 +127,24 @@ const LabSessionPage = () => {
 
   const { exp, lab } = session || {}
 
+  if (dataLoading) {
+    return <Loading />
+  }
+
   return (
     <>
       <Header
         title={`${exp?.title}`}
         pathList={lab && exp ? [lab?.name, exp?.title] : []}
         rightContent={
-          <Button onClick={handleEndSession} colorScheme="red">
-            Stop Session
+          <Button
+            onClick={handleEndSession}
+            disabled={!session?.active}
+            colorScheme="red"
+            loadingText="Ending..."
+            isLoading={loading}
+          >
+            {session?.active ? "Stop Session" : "Ended"}
           </Button>
         }
       />

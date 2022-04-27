@@ -29,7 +29,7 @@ const JoinLabPage = () => {
       setLabId(res.data.labId)
       toast()
       setTimeout(() => {
-        navigate(`/s/labs/${res.data.labId}`)
+        navigate(`/s/labs/${res.data.labId}`, { replace: true })
       }, 500)
       console.log(res)
       setLoading(false)
