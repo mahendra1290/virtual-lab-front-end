@@ -71,7 +71,6 @@ const JoinLabPage = () => {
       </div>
     )
   }
-
   return <div />
 }
 

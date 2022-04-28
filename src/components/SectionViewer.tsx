@@ -1,8 +1,14 @@
-import { Divider } from "@chakra-ui/react"
+import {
+  Divider,
+  VStack,
+} from "@chakra-ui/react"
+import { ReactJSXElement } from "@emotion/react/types/jsx-namespace"
 import draftToHtml from "draftjs-to-html"
 import React, { useEffect, useMemo, useState } from "react"
 import { RawDraftContentState } from "react-draft-wysiwyg"
+import { Experiment } from "../shared/types/Lab"
 import LabMenuPanel from "./labs/LabMenuPanel"
+import { Link, useNavigate, useParams } from "react-router-dom"
 
 export interface SectionViewerItem {
   id: string
@@ -10,15 +16,28 @@ export interface SectionViewerItem {
   editorState: RawDraftContentState
 }
 
-interface SectionViewerProps {
-  sections: SectionViewerItem[]
+export interface SectionViewerComponentItem {
+  id: string
+  name: string
+  component?: React.Component | ReactJSXElement
 }
 
-const SectionViewer = ({ sections }: SectionViewerProps) => {
+interface SectionViewerProps {
+  sections: SectionViewerItem[],
+  otherComponents?: SectionViewerComponentItem[]
+}
+
+const SectionViewer = ({ sections, otherComponents }: SectionViewerProps) => {
   const [activeSection, setActiveSection] = useState("")
 
   const menus = useMemo(() => {
-    return sections.map((section) => section.name)
+    const secMenus = sections.map((section) => section.name)
+    if (otherComponents && otherComponents.length > 0) {
+      otherComponents.forEach((comp) => {
+        secMenus.push(comp.name)
+      })
+    }
+    return secMenus;
   }, [sections])
 
   const sectionData = useMemo(() => {
@@ -26,6 +45,7 @@ const SectionViewer = ({ sections }: SectionViewerProps) => {
     sections.forEach((section) => {
       obj[section.name] = draftToHtml(section.editorState)
     })
+
     return obj
   }, [sections])
 
@@ -35,6 +55,23 @@ const SectionViewer = ({ sections }: SectionViewerProps) => {
       setActiveSection(firstSection?.name)
     }
   }, [sections])
+
+  const RightSection = useMemo(() => {
+
+    if (sectionData[activeSection]) {
+      return (
+        <div
+          className="reset-tailwindcss"
+          dangerouslySetInnerHTML={{ __html: sectionData[activeSection] }}
+        />
+      )
+    } else {
+      const comp = otherComponents?.find((item) => item.name === activeSection)
+      return comp?.component
+    }
+
+  }, [activeSection, otherComponents])
+
 
   return (
     <div className="flex gap-4">
@@ -47,12 +84,8 @@ const SectionViewer = ({ sections }: SectionViewerProps) => {
       <div className="w-3/4 rounded-md border p-4">
         <h1 className="mb-2 text-xl">{activeSection}</h1>
         <Divider />
-        <div
-          className="reset-tailwindcss"
-          dangerouslySetInnerHTML={{
-            __html: sectionData[activeSection],
-          }}
-        />
+
+        {RightSection}
       </div>
     </div>
   )

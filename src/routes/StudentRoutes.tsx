@@ -7,6 +7,7 @@ const StudentPage = React.lazy(() => import("../pages/Student/StudentPage"))
 const StudentLabPage = React.lazy(() => import("../pages/StudentLabPage"))
 import { LabProvider } from "../providers/LabProvider"
 import PrivateRoute from "./PrivateRoute"
+import StudentExperimentPage from "../pages/Experiment/StudentExperimentPage"
 
 const StudentRoutes = (
   <>
@@ -28,6 +29,11 @@ const StudentRoutes = (
         }
       />
       <Route path="/s/lab-session/:id" element={<StudentLabSessionPage />} />
+      <Route
+        path="/s/labs/:labId/experiments/:expId"
+        element={<StudentExperimentPage />}
+      />
+
       {/* <Route
         path="/t/labs/:labId/experiments/:expId"
         element={<ExperimentPage />}
