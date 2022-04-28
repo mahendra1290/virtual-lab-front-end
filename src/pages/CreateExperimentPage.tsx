@@ -9,7 +9,7 @@ import {
   Textarea,
   useToast,
 } from "@chakra-ui/react"
-import { collection, doc, getDoc, setDoc } from "firebase/firestore"
+import { collection, doc, FieldValue, getDoc, setDoc } from "firebase/firestore"
 import { useForm } from "react-hook-form"
 import { convertToRaw, convertFromRaw, EditorState } from "draft-js"
 import { db } from "../firebase"
@@ -140,6 +140,16 @@ const CreateExperimentPage = ({ edit = false }: { edit?: boolean }) => {
     }
   }
 
+  const expId = edit ? id : newExpId.current
+
+  const handleFileUpload = async (sectionId: string, fileUrls: string[]) => {
+    const docRef = doc(collection(db, "experiment-files"), expId)
+    await setDoc(docRef, {
+      sectionId: sectionId,
+      fileUrls: fileUrls,
+    })
+  }
+
   if (edit && fetchLoading) {
     return <Loading />
   }
@@ -175,6 +185,7 @@ const CreateExperimentPage = ({ edit = false }: { edit?: boolean }) => {
         <SectionEditor
           initialValue={initValue}
           onChange={setSectionData}
+          onFileUpload={handleFileUpload}
           uploadUnderPath={`/experiments-files/${edit ? id : newExpId.current}`}
         />
       </div>

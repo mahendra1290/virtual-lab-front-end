@@ -1,5 +1,10 @@
 import { Button, useToast } from "@chakra-ui/react"
-import { ref, uploadBytes } from "firebase/storage"
+import {
+  getDownloadURL,
+  ref,
+  uploadBytes,
+  UploadResult,
+} from "firebase/storage"
 import { nanoid } from "nanoid"
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useDropzone, FileWithPath } from "react-dropzone"
@@ -23,9 +28,10 @@ const normalizeFileName = (filename: string) => {
 interface FileUploadProps {
   onFilesSelect?: (files: File[]) => void
   uploadUnderPath: string
+  onUploadSuccess: (fileUrls: string[]) => void
 }
 
-const FileUpload = ({ onFilesSelect, uploadUnderPath }: FileUploadProps) => {
+const FileUpload = ({ onUploadSuccess, uploadUnderPath }: FileUploadProps) => {
   const onDrop = useCallback((acceptedFiles) => {
     setFiles(acceptedFiles)
   }, [])
@@ -76,7 +82,7 @@ const FileUpload = ({ onFilesSelect, uploadUnderPath }: FileUploadProps) => {
 
   const handleUpload = async () => {
     startLoading()
-    const promises: Promise<any>[] = []
+    const promises: Promise<UploadResult>[] = []
     const bufferPromises: Promise<any>[] = []
     files.forEach((file) => {
       bufferPromises.push(file.arrayBuffer())
@@ -89,7 +95,14 @@ const FileUpload = ({ onFilesSelect, uploadUnderPath }: FileUploadProps) => {
         uploadBytes(fileRef, bufferValues[index], { contentType: file.type })
       )
     })
-    await Promise.all(promises)
+    const response = await Promise.all(promises)
+    const urlPromises: Promise<string>[] = []
+    const urls = response.map((res) => {
+      return res.metadata.fullPath
+      // urlPromises.push(getDownloadURL(res.ref))
+    })
+    // const urls = await Promise.all(urlPromises)
+    onUploadSuccess(urls)
     setFiles([])
     stopLoading()
     fileUploadSuccessToast()

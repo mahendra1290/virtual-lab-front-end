@@ -48,6 +48,7 @@ type LabMenuPanelProps = {
   onChange?: (value: SectionEditorValue[]) => void
   defaultMenus?: string[]
   uploadUnderPath?: string
+  onFileUpload?: (sectionId: string, fileUrls: string[]) => void
   extraRightContent?: React.Component | JSX.Element
 }
 
@@ -61,6 +62,7 @@ const SectionEditor = ({
   initialValue,
   defaultMenus,
   extraRightContent,
+  onFileUpload,
   uploadUnderPath,
 }: LabMenuPanelProps) => {
   const [state, dispatch] = useReducer(reducer, {
@@ -222,6 +224,11 @@ const SectionEditor = ({
             }}
           />
           <FileUpload
+            onUploadSuccess={(urls) => {
+              if (onFileUpload) {
+                onFileUpload(activeMenu, urls)
+              }
+            }}
             uploadUnderPath={`/${uploadUnderPath || "temp"}/${
               activeMenuItem?.id
             }`}
