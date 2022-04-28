@@ -1,11 +1,17 @@
 import { FormControl, Input } from "@chakra-ui/react"
-import React, { useState } from "react"
-import { useSearchParams } from "react-router-dom"
+import React, { useEffect, useState } from "react"
+import { useParams, useSearchParams } from "react-router-dom"
 import Header from "../components/header/header"
-import { Button, FormErrorMessage, FormLabel, Textarea, useToast } from "@chakra-ui/react"
-import { collection, doc, setDoc } from "firebase/firestore"
+import {
+  Button,
+  FormErrorMessage,
+  FormLabel,
+  Textarea,
+  useToast,
+} from "@chakra-ui/react"
+import { collection, doc, getDoc, setDoc } from "firebase/firestore"
 import { useForm } from "react-hook-form"
-import { convertToRaw } from "draft-js"
+import { convertToRaw, convertFromRaw, EditorState } from "draft-js"
 import { db } from "../firebase"
 import { FormField } from "../components/forms/FormField"
 import SectionEditor, {
@@ -14,6 +20,8 @@ import SectionEditor, {
 import useLoading from "../hooks/useLoading"
 import { nanoid } from "nanoid"
 import { Link, useNavigate } from "react-router-dom"
+import { Experiment } from "../shared/types/Lab"
+import Loading from "../components/Loading"
 
 type ExperimentFormInput = {
   title: string
@@ -27,17 +35,52 @@ type Props = {
   onCancel?: () => void
 }
 
-const CreateExperimentPage = () => {
+const CreateExperimentPage = ({ edit = false }: { edit?: boolean }) => {
   const [searchParams] = useSearchParams()
+  const { id } = useParams()
 
   const [expName, setExpName] = useState("")
-
   const [sectionData, setSectionData] = useState<SectionEditorValue[]>([])
+  const [initValue, setInitValue] = useState<SectionEditorValue[]>([])
 
   const { loading, startLoading, stopLoading } = useLoading()
-  const toast = useToast()
+  const {
+    loading: fetchLoading,
+    startLoading: startFetch,
+    stopLoading: stopFetch,
+  } = useLoading()
 
+  const toast = useToast()
   const navigate = useNavigate()
+  const labId = searchParams.get("lab")
+
+  useEffect(() => {
+    if (edit && id && labId && sectionData.length === 0) {
+      startFetch()
+      const expRef = doc(collection(db, "experiments"), id)
+      getDoc(expRef)
+        .then((doc) => {
+          const exp = doc.data() as Experiment
+          const sectionData = exp.sections?.map((val, ind) => ({
+            ...val,
+            editorState: EditorState.createWithContent(
+              convertFromRaw(val.editorState)
+            ),
+            order: ind,
+          }))
+          console.log("doc", doc.data())
+
+          if (sectionData) {
+            setInitValue(sectionData)
+          }
+          setExpName(exp.title)
+          stopFetch()
+        })
+        .catch((err) => {
+          stopFetch()
+        })
+    }
+  }, [edit])
 
   const {
     handleSubmit,
@@ -61,28 +104,44 @@ const CreateExperimentPage = () => {
       }
     })
 
+    console.log(mappedSectionData)
+
     if (labId) {
       startLoading()
-      const id = nanoid()
-      await setDoc(doc(collection(db, "labs", labId, "experiments"), id), {
-        id,
-        title: expName,
-        labId: labId,
-        sections: mappedSectionData,
-      })
-
-      stopLoading()
-      toast({
-        position: 'top',
-        title: "New experiment created",
-        status: "success",
-        duration: 2000,
-      })
-      navigate(`/t/labs/${labId}/experiments/${id}`)
+      const tId = edit ? id : nanoid()
+      try {
+        await setDoc(
+          doc(collection(db, "labs", labId, "experiments"), tId),
+          {
+            tId,
+            title: expName,
+            labId: labId,
+            sections: mappedSectionData,
+          },
+          { merge: true }
+        )
+        stopLoading()
+        toast({
+          position: "top",
+          title: "New experiment created",
+          status: "success",
+          duration: 2000,
+        })
+        if (edit) {
+          navigate(-1)
+        } else {
+          navigate(`/t/labs/${labId}/experiments/${tId}`)
+        }
+      } catch (err) {
+        console.log(err)
+        stopLoading()
+      }
     }
   }
 
-  const labId = searchParams.get("lab")
+  if (edit && fetchLoading) {
+    return <Loading />
+  }
 
   return (
     <>
@@ -111,7 +170,9 @@ const CreateExperimentPage = () => {
           </div>
         }
       />
-      <SectionEditor onChange={setSectionData} />
+      <div className="px-8 py-4">
+        <SectionEditor initialValue={initValue} onChange={setSectionData} />
+      </div>
       {/* <div className="mx-auto w-2/3 p-4">
         <form className="space-y-4" onSubmit={handleSubmit(createExperiment)}>
           <FormControl isInvalid={!!errors.title}>

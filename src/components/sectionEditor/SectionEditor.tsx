@@ -39,12 +39,14 @@ export type SectionEditorValue = {
   id: string
   name: string
   editorState: EditorState
+  order: number
 }
 
 type LabMenuPanelProps = {
   className?: string
   initialValue?: SectionEditorValue[]
   onChange?: (value: SectionEditorValue[]) => void
+  defaultMenus?: string[]
 }
 
 const activeMenuStyle = "bg-slate-200 text-teal-700 font-bold"
@@ -55,13 +57,17 @@ const SectionEditor = ({
   className,
   onChange,
   initialValue,
+  defaultMenus,
 }: LabMenuPanelProps) => {
   const [state, dispatch] = useReducer(reducer, {
     activeMenu: "",
     menus: [],
     sectionData: {},
     activeEditorState: DraftEditorState.createEmpty(),
+    initial: false,
   })
+
+  const [defaultMenuAdded, setDefaultMenuAdded] = useState(false)
 
   const { menus, activeMenu, activeEditorState } = state
 
@@ -93,25 +99,58 @@ const SectionEditor = ({
         return { [key]: convertToRaw(val.getCurrentContent()) }
       }
     )
-    console.log(sectionStates)
   }
 
   useEffect(() => {
+    if (initialValue && initialValue?.length > 0 && !state.initial) {
+      dispatch({
+        type: ACTIONS.SET_INIITAL_DATA,
+        payload: { initialData: initialValue },
+      })
+    }
+  }, [initialValue])
+
+  useEffect(() => {
+    if (defaultMenus && !defaultMenuAdded) {
+      dispatch({
+        type: ACTIONS.SET_DEFAULT_MENUS,
+        payload: { defaultMenus: defaultMenus },
+      })
+      setDefaultMenuAdded(true)
+    }
+  }, [defaultMenus])
+
+  useEffect(() => {
     const sections: SectionEditorValue[] = []
-    state.menus.forEach((menu) => {
-      sections.push({ ...menu, editorState: state.sectionData[menu.id] })
+    state.menus.forEach((menu, index) => {
+      sections.push({
+        ...menu,
+        editorState: state.sectionData[menu.id],
+        order: index,
+      })
     })
     if (onChange) {
       onChange(sections)
     }
   }, [state.sectionData])
 
+  useEffect(() => {
+    if (!activeMenu && menus.length > 0) {
+      dispatch({
+        type: ACTIONS.SELECT_SECTION,
+        payload: {
+          sectionId: menus.at(0)?.id,
+        },
+      })
+    }
+  }, [menus])
+
   const activeMenuItem = useMemo(() => {
     return menus.find((item) => item.id === activeMenu)
   }, [activeMenu, menus])
 
   return (
-    <div className="flex h-[calc(100vh-130px)] gap-4 p-8">
+    <div className="flex h-[calc(100vh-130px)] gap-4">
       <div
         className={`${className} flex w-1/5 flex-col gap-2 overflow-y-auto overflow-x-hidden rounded-md border border-slate-200 p-2 shadow-sm`}
       >
@@ -130,7 +169,7 @@ const SectionEditor = ({
               <Editable
                 width="full"
                 // value={menu.name}
-                // defaultValue={menu.name}
+                defaultValue={menu.name}
                 isPreviewFocusable
                 // onChange={handleMenuChange(menu.id)}
                 placeholder="Enter section name"

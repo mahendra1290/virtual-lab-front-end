@@ -115,7 +115,9 @@ const ExperimentPage = () => {
             >
               Start Session
             </Button>
-            <Button colorScheme={"green"}>Edit</Button>
+            <Button colorScheme={"green"}>
+              <Link to={`/t/experiments/${expId}/edit?lab=${labId}`}>Edit</Link>
+            </Button>
             <Button colorScheme={"red"}>Delete</Button>
           </HStack>
         }
