@@ -40,7 +40,7 @@ import LabSectionMenu from "../components/labs/LabSectionMenu"
 import LabMenuPanel from "../components/labs/LabMenuPanel"
 import { RawDraftContentState } from "react-draft-wysiwyg"
 import Header from "../components/header/header"
-import LabOptionMenu from "../components/labs/LabOptionMenu"
+import { LabOptionMenu, LabMenus } from "../components/labs/LabOptionMenu"
 import { useConfirmationModal } from "../hooks/useConfirmationModal"
 import ConfirmationModal from "../components/modals/ConfirmationModal"
 import LabSettings from "../components/labs/LabSettings"
@@ -148,8 +148,8 @@ const LabPage = () => {
   const sectionData = useMemo(() => {
     const data: { [key: string]: string } = {}
     if (lab && lab.sectionData) {
-      Object.entries(lab.sectionData).forEach(([key, val]) => {
-        data[key] = draftToHtml(val)
+      lab.sectionData.forEach((val) => {
+        data[val.name] = draftToHtml(val.editorState)
       })
     }
     return data
@@ -219,25 +219,25 @@ const LabPage = () => {
     )
   }
 
+  const handleLabOptionMenuClick = (menu: LabMenus) => {
+    switch (menu) {
+      case "edit":
+        navigate(`/t/labs/${lab?.id}/edit`)
+      case "delete":
+        showDeleteLabConfirmation()
+    }
+  }
+
   return (
     <>
       <Header
         title={lab?.name || ""}
-        pathList={[["/t/labs", "labs"], lab?.name || ""]}
+        pathList={[["/t", "labs"], lab?.name || ""]}
         rightContent={
           <div className="space-x-4">
             <Button onClick={handleAddExperiment}>Add Experiment</Button>
             <Button colorScheme="blue">Start Lab Session</Button>
-            {/* <Button
-              isLoading={deleteLoading}
-              loadingText={"Deleting..."}
-              variant="outline"
-              colorScheme={"red"}
-              onClick={showDeleteLabConfirmation}
-            >
-              Delete
-            </Button> */}
-            <LabOptionMenu />
+            <LabOptionMenu onMenuClick={handleLabOptionMenuClick} />
           </div>
         }
       />

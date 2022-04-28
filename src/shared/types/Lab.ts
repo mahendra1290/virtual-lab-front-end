@@ -14,7 +14,7 @@ export type Lab = {
   userUid: string,
   visibility: string,
   createdAt: Date,
-  sectionData?: { [key: string]: RawDraftContentState }
+  sectionData?: { name: string, editorState: RawDraftContentState, order: number }[]
   students?: {
     uid: string,
     name: string,

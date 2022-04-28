@@ -13,6 +13,12 @@ interface SectionEditorMenu {
   active: boolean
 }
 
+type SectionEditorValue = {
+  id: string
+  name: string
+  editorState: EditorState
+}
+
 export interface SectionEditorState {
   activeMenu: string,
   menus: SectionEditorMenu[]
@@ -20,6 +26,7 @@ export interface SectionEditorState {
     [key: string]: EditorState
   }
   activeEditorState: EditorState
+  initial: boolean
 }
 
 export interface SectionEditorAction {
@@ -29,6 +36,8 @@ export interface SectionEditorAction {
     sectionId?: string,
     sectionName?: string,
     editorState?: EditorState,
+    initialData?: SectionEditorValue[],
+    defaultMenus?: string[]
   }
 }
 
@@ -88,6 +97,27 @@ const reducer = (state: SectionEditorState, action: SectionEditorAction): Sectio
         const newEditorData = action.payload?.editorState || DraftEditorState.createEmpty()
         return { ...state, sectionData: { ...state.sectionData, [sectionId]: newEditorData }, activeEditorState: newEditorData }
       }
+
+    case ACTIONS.SET_INIITAL_DATA:
+      const initData = action.payload?.initialData
+      if (initData) {
+        const tempMenus = initData.map((v) => ({ id: v.id, name: v.name, active: false }))
+        // console.log(action.payload.initialData);
+        const tempState = { ...state.sectionData };
+        initData?.forEach(item => {
+          tempState[item.id] = item.editorState
+        })
+        return { ...state, menus: tempMenus, sectionData: tempState }
+      }
+      return state
+
+    case ACTIONS.SET_DEFAULT_MENUS:
+      const names = action.payload?.defaultMenus;
+      if (names) {
+        const tMenus = names?.map((name) => ({ id: nanoid(5), name, active: false }))
+        return { ...state, menus: tMenus }
+      }
+      return state
 
     default:
       return state;

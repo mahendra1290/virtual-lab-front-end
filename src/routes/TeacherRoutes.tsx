@@ -36,7 +36,12 @@ const TeacherRoutes = (
         }
       />
       <Route path="/t/labs/create" element={<CreateLab />} />
+      <Route path="/t/labs/:id/edit" element={<CreateLab edit />} />
       <Route path="/t/experiments/create" element={<CreateExperimentPage />} />
+      <Route
+        path="/t/experiments/:id/edit"
+        element={<CreateExperimentPage edit={true} />}
+      />
       <Route
         path="/t/labs/:labId/experiments/:expId"
         element={<ExperimentPage />}
