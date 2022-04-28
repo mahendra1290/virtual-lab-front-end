@@ -1,5 +1,6 @@
 import React from "react"
 import { Route } from "react-router-dom"
+import { StudentActivity } from "../pages/LabSession/StudentActivity"
 import { LabProvider } from "../providers/LabProvider"
 import PrivateRoute from "./PrivateRoute"
 const CreateLab = React.lazy(() => import("../pages/CreateLab/CreateLab"))
@@ -45,6 +46,10 @@ const TeacherRoutes = (
       <Route
         path="/t/labs/:labId/experiments/:expId"
         element={<ExperimentPage />}
+      />
+      <Route
+        path="/t/lab-session/:id/student/:stdId"
+        element={<StudentActivity />}
       />
       <Route path="/t/lab-session/:id" element={<LabSessionPage />} />
     </Route>

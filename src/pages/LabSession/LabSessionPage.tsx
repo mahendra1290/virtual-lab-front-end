@@ -24,7 +24,7 @@ import {
   Unsubscribe,
 } from "firebase/firestore"
 import { useEffect, useState } from "react"
-import { useParams, useSearchParams } from "react-router-dom"
+import { Link, useParams, useSearchParams } from "react-router-dom"
 import Header from "../../components/header/header"
 import Loading from "../../components/Loading"
 import SectionViewer from "../../components/SectionViewer"
@@ -174,7 +174,14 @@ const LabSessionPage = () => {
             <TabPanel>
               {students?.map((stud) => (
                 <div className="mb-4 rounded-lg bg-gray-100 p-4" key={stud.uid}>
-                  <h1 className="text-lg capitalize">{stud.name}</h1>
+                  <Link
+                    to={`student/${stud.uid}`}
+                    onClick={() => {
+                      localStorage.setItem("stdName", stud.name)
+                    }}
+                  >
+                    <h1 className="text-lg capitalize">{stud.name}</h1>
+                  </Link>
                   <div>{stud.active ? "active" : "gone"}</div>
                 </div>
               ))}
