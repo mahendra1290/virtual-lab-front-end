@@ -1,5 +1,5 @@
 import { FormControl, Input } from "@chakra-ui/react"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
 import Header from "../components/header/header"
 import {
@@ -22,6 +22,7 @@ import { nanoid } from "nanoid"
 import { Link, useNavigate } from "react-router-dom"
 import { Experiment } from "../shared/types/Lab"
 import Loading from "../components/Loading"
+import FileUpload from "../components/file-uploader/FileUpload"
 
 type ExperimentFormInput = {
   title: string
@@ -43,6 +44,8 @@ const CreateExperimentPage = ({ edit = false }: { edit?: boolean }) => {
   const [sectionData, setSectionData] = useState<SectionEditorValue[]>([])
   const [initValue, setInitValue] = useState<SectionEditorValue[]>([])
 
+  const newExpId = useRef(nanoid(10))
+
   const { loading, startLoading, stopLoading } = useLoading()
   const {
     loading: fetchLoading,
@@ -57,7 +60,7 @@ const CreateExperimentPage = ({ edit = false }: { edit?: boolean }) => {
   useEffect(() => {
     if (edit && id && labId && sectionData.length === 0) {
       startFetch()
-      const expRef = doc(collection(db, "experiments"), id)
+      const expRef = doc(collection(db, "labs", labId, "experiments"), id)
       getDoc(expRef)
         .then((doc) => {
           const exp = doc.data() as Experiment
@@ -104,11 +107,9 @@ const CreateExperimentPage = ({ edit = false }: { edit?: boolean }) => {
       }
     })
 
-    console.log(mappedSectionData)
-
     if (labId) {
       startLoading()
-      const tId = edit ? id : nanoid()
+      const tId = edit ? id : newExpId.current
       try {
         await setDoc(
           doc(collection(db, "labs", labId, "experiments"), tId),
@@ -171,7 +172,11 @@ const CreateExperimentPage = ({ edit = false }: { edit?: boolean }) => {
         }
       />
       <div className="px-8 py-4">
-        <SectionEditor initialValue={initValue} onChange={setSectionData} />
+        <SectionEditor
+          initialValue={initValue}
+          onChange={setSectionData}
+          uploadUnderPath={`/experiments-files/${newExpId.current}`}
+        />
       </div>
       {/* <div className="mx-auto w-2/3 p-4">
         <form className="space-y-4" onSubmit={handleSubmit(createExperiment)}>

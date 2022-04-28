@@ -47,6 +47,8 @@ type LabMenuPanelProps = {
   initialValue?: SectionEditorValue[]
   onChange?: (value: SectionEditorValue[]) => void
   defaultMenus?: string[]
+  uploadUnderPath?: string
+  extraRightContent?: React.Component | JSX.Element
 }
 
 const activeMenuStyle = "bg-slate-200 text-teal-700 font-bold"
@@ -58,6 +60,8 @@ const SectionEditor = ({
   onChange,
   initialValue,
   defaultMenus,
+  extraRightContent,
+  uploadUnderPath,
 }: LabMenuPanelProps) => {
   const [state, dispatch] = useReducer(reducer, {
     activeMenu: "",
@@ -217,12 +221,13 @@ const SectionEditor = ({
               })
             }}
           />
+          <FileUpload
+            uploadUnderPath={`/${uploadUnderPath || "temp"}/${
+              activeMenuItem?.id
+            }`}
+            onFilesSelect={(files) => console.log(files)}
+          />
         </div>
-
-        <FileUpload onFilesSelect={(files) => console.log(files)} />
-        <Button colorScheme="linkedin" className="mt-4 ml-4">
-          Add Links
-        </Button>
       </div>
     </div>
   )

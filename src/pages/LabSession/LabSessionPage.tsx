@@ -69,6 +69,7 @@ const LabSessionPage = () => {
         status: "success",
         duration: 2000,
         position: "top",
+        isClosable: true,
       })
       stopLoading()
     } catch (err) {
@@ -78,6 +79,7 @@ const LabSessionPage = () => {
         description: "Something went wrong",
         duration: 2000,
         status: "error",
+        isClosable: true,
         position: "top",
       })
       console.log(err)

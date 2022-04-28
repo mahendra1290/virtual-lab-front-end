@@ -28,11 +28,11 @@ const auth = getAuth(app)
 const storage = getStorage(app)
 // connectAuthEmulator(auth, "http://localhost:9099");
 // connectFirestoreEmulator(db, "localhost", 8080)
-const analytics = getAnalytics(app);
+// const analytics = getAnalytics(app);
 
 const createCollection = <T = DocumentData>(collectionName: string) => collection(db, collectionName) as CollectionReference<T>
 
 const usersCol = createCollection<User>("users")
 const labsCol = createCollection<Lab>("labs")
 
-export { app, db, auth, storage, analytics, usersCol, labsCol };
+export { app, db, auth, storage, usersCol, labsCol };
