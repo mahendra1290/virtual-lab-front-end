@@ -3,6 +3,7 @@ import React from "react"
 import { Link } from "react-router-dom"
 import { useAuthContext } from "../../providers/AuthProvider"
 import Header from "../header/header"
+import NotificationBox from "./NotificationBox"
 import ProfileMenu from "./ProfileMenu"
 
 export const Navbar = () => {
@@ -17,6 +18,7 @@ export const Navbar = () => {
           </h1>
         </Link>
         <ul className="flex items-center gap-2">
+          <NotificationBox />
           <li>About</li>
           <li>Contact Us</li>
           {!user && (
@@ -31,6 +33,7 @@ export const Navbar = () => {
           )}
           {/* {user && <Avatar size="sm" name={user.name || ""} src="" />} */}
           {user && <ProfileMenu />}
+
           {/* {user && (
             <li>
               <Button

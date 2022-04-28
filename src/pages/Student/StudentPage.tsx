@@ -54,7 +54,7 @@ const StudentPage = () => {
   return (
     <>
       <Header title={"My Labs"} pathList={["labs"]} />
-      <Notifications />
+      {/* <Notifications /> */}
       <div className="px-8 py-2">
         {!labs.length && !empty && (
           <div className="mt-12 flex flex-col items-center justify-center">
