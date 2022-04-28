@@ -126,9 +126,9 @@ const LabPage = () => {
       await axios.post("/notifications/lab-invite", {
         emails,
         labJoinUrl: lab?.joiningLink?.url,
+        labName: lab?.name,
       })
       inviteSentToast()
-      throw Error()
     } catch (err) {
       somethingWentWrongToast()
     }
