@@ -9,7 +9,7 @@ import {
 import Editor from "@monaco-editor/react"
 import axios from "axios"
 import { editor } from "monaco-editor"
-import { useEffect, useRef, useState } from "react"
+import { ChangeEvent, useEffect, useRef, useState } from "react"
 import { io } from "socket.io-client"
 import useLoading from "../hooks/useLoading"
 import { useAuthContext } from "../providers/AuthProvider"
@@ -46,7 +46,7 @@ export const CodeEditor = () => {
       setRes("")
       setError("")
       axios
-        .post("/code/run/python", { code })
+        .post(`/code/run/${selectedLanguage}`, { code })
         .then((res) => {
           if (res.status == 400) {
             stopLoading()
@@ -72,6 +72,16 @@ export const CodeEditor = () => {
     }
   }
 
+  const handleLanguageChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const newLangCode = localStorage.getItem(`${e.target.value}-code`) || ""
+    const currLang = selectedLanguage
+    const currCode = editorRef.current?.getValue()
+    localStorage.setItem(`${currLang}-code`, currCode || "")
+    editorRef.current?.setValue(newLangCode)
+    console.log(currLang, currCode)
+    setSelectedLanguage(e.target.value)
+  }
+
   return (
     <div className="flex gap-2 border p-4">
       <div className="w-1/2 rounded-md border p-2">
@@ -81,7 +91,7 @@ export const CodeEditor = () => {
               <FormLabel htmlFor="language">Language</FormLabel>
               <Select
                 value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
+                onChange={handleLanguageChange}
                 id="language"
                 size="sm"
               >
