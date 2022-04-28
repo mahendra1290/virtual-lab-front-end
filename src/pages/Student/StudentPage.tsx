@@ -16,7 +16,6 @@ import { Link } from "react-router-dom"
 import { db } from "../../firebase"
 import { useAuthContext } from "../../providers/AuthProvider"
 import Header from "../../components/header/header"
-import Notifications from "../../components/Notifications"
 
 interface Lab {
   id: string
