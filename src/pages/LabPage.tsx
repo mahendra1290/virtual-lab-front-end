@@ -133,9 +133,9 @@ const LabPage = () => {
     if (activeSection === "Experiments") {
       return (
         <VStack spacing={4} align={"strecth"} className="mt-4 w-1/2">
-          {experiments.map((item) => (
+          {experiments.map((item, idx) => (
             <Link key={item.id} to={`experiments/${item.id}`}>
-              <ExperimentCard {...item} key={item.id} />
+              <ExperimentCard srNo={idx + 1} {...item} key={item.id} />
             </Link>
           ))}
         </VStack>

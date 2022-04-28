@@ -3,6 +3,7 @@ import {
   collection,
   doc,
   getDoc,
+  getDocs,
   onSnapshot,
   Unsubscribe,
 } from "firebase/firestore"
@@ -11,10 +12,11 @@ import { useParams } from "react-router-dom"
 import LabLoadingSkeleton from "../components/skeletons/LabLoadingSkeleton"
 import { db } from "../firebase"
 import useLoading from "../hooks/useLoading"
-import { Lab } from "../shared/types/Lab"
+import { Experiment, Lab } from "../shared/types/Lab"
 
 interface LabContextValue {
   lab?: Lab
+  experiments?: Experiment[]
   updateLab: (data: Partial<Lab>) => void
 }
 
@@ -32,11 +34,11 @@ const LabProvider = ({ children }: LabProviderProps) => {
   const { id } = useParams()
   const { loading, startLoading, stopLoading } = useLoading(true)
   const [lab, setLab] = useState<Lab>()
+  const [experiments, setExperiments] = useState<Experiment[]>([])
 
   const updateLab = (data: Partial<Lab>) => {
     const tempLab = { ...lab }
     Object.assign(tempLab, data)
-    console.log(tempLab, "templab")
 
     setLab(tempLab as Lab)
   }
@@ -48,12 +50,21 @@ const LabProvider = ({ children }: LabProviderProps) => {
       const docRef = doc(collection(db, "labs"), id)
       unsubscribe = onSnapshot(docRef, (docSnap) => {
         if (docSnap.exists()) {
-          setLab({ ...docSnap.data(), id: docSnap.id } as Lab)
+          const labRes = { ...docSnap.data(), id: docSnap.id } as Lab
+          setLab(labRes)
+          if (labRes) {
+            const docRef = collection(db, "labs", labRes.id, "experiments")
+            getDocs(docRef).then(res => {
+              const finalRes = res.docs.map((item) => ({ id: item.id, ...item.data() } as Experiment))
+              setExperiments(finalRes)
+            })
+          }
           stopLoading()
         } else {
           stopLoading()
         }
       })
+
     } catch (err) {
       console.log(err)
       stopLoading()
@@ -65,7 +76,7 @@ const LabProvider = ({ children }: LabProviderProps) => {
     }
   }, [])
 
-  const value: LabContextValue = { lab, updateLab }
+  const value: LabContextValue = { lab, experiments, updateLab }
 
   return (
     <LabContext.Provider value={value}>

@@ -4,6 +4,7 @@ import { StudentPage } from "../pages/Student/StudentPage"
 import StudentLabPage from "../pages/StudentLabPage"
 import { LabProvider } from "../providers/LabProvider"
 import PrivateRoute from "./PrivateRoute"
+import StudentExperimentPage from "../pages/Experiment/StudentExperimentPage"
 
 const StudentRoutes = (
   <>
@@ -23,6 +24,10 @@ const StudentRoutes = (
             <StudentLabPage />
           </LabProvider>
         }
+      />
+      <Route
+        path="/s/labs/:labId/experiments/:expId"
+        element={<StudentExperimentPage />}
       />
       {/* <Route
         path="/t/labs/:labId/experiments/:expId"
