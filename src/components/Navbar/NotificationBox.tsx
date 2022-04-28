@@ -40,9 +40,11 @@ export interface FireNotification {
 }
 
 const NotificationBox = () => {
-  const { user, signOut } = useAuthContext()
+  const { user } = useAuthContext()
 
   const [notifications, setNotifications] = useState<FireNotification[]>([])
+
+  const [newNot, setNewNot] = useState(false)
 
   useEffect(() => {
     const uid = user?.uid
@@ -54,6 +56,7 @@ const NotificationBox = () => {
         setNotifications(
           data.docs.map((doc) => doc.data() as FireNotification).reverse()
         )
+        setNewNot(true)
       })
     }
     return () => {
@@ -68,69 +71,76 @@ const NotificationBox = () => {
   const initRef = useRef()
   return (
     <Popover closeOnBlur={true} placement="bottom-start">
-      {({ isOpen, onClose }) => (
-        <>
-          <PopoverTrigger>
-            <IconButton
-              variant="link"
-              colorScheme="teal"
-              aria-label="Call Segun"
-              size="lg"
-              icon={<FaBell />}
-            />
-          </PopoverTrigger>
-          <Portal>
-            <PopoverContent width="500px">
-              <PopoverHeader>Notifications</PopoverHeader>
-              <PopoverCloseButton />
-              <PopoverBody>
-                <VStack
-                  align="stretch"
-                  className="max-h-[400px] min-h-[150px] overflow-y-auto overflow-x-hidden"
-                >
-                  {notifications.length > 0 ? (
-                    notifications.map((note) => {
-                      return (
-                        <Box className="rounded-lg border p-2">
-                          <h1>{note.title}</h1>
-                          <h1 className="text-sm text-gray-600">
-                            {note.description}
-                          </h1>
+      {({ isOpen, onClose }) => {
+        if (isOpen) {
+          if (newNot) {
+            setNewNot(false)
+          }
+        }
+        return (
+          <>
+            <PopoverTrigger>
+              <IconButton
+                variant="link"
+                colorScheme={newNot ? "red" : "teal"}
+                aria-label="Call Segun"
+                size="lg"
+                icon={<FaBell />}
+              />
+            </PopoverTrigger>
+            <Portal>
+              <PopoverContent width="500px">
+                <PopoverHeader>Notifications</PopoverHeader>
+                <PopoverCloseButton />
+                <PopoverBody>
+                  <VStack
+                    align="stretch"
+                    className="max-h-[400px] min-h-[150px] overflow-y-auto overflow-x-hidden"
+                  >
+                    {notifications.length > 0 ? (
+                      notifications.map((note) => {
+                        return (
+                          <Box key={note.id} className="rounded-lg border p-2">
+                            <h1>{note.title}</h1>
+                            <h1 className="text-sm text-gray-600">
+                              {note.description}
+                            </h1>
 
-                          {note?.actions?.map((act) => {
-                            return (
-                              <div className="flex justify-between">
-                                <div className="text-xs text-gray-400">
-                                  {moment(
-                                    note.createdAt.seconds * 1000
-                                  ).fromNow()}
+                            {note?.actions?.map((act) => {
+                              return (
+                                <div className="flex justify-between">
+                                  <div className="text-xs text-gray-400">
+                                    {moment(
+                                      note.createdAt.seconds * 1000
+                                    ).fromNow()}
+                                  </div>
+                                  <div className="flex justify-end">
+                                    <Link
+                                      onClick={onClose}
+                                      to={act.action}
+                                      className="text-sm uppercase text-blue-500"
+                                    >
+                                      {act.name}
+                                    </Link>
+                                  </div>
                                 </div>
-                                <div className="flex justify-end">
-                                  <Link
-                                    onClick={onClose}
-                                    to={act.action}
-                                    className="text-sm uppercase text-blue-500"
-                                  >
-                                    {act.name}
-                                  </Link>
-                                </div>
-                              </div>
-                            )
-                          })}
-                        </Box>
-                      )
-                    })
-                  ) : (
-                    <Box className="rounded-lg border p-2 text-center">
-                      <h1>No new notifications</h1>
-                    </Box>
-                  )}
-                </VStack>
-              </PopoverBody>
-            </PopoverContent>
-          </Portal>
-        </>
-      )}
+                              )
+                            })}
+                          </Box>
+                        )
+                      })
+                    ) : (
+                      <Box className="rounded-lg border p-2 text-center">
+                        <h1>No new notifications</h1>
+                      </Box>
+                    )}
+                  </VStack>
+                </PopoverBody>
+              </PopoverContent>
+            </Portal>
+          </>
+        )
+      }}
     </Popover>
   )
 }
