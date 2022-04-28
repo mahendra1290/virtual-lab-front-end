@@ -99,14 +99,16 @@ const LabSettings = ({ lab }: LabSettingsProps) => {
             >
               {link.url}
             </Link>
-            <p className="rounded-lg border px-4 py-2 text-lg text-red-500">
-              {/* {link.expiryTimestamp} */}
-              {moment(
-                Timestamp.fromMillis(
-                  link.expiryTimestamp.seconds * 1000
-                ).toDate()
-              ).format("DD-MM-YYYY")}
-            </p>
+            {link.expiryTimestamp && (
+              <p className="rounded-lg border px-4 py-2 text-lg text-red-500">
+                {/* {link.expiryTimestamp} */}
+                {moment(
+                  Timestamp.fromMillis(
+                    link.expiryTimestamp.seconds * 1000
+                  ).toDate()
+                ).format("DD-MM-YYYY")}
+              </p>
+            )}
           </HStack>
         )}
         <Button onClick={() => setIsOpen(true)}>
@@ -124,14 +126,15 @@ const LabSettings = ({ lab }: LabSettingsProps) => {
               <FormLabel>Valid for</FormLabel>
               <Input ref={dateRef} type="date" />
               <FormHelperText>
-                A student can join lab before expiry date.
+                A student can join lab before expiry date. (Leave empty if not
+                needed)
               </FormHelperText>
             </FormControl>
 
-            <FormControl className="mt-4">
+            {/* <FormControl className="mt-4">
               <FormLabel>Email domain</FormLabel>
               <Input type="text" />
-            </FormControl>
+            </FormControl> */}
           </ModalBody>
           <ModalFooter>
             <Button type="button" colorScheme="red" className="mr-4">
