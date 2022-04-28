@@ -71,8 +71,7 @@ const JoinLabPage = () => {
       </div>
     )
   }
-
-  return (<div />)
+  return <div />
 }
 
 export default JoinLabPage

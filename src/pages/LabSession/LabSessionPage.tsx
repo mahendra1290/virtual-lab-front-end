@@ -42,9 +42,17 @@ interface ILabSession {
   active: boolean
 }
 
+interface JoinedStudent {
+  uid: string
+  email: string
+  name: string
+  active: boolean
+}
+
 const LabSessionPage = () => {
   const { id } = useParams()
   const [session, setSession] = useState<ILabSession>()
+  const [students, setStudents] = useState<JoinedStudent[]>([])
   const toast = useToast()
   const [dataLoading, setDataLoading] = useState(false)
   const { loading, startLoading, stopLoading } = useLoading()
@@ -96,34 +104,34 @@ const LabSessionPage = () => {
     fetchLabSessionDetails()
   }, [])
 
-  // useEffect(() => {
-  //   let unsubscribeSession: Unsubscribe
-  //   let unsubscribeStudent: Unsubscribe
-  //   if (id) {
-  //     unsubscribeSession = onSnapshot(
-  //       doc(collection(db, "experiment-sessions"), id),
-  //       (doc) => {
-  //         console.log(doc.data(), "got data")
-  //         setSession(doc.data())
-  //       }
-  //     )
-  //     unsubscribeStudent = onSnapshot(
-  //       collection(db, "experiment-sessions", id, "students"),
-  //       (data) => {
-  //         setStudents(data.docs.map((docSnap) => docSnap.data()))
-  //         console.log(data.docs)
-  //       }
-  //     )
-  //   }
-  //   return () => {
-  //     if (unsubscribeSession) {
-  //       unsubscribeSession()
-  //     }
-  //     if (unsubscribeStudent) {
-  //       unsubscribeStudent()
-  //     }
-  //   }
-  // }, [])
+  useEffect(() => {
+    let unsubscribeSession: Unsubscribe
+    let unsubscribeStudent: Unsubscribe
+    if (id) {
+      // unsubscribeSession = onSnapshot(
+      //   doc(collection(db, "experiment-sessions"), id),
+      //   (doc) => {
+      //     console.log(doc.data(), "got data")
+      //     setSession(doc.data())
+      //   }
+      // )
+      unsubscribeStudent = onSnapshot(
+        doc(db, "session-students", `session-${id}`),
+        (data) => {
+          setStudents(data?.data()?.students as JoinedStudent[])
+          console.log(data.data(), "update")
+        }
+      )
+    }
+    return () => {
+      if (unsubscribeSession) {
+        unsubscribeSession()
+      }
+      if (unsubscribeStudent) {
+        unsubscribeStudent()
+      }
+    }
+  }, [])
 
   const { exp, lab } = session || {}
 
@@ -152,9 +160,9 @@ const LabSessionPage = () => {
         <Tabs className="min-h-screen rounded-lg border p-2">
           <TabList>
             <Tab>Experiment</Tab>
-            <Tab>Submission</Tab>
             <Tab>Students</Tab>
-            <Tab>Settings</Tab>
+            <Tab>Submission</Tab>
+            <Tab>Stats</Tab>
           </TabList>
 
           <TabPanels>
@@ -162,7 +170,12 @@ const LabSessionPage = () => {
               <SectionViewer sections={exp?.sections || []} />
             </TabPanel>
             <TabPanel>
-              <p>two!</p>
+              {students?.map((stud) => (
+                <div className="mb-4 rounded-lg bg-gray-100 p-4" key={stud.uid}>
+                  <h1 className="text-lg capitalize">{stud.name}</h1>
+                  <div>{stud.active ? "active" : "gone"}</div>
+                </div>
+              ))}
             </TabPanel>
             <TabPanel>
               <p>three!</p>

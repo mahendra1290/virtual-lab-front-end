@@ -13,10 +13,15 @@ import {
 import {
   Button,
   Divider,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Spinner,
@@ -39,6 +44,7 @@ import { useConfirmationModal } from "../hooks/useConfirmationModal"
 import ConfirmationModal from "../components/modals/ConfirmationModal"
 import LabSettings from "../components/labs/LabSettings"
 import { useLabContext } from "../providers/LabProvider"
+import LabInviteModal from "../components/LabInviteModal"
 
 const LabPage = () => {
   const { user } = useAuthContext()
@@ -98,6 +104,14 @@ const LabPage = () => {
     }
   }
 
+  const handleSendEmail = async (emails: string[]) => {
+    const res = await axios.post("/notifications/lab-invite", {
+      emails,
+      labJoinUrl: lab?.joiningLink?.url,
+    })
+    console.log(res)
+  }
+
   useEffect(() => {
     if (lab) {
       const docRef = collection(db, "labs", lab.id, "experiments")
@@ -144,17 +158,22 @@ const LabPage = () => {
       return <LabSettings lab={lab} />
     } else if (activeSection === "Students") {
       return (
-        <VStack align="strecth">
-          {lab?.students?.map((student) => (
-            <div
-              key={student.uid}
-              className="rounded border bg-blue-100 px-4 py-2 text-gray-800"
-            >
-              <h2 className="text-lg">{student.name}</h2>
-              <p className="text-sm">{student.email}</p>
-            </div>
-          ))}
-        </VStack>
+        <>
+          <VStack align="strecth">
+            {lab?.students?.map((student) => (
+              <div
+                key={student.uid}
+                className="rounded border bg-blue-100 px-4 py-2 text-gray-800"
+              >
+                <h2 className="text-lg">{student.name}</h2>
+                <p className="text-sm">{student.email}</p>
+              </div>
+            ))}
+          </VStack>
+          <Button className="mt-4" onClick={openModal}>
+            Invite Students
+          </Button>
+        </>
       )
     } else {
       return (
@@ -220,14 +239,9 @@ const LabPage = () => {
         <Modal size="2xl" isOpen={modalOpen} onClose={handleModalClose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Create Experiment</ModalHeader>
+            <ModalHeader>Invite Students</ModalHeader>
             <ModalCloseButton />
-            <ModalBody>
-              <CreateExperment
-                onSuccess={handleModalClose}
-                labId={lab?.id || ""}
-              />
-            </ModalBody>
+            <LabInviteModal onSubmit={handleSendEmail} />
           </ModalContent>
         </Modal>
       </div>

@@ -17,7 +17,7 @@ import JoinLabPage from "./pages/JoinLabPage/JoinLabPage"
 import TeacherRoutes from "./routes/TeacherRoutes"
 import PrivateRoute from "./routes/PrivateRoute"
 import CodeEditorPage from "./pages/CodeEditorPage/CodeEditorPage"
-import StudentLabSessionView from "./pages/StudentLabSessionView/StudentLabSessionView"
+import StudentLabSessionView from "./pages/StudentLabSessionView/StudentLabSessionVie"
 import StudentRoutes from "./routes/StudentRoutes"
 
 function App() {

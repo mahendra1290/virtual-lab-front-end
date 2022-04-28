@@ -20,11 +20,11 @@ const StudentLabSessionView = () => {
     socket.on("connect", () => {
       console.log("connected", socket.id)
     })
-    socket.emit("view-student", id)
-    socket.on(`code-update-${id}`, (code) => {
-      console.log(code)
-      setData(code)
-    })
+    // socket.emit("view-student", id)
+    // socket.on(`code-update-${id}`, (code) => {
+    //   console.log(code)
+    //   setData(code)
+    // })
   }, [])
 
   return (

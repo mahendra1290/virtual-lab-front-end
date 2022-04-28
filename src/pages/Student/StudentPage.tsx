@@ -16,6 +16,7 @@ import { Link } from "react-router-dom"
 import { db } from "../../firebase"
 import { useAuthContext } from "../../providers/AuthProvider"
 import Header from "../../components/header/header"
+import Notifications from "../../components/Notifications"
 
 interface Lab {
   id: string
@@ -25,7 +26,7 @@ interface Lab {
   createdAt: Timestamp | string | Date
 }
 
-export const StudentPage = () => {
+const StudentPage = () => {
   const { user } = useAuthContext()
   const [addLabModalOpen, setAddModalOpen] = useState(false)
   const [name, setName] = useState("")
@@ -53,6 +54,7 @@ export const StudentPage = () => {
   return (
     <>
       <Header title={"My Labs"} pathList={["labs"]} />
+      <Notifications />
       <div className="px-8 py-2">
         {!labs.length && !empty && (
           <div className="mt-12 flex flex-col items-center justify-center">
@@ -82,3 +84,5 @@ export const StudentPage = () => {
     </>
   )
 }
+
+export default StudentPage
