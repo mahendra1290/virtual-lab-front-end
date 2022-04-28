@@ -25,6 +25,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Spinner,
+  toast,
   useToast,
   VStack,
 } from "@chakra-ui/react"
@@ -58,6 +59,21 @@ const LabPage = () => {
     status: "success",
     duration: 2000,
     isClosable: true,
+  })
+
+  const inviteSentToast = useToast({
+    title: "Invite sent successfully",
+    status: "success",
+    duration: 2000,
+    isClosable: true,
+    position: "top",
+  })
+
+  const somethingWentWrongToast = useToast({
+    title: "Something went wrong",
+    description: "Please try again later",
+    status: "error",
+    duration: 2000,
   })
 
   const [error, setError] = useState("")
@@ -105,11 +121,17 @@ const LabPage = () => {
   }
 
   const handleSendEmail = async (emails: string[]) => {
-    const res = await axios.post("/notifications/lab-invite", {
-      emails,
-      labJoinUrl: lab?.joiningLink?.url,
-    })
-    console.log(res)
+    handleModalClose()
+    try {
+      await axios.post("/notifications/lab-invite", {
+        emails,
+        labJoinUrl: lab?.joiningLink?.url,
+      })
+      inviteSentToast()
+      throw Error()
+    } catch (err) {
+      somethingWentWrongToast()
+    }
   }
 
   useEffect(() => {
