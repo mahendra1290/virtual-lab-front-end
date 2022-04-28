@@ -1,7 +1,10 @@
+import React from "react"
 import { Outlet, Route } from "react-router-dom"
-import LabPage from "../pages/LabPage"
-import { StudentPage } from "../pages/Student/StudentPage"
-import StudentLabPage from "../pages/StudentLabPage"
+const StudentLabSessionPage = React.lazy(
+  () => import("../pages/StudentLabSessionPage")
+)
+const StudentPage = React.lazy(() => import("../pages/Student/StudentPage"))
+const StudentLabPage = React.lazy(() => import("../pages/StudentLabPage"))
 import { LabProvider } from "../providers/LabProvider"
 import PrivateRoute from "./PrivateRoute"
 
@@ -24,6 +27,7 @@ const StudentRoutes = (
           </LabProvider>
         }
       />
+      <Route path="/s/lab-session/:id" element={<StudentLabSessionPage />} />
       {/* <Route
         path="/t/labs/:labId/experiments/:expId"
         element={<ExperimentPage />}

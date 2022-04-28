@@ -32,6 +32,7 @@ import moment from "moment"
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import Header from "../components/header/header"
+import Notifications from "../components/Notifications"
 import { db } from "../firebase"
 import { useAuthContext } from "../providers/AuthProvider"
 
@@ -99,6 +100,7 @@ const Teacher = () => {
         pathList={["labs"]}
         rightContent={<Button onClick={handleCreateLab}>Create new lab</Button>}
       />
+      <Notifications />
       <div className="px-8">
         {!labs.length && !empty && (
           <div className="mt-12 flex flex-col items-center justify-center">
