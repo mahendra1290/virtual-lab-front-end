@@ -175,7 +175,7 @@ const CreateExperimentPage = ({ edit = false }: { edit?: boolean }) => {
         <SectionEditor
           initialValue={initValue}
           onChange={setSectionData}
-          uploadUnderPath={`/experiments-files/${newExpId.current}`}
+          uploadUnderPath={`/experiments-files/${edit ? id : newExpId.current}`}
         />
       </div>
       {/* <div className="mx-auto w-2/3 p-4">
