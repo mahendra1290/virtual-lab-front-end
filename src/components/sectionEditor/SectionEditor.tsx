@@ -226,7 +226,7 @@ const SectionEditor = ({
           <FileUpload
             onUploadSuccess={(urls) => {
               if (onFileUpload) {
-                onFileUpload(activeMenu, urls)
+                onFileUpload(activeMenuItem?.name || "", urls)
               }
             }}
             uploadUnderPath={`/${uploadUnderPath || "temp"}/${

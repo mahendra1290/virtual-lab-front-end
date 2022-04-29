@@ -176,7 +176,6 @@ const LabPage = () => {
               labFiles[sectionId].push(url)
             }
           })
-          console.log(labFiles)
 
           setLabFilesMap(labFiles)
         })
@@ -241,12 +240,40 @@ const LabPage = () => {
     } else {
       return (
         <div
-          className="reset-tailwindcss"
-          dangerouslySetInnerHTML={{ __html: sectionData[activeSection] }}
-        />
+          style={{ height: "calc(100% - 36px)" }}
+          className="flex flex-col justify-between overflow-auto"
+        >
+          <div
+            style={{ width: "100%" }}
+            className="reset-tailwindcss"
+            dangerouslySetInnerHTML={{ __html: sectionData[activeSection] }}
+          />
+          {labFilesMap && labFilesMap[activeSection]?.length > 0 && (
+            <div>
+              <VStack align="flex-start">
+                <h1 className="mb-2 text-xl">Files</h1>
+                <Divider />
+                {labFilesMap[activeSection].map((url, idx) => {
+                  return (
+                    <div key={url}>
+                      <span>{idx + 1}. &nbsp;</span>
+                      <a
+                        target="_blank"
+                        href={url}
+                        className="whitespace-nowrap text-blue-500"
+                      >
+                        {url.slice(0, 100)}...
+                      </a>
+                    </div>
+                  )
+                })}
+              </VStack>
+            </div>
+          )}
+        </div>
       )
     }
-  }, [activeSection, experiments])
+  }, [activeSection, experiments, labFilesMap])
 
   if (loading) {
     return <Spinner size="xl" />
