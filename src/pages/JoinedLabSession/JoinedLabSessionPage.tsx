@@ -51,16 +51,13 @@ export const JoinedLabSessionPage = () => {
 
   useEffect(() => {
     if (session) {
-      getDoc(
-        doc(
-          collection(db, "labs", session.labId, "experiments"),
-          session.experimentId
-        )
-      ).then((docSnap) => {
-        if (docSnap.exists()) {
-          setExperiment({ id: docSnap.id, ...docSnap.data() })
+      getDoc(doc(collection(db, "experiments"), session.experimentId)).then(
+        (docSnap) => {
+          if (docSnap.exists()) {
+            setExperiment({ id: docSnap.id, ...docSnap.data() })
+          }
         }
-      })
+      )
     }
   }, [session])
 

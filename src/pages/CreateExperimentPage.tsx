@@ -60,7 +60,7 @@ const CreateExperimentPage = ({ edit = false }: { edit?: boolean }) => {
   useEffect(() => {
     if (edit && id && labId && sectionData.length === 0) {
       startFetch()
-      const expRef = doc(collection(db, "labs", labId, "experiments"), id)
+      const expRef = doc(collection(db, "experiments"), id)
       getDoc(expRef)
         .then((doc) => {
           const exp = doc.data() as Experiment
@@ -112,7 +112,7 @@ const CreateExperimentPage = ({ edit = false }: { edit?: boolean }) => {
       const tId = edit ? id : newExpId.current
       try {
         await setDoc(
-          doc(collection(db, "labs", labId, "experiments"), tId),
+          doc(collection(db, "experiments"), tId),
           {
             tId,
             title: expName,

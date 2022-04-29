@@ -136,7 +136,7 @@ const LabPage = () => {
 
   useEffect(() => {
     if (lab) {
-      const docRef = collection(db, "labs", lab.id, "experiments")
+      const docRef = collection(db, "experiments")
       onSnapshot(docRef, (snapShot) => {
         setExperiments(
           snapShot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))

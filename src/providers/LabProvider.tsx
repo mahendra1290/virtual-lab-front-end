@@ -53,9 +53,11 @@ const LabProvider = ({ children }: LabProviderProps) => {
           const labRes = { ...docSnap.data(), id: docSnap.id } as Lab
           setLab(labRes)
           if (labRes) {
-            const docRef = collection(db, "labs", labRes.id, "experiments")
-            getDocs(docRef).then(res => {
-              const finalRes = res.docs.map((item) => ({ id: item.id, ...item.data() } as Experiment))
+            const docRef = collection(db, "experiments")
+            getDocs(docRef).then((res) => {
+              const finalRes = res.docs.map(
+                (item) => ({ id: item.id, ...item.data() } as Experiment)
+              )
               setExperiments(finalRes)
             })
           }
@@ -64,7 +66,6 @@ const LabProvider = ({ children }: LabProviderProps) => {
           stopLoading()
         }
       })
-
     } catch (err) {
       console.log(err)
       stopLoading()

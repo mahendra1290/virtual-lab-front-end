@@ -46,7 +46,7 @@ const StudentExperimentPage = () => {
     useEffect(() => {
         if (labId && expId) {
             const labCollection = collection(db, "labs")
-            const expCollection = collection(db, "labs", labId, "experiments")
+            const expCollection = collection(db, "experiments")
             getDoc(doc(labCollection, labId)).then((docSnap) => {
                 if (docSnap.exists()) {
                     setLab(docSnap.data() as Lab)
