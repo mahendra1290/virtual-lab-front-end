@@ -192,7 +192,9 @@ const AssessmentCreatePage = () => {
             )
           })}
           <Button
-            onClick={() => append({ id: nanoid(), input: "", output: "" })}
+            onClick={() =>
+              append({ id: nanoid(), input: "", output: "", score: 10 })
+            }
             colorScheme={"cyan"}
             className="mt-4"
           >

@@ -34,21 +34,21 @@ export const StudentActivity = () => {
   const { loading, startLoading, stopLoading } = useLoading()
   const [selectedLanguage, setSelectedLanguage] = useState("javascript")
 
+  const selectLangRef = useRef("javascript")
+
   const studName = localStorage.getItem("stdName")
 
   useEffect(() => {
     socket.auth = { uid: stdId }
-    // console.log("student uid", stdId)
-
     socket.connect()
-    // socket.on("connect", () => {
-    //   console.log(socket.id)
-    // })
-
     socket.emit("view-student", stdId)
-    socket.on(`code-update-${stdId}`, (code) => {
-      //   console.log(code, " code cde ")
+    socket.on(`code-update-${stdId}`, ({ lang, code }) => {
+      if (selectLangRef.current !== lang) {
+        selectLangRef.current = lang
+        setSelectedLanguage(lang)
+      }
       setCodeData(code)
+      editorRef.current?.setValue(code)
     })
   }, [])
 
@@ -82,7 +82,10 @@ export const StudentActivity = () => {
   const handleCodeChange = (value: string | undefined) => {
     if (value !== undefined) {
       setCodeData(value)
-      socket.emit("save-code", value)
+      socket.emit("save-code", {
+        lang: selectedLanguage,
+        code: value,
+      })
     }
   }
 
@@ -91,9 +94,13 @@ export const StudentActivity = () => {
       <Header
         title={studName || ""}
         pathList={[]}
-        // rightContent={<Button colorScheme="blue">Join</Button>}
+        rightContent={
+          <LabSessionChatPopover>
+            <LabSessionChatBox sessionId={id || ""} studentId={stdId || ""} />
+          </LabSessionChatPopover>
+        }
       />
-      <div className="flex gap-2 border p-4">
+      <div className="flex gap-4 border p-4">
         <div className="w-1/2 rounded-md border p-2">
           <div className="flex gap-4 rounded  p-2">
             <div className="flex flex-grow gap-4">
@@ -101,7 +108,7 @@ export const StudentActivity = () => {
                 <FormLabel htmlFor="language">Language</FormLabel>
                 <Select
                   value={selectedLanguage}
-                  onChange={(e) => setSelectedLanguage(e.target.value)}
+                  disabled
                   id="language"
                   size="sm"
                 >
@@ -121,31 +128,21 @@ export const StudentActivity = () => {
                 </Select>
               </FormControl>
             </div>
-            <Button
-              isLoading={loading}
-              loadingText="Running..."
-              size="sm"
-              colorScheme="green"
-              onClick={handleRun}
-            >
-              Run
-            </Button>
           </div>
           <Divider />
           <Editor
             height="70vh"
             language={selectedLanguage}
             className="w-1/2"
-            value={codeData}
+            // value={codeData}
             theme="vs-light"
-            onChange={handleCodeChange}
+            // onChange={handleCodeChange}
             onMount={(editor, monaco) => {
               editorRef.current = editor
             }}
           />
         </div>
         <div className="flex w-1/2 flex-col justify-items-stretch gap-2">
-          <div className="flex-grow rounded border p-2">Problem Statement</div>
           <div className="flex flex-grow flex-col">
             <h1>Output:</h1>
             <Textarea
@@ -161,9 +158,6 @@ export const StudentActivity = () => {
             />
           </div>
         </div>
-        <LabSessionChatPopover>
-          <LabSessionChatBox sessionId={id || ""} studentId={stdId || ""} />
-        </LabSessionChatPopover>
       </div>
     </div>
   )
