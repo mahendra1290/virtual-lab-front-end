@@ -6,13 +6,11 @@ import { Link, useNavigate, useParams } from "react-router-dom"
 import draftToHtml from "draftjs-to-html"
 
 import { db } from "../../firebase"
-import { useAuthContext } from "../../providers/AuthProvider"
 import { Experiment, Lab, LabSession } from "../../shared/types/Lab"
 import Header from "../../components/header/header"
 import LabMenuPanel from "../../components/labs/LabMenuPanel"
 import { useConfirmationModal } from "../../hooks/useConfirmationModal"
 import ConfirmationModal from "../../components/modals/ConfirmationModal"
-import Loading from "../../components/Loading"
 import LabLoadingSkeleton from "../../components/skeletons/LabLoadingSkeleton"
 
 const ExperimentPage = () => {

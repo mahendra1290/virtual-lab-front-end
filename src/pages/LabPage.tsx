@@ -5,6 +5,7 @@ import {
   deleteDoc,
   doc,
   FirestoreError,
+  getDocs,
   onSnapshot,
   query,
   where,
@@ -134,6 +135,15 @@ const LabPage = () => {
     }
     setLoading(false)
   }, [lab])
+
+  useEffect(() => {
+    if (lab) {
+      const labFilesRef = collection(db, `lab-files-${lab.id}`)
+      getDocs(labFilesRef).then((files) => {
+        console.log(files.docs.map((doc) => doc.data()))
+      })
+    }
+  })
 
   const sectionData = useMemo(() => {
     const data: { [key: string]: string } = {}

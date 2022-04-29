@@ -6,7 +6,7 @@ import { db, labsCol } from "../../firebase"
 import useLoading from "../../hooks/useLoading"
 import { useAuthContext } from "../../providers/AuthProvider"
 import { nanoid } from "nanoid"
-import { FormEvent, useEffect, useMemo, useState } from "react"
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react"
 import { Lab } from "../../shared/types/Lab"
 import {
   EditorState as DraftEditorState,
@@ -35,6 +35,8 @@ const CreateLab = ({ edit = false }: { edit?: boolean }) => {
   const [sectionData, setSectionData] = useState<SectionEditorValue[]>([])
   const [initValue, setInitValue] = useState<SectionEditorValue[]>([])
 
+  const newId = useRef(nanoid(6))
+
   const createLab = async (data: {
     name: string
     visibility: "public" | "private"
@@ -54,7 +56,7 @@ const CreateLab = ({ edit = false }: { edit?: boolean }) => {
 
     try {
       if (user?.uid) {
-        const lId = edit ? id : nanoid()
+        const lId = edit ? id : newId.current
         await setDoc(
           doc(labsCol, lId),
           {
@@ -106,6 +108,15 @@ const CreateLab = ({ edit = false }: { edit?: boolean }) => {
     fetchLab()
   }, [edit])
 
+  const handleFileUpload = async (sectionId: string, fileUrls: string[]) => {
+    const tId = edit ? id : newId.current
+    const docRef = doc(collection(db, `lab-files-${tId}`))
+    await setDoc(docRef, {
+      sectionId: sectionId,
+      fileUrls: fileUrls,
+    })
+  }
+
   return (
     <>
       {/* <form onSubmit={handleSubmit(createLab)}> */}
@@ -141,44 +152,15 @@ const CreateLab = ({ edit = false }: { edit?: boolean }) => {
               <option value="public">Public</option>
               <option value="private">Private</option>
             </Select>
-            {/* <FormHelperText>
-              Public labs are accessible by everyone.
-            </FormHelperText> */}
           </FormControl>
         </div>
 
-        {/* <div className="flex gap-8">
-          <LabMenuPanel
-            activeMenu={activeSession}
-            onChange={handleSectionChange}
-            menus={sections}
-            className="w-1/4 border p-6 shadow-sm"
-          >
-            <Button
-              className="self-center"
-              size="sm"
-              onClick={handleAddSectionButtonClick}
-            >
-              Add New Section
-            </Button>
-          </LabMenuPanel>
-
-          <div className="w-3/4 rounded-md border p-6 shadow-sm">
-            <h1 className="mb-2 text-xl">{activeSession}</h1>
-            <TextEditor value={editorData} onChange={handleEditorDataChange} />
-
-            <Button className="mt-4" colorScheme="teal" size="sm">
-              Save
-            </Button>
-            <Button className="mt-4 ml-2" colorScheme="red" size="sm">
-              Clear
-            </Button>
-          </div>
-        </div> */}
         <SectionEditor
           defaultMenus={edit ? undefined : ["Introduction", "Aim", "About"]}
           initialValue={initValue}
           onChange={setSectionData}
+          onFileUpload={handleFileUpload}
+          uploadUnderPath={`/experiments-files/${edit ? id : newId.current}`}
         />
       </div>
     </>
