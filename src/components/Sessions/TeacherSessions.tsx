@@ -90,7 +90,7 @@ const TeacherSessions = ({ lab, experiments }: TeacherSessionProps) => {
     <>
       <div className="py-4">
         {sessionData?.map((sess) => (
-          <div className="mb-4 rounded-lg bg-gray-100 p-4" key={sess.uid}>
+          <div className="mb-4 rounded-lg bg-gray-100 p-4" key={sess.id}>
             <Link to={`/t/lab-session/${sess.id}`}>
               <h1 className="text-lg capitalize">
                 {experiments.find((exp) => exp.id == sess.expId)?.title}

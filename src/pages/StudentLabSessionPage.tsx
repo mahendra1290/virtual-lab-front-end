@@ -126,7 +126,11 @@ const StudentLabSessionPage = () => {
               <SectionViewer sections={exp?.sections || []} />
             </TabPanel>
             <TabPanel>
-              <CodeEditorPage />
+              <CodeEditor
+                sessionId={session?.id}
+                expId={session?.expId}
+                labId={session?.labId}
+              />
             </TabPanel>
             <TabPanel>
               <p>three!</p>
