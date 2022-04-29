@@ -65,7 +65,6 @@ const TeacherSessions = ({ lab, experiments }: TeacherSessionProps) => {
                 labId: lab?.id,
               },
             })
-            console.log(result, "res")
             setSessionData(result.data)
             setDataLoading(false)
           })()
@@ -81,35 +80,6 @@ const TeacherSessions = ({ lab, experiments }: TeacherSessionProps) => {
     fetchLabSessionDetails()
   }, [])
 
-  //   useEffect(() => {
-  //     let unsubscribeSession: Unsubscribe
-  //     let unsubscribeStudent: Unsubscribe
-  //     if (id) {
-  //       // unsubscribeSession = onSnapshot(
-  //       //   doc(collection(db, "experiment-sessions"), id),
-  //       //   (doc) => {
-  //       //     console.log(doc.data(), "got data")
-  //       //     setSession(doc.data())
-  //       //   }
-  //       // )
-  //       unsubscribeStudent = onSnapshot(
-  //         doc(db, "session-students", `session-${id}`),
-  //         (data) => {
-  //           setStudents(data?.data()?.students as JoinedStudent[])
-  //           console.log(data.data(), "update")
-  //         }
-  //       )
-  //     }
-  //     return () => {
-  //       if (unsubscribeSession) {
-  //         unsubscribeSession()
-  //       }
-  //       if (unsubscribeStudent) {
-  //         unsubscribeStudent()
-  //       }
-  //     }
-  //   }, [])
-
   if (dataLoading) {
     return <Loading />
   }
@@ -121,7 +91,7 @@ const TeacherSessions = ({ lab, experiments }: TeacherSessionProps) => {
       <div className="py-4">
         {sessionData?.map((sess) => (
           <div className="mb-4 rounded-lg bg-gray-100 p-4" key={sess.uid}>
-            <Link to={`student/${sess.uid}`}>
+            <Link to={`/t/lab-session/${sess.id}`}>
               <h1 className="text-lg capitalize">
                 {experiments.find((exp) => exp.id == sess.expId)?.title}
               </h1>
