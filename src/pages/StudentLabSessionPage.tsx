@@ -26,6 +26,7 @@ import {
 import { useEffect, useState } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
 import { io } from "socket.io-client"
+import LabSessionChatBox from "../components/chatbox/LabSessionChatBox"
 import { CodeEditor } from "../components/CodeEditor"
 import Header from "../components/header/header"
 import Loading from "../components/Loading"
@@ -111,6 +112,7 @@ const StudentLabSessionPage = () => {
         rightContent={<Button colorScheme="blue">Join</Button>}
       />
       <div className="py-4">
+        <LabSessionChatBox sessionId={id || ""} studentId={user?.uid || ""} />
         <Tabs className="min-h-screen">
           <TabList>
             <Tab>Experiment</Tab>

@@ -15,6 +15,8 @@ import { io } from "socket.io-client"
 import Header from "../../components/header/header"
 import useLoading from "../../hooks/useLoading"
 import { useAuthContext } from "../../providers/AuthProvider"
+import LabSessionChatBox from "../../components/chatbox/LabSessionChatBox"
+import LabSessionChatPopover from "../../components/chatbox/LabSessionChatPopover"
 
 const languageOptions = ["javascript", "typescript", "cpp", "java", "python"]
 
@@ -24,7 +26,7 @@ const socket = io("http://localhost:5000", {
 
 export const StudentActivity = () => {
   const { user } = useAuthContext()
-  const { stdId } = useParams()
+  const { stdId, id } = useParams()
   const editorRef = useRef<editor.IStandaloneCodeEditor>()
   const [res, setRes] = useState("")
   const [error, setError] = useState("")
@@ -159,6 +161,9 @@ export const StudentActivity = () => {
             />
           </div>
         </div>
+        <LabSessionChatPopover>
+          <LabSessionChatBox sessionId={id || ""} studentId={stdId || ""} />
+        </LabSessionChatPopover>
       </div>
     </div>
   )
