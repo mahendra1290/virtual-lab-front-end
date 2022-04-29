@@ -27,6 +27,7 @@ import { useEffect, useState } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
 import { io } from "socket.io-client"
 import LabSessionChatBox from "../components/chatbox/LabSessionChatBox"
+import LabSessionChatPopover from "../components/chatbox/LabSessionChatPopover"
 import { CodeEditor } from "../components/CodeEditor"
 import Header from "../components/header/header"
 import Loading from "../components/Loading"
@@ -112,12 +113,12 @@ const StudentLabSessionPage = () => {
         rightContent={<Button colorScheme="blue">Join</Button>}
       />
       <div className="py-4">
-        <LabSessionChatBox sessionId={id || ""} studentId={user?.uid || ""} />
         <Tabs className="min-h-screen">
           <TabList>
             <Tab>Experiment</Tab>
             <Tab>Assessment</Tab>
             <Tab>My Submission</Tab>
+            <Tab>Chat</Tab>
           </TabList>
 
           <TabPanels>
@@ -129,6 +130,16 @@ const StudentLabSessionPage = () => {
             </TabPanel>
             <TabPanel>
               <p>three!</p>
+            </TabPanel>
+            <TabPanel>
+              <div className="mx-auto">
+                <h1 className="text-lg">Chat</h1>
+                <LabSessionChatBox
+                  className=" min-h-[30rem] rounded-md border p-4"
+                  sessionId={id || ""}
+                  studentId={user?.uid || ""}
+                />
+              </div>
             </TabPanel>
           </TabPanels>
         </Tabs>

@@ -18,6 +18,7 @@ import { useAuthContext } from "../../providers/AuthProvider"
 interface LabSessionChatBoxProps {
   sessionId: string
   studentId: string
+  className?: string
 }
 
 interface Message {
@@ -35,6 +36,7 @@ const scrollToBottom = (element: HTMLDivElement) => {
 const LabSessionChatBox = ({
   sessionId,
   studentId,
+  className,
 }: LabSessionChatBoxProps) => {
   const { user } = useAuthContext()
 
@@ -94,11 +96,14 @@ const LabSessionChatBox = ({
   }
 
   return (
-    <div>
+    <div className={`${className} flex max-h-[18rem] max-w-[50rem] flex-col`}>
       <div
         ref={scrollRef}
-        className="scrollbar-thumb-rounded-full gap flex max-h-[15rem] min-w-[20rem] flex-col gap-1 overflow-y-scroll scroll-smooth pr-4 scrollbar-thin scrollbar-track-slate-50 scrollbar-thumb-slate-200"
+        className="scrollbar-thumb-rounded-full gap flex flex-grow flex-col gap-1 overflow-y-scroll scroll-smooth pr-4 scrollbar-thin scrollbar-track-slate-50 scrollbar-thumb-slate-200"
       >
+        {messages.length == 0 && (
+          <p className="text-gray-500">No messages found.</p>
+        )}
         {messages.map((msg, index) => (
           <div
             className={`${

@@ -26,6 +26,7 @@ import {
 import { useEffect, useState } from "react"
 import { Link, useParams, useSearchParams } from "react-router-dom"
 import LabSessionChatBox from "../../components/chatbox/LabSessionChatBox"
+import LabSessionChatPopover from "../../components/chatbox/LabSessionChatPopover"
 import Header from "../../components/header/header"
 import Loading from "../../components/Loading"
 import SectionViewer from "../../components/SectionViewer"
@@ -184,10 +185,12 @@ const LabSessionPage = () => {
                     <h1 className="text-lg capitalize">{stud.name}</h1>
                   </Link>
                   <div>{stud.active ? "active" : "gone"}</div>
-                  <LabSessionChatBox
-                    studentId={stud.uid}
-                    sessionId={id || ""}
-                  />
+                  <LabSessionChatPopover>
+                    <LabSessionChatBox
+                      studentId={stud.uid}
+                      sessionId={id || ""}
+                    />
+                  </LabSessionChatPopover>
                 </div>
               ))}
             </TabPanel>
