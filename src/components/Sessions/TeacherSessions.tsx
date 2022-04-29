@@ -124,13 +124,15 @@ const TeacherSessions = ({ lab, experiments }: TeacherSessionProps) => {
             <Link to={`student/${sess.uid}`}>
               <h1 className="text-lg capitalize">
                 {experiments.find((exp) => exp.id == sess.expId)?.title}
+              </h1>
+              <h2>
                 Started At:{" "}
                 {moment(sess.startedAt._seconds * 1000).format(
                   "YYYY-MM-DD HH:MM"
                 )}
-              </h1>
+              </h2>
             </Link>
-            <div>{sess.active ? "active" : "gone"}</div>
+            <div>{sess.active ? "active" : "ended"}</div>
           </div>
         ))}
       </div>
