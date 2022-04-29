@@ -23,7 +23,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import draftToHtml from "draftjs-to-html"
-import { db } from "../firebase"
+import { db, storage } from "../firebase"
 import { ExperimentCard } from "../components/experiment/ExperimentCard"
 import axios from "axios"
 import LabMenuPanel from "../components/labs/LabMenuPanel"
@@ -35,6 +35,16 @@ import LabSettings from "../components/labs/LabSettings"
 import { useLabContext } from "../providers/LabProvider"
 import LabInviteModal from "../components/LabInviteModal"
 import TeacherSessions from "../components/Sessions/TeacherSessions"
+import { getDownloadURL, getMetadata, ref } from "firebase/storage"
+
+interface LabFiles {
+  sectionId: string
+  fileUrls: string[]
+}
+
+interface LabFileMap {
+  [key: string]: string[]
+}
 
 const LabPage = () => {
   const { lab } = useLabContext()
@@ -69,6 +79,7 @@ const LabPage = () => {
   const [experiments, setExperiments] = useState<any[]>([])
   const [activeSection, setActiveSection] = useState("")
   const [deleteLoading, setDeleteLoading] = useState(false)
+  const [labFilesMap, setLabFilesMap] = useState<LabFileMap>()
 
   const handleModalClose = () => {
     setModalOpen(false)
@@ -140,10 +151,38 @@ const LabPage = () => {
     if (lab) {
       const labFilesRef = collection(db, `lab-files-${lab.id}`)
       getDocs(labFilesRef).then((files) => {
-        console.log(files.docs.map((doc) => doc.data()))
+        const promises: Promise<[string, string]>[] = []
+        files.docs.forEach((doc) => {
+          const docData = doc.data() as LabFiles
+          docData.fileUrls.forEach((path) => {
+            const prom = new Promise<[string, string]>((resolve) => {
+              getDownloadURL(ref(storage, path)).then((link) => {
+                resolve([docData.sectionId, link])
+              })
+              return [docData.sectionId]
+            })
+            promises.push(prom)
+          })
+        })
+        const labFiles: {
+          [key: string]: string[]
+        } = {}
+        Promise.all(promises).then((values) => {
+          values.forEach((value) => {
+            const [sectionId, url] = value
+            if (!labFiles[sectionId]) {
+              labFiles[sectionId] = [url]
+            } else {
+              labFiles[sectionId].push(url)
+            }
+          })
+          console.log(labFiles)
+
+          setLabFilesMap(labFiles)
+        })
       })
     }
-  })
+  }, [lab])
 
   const sectionData = useMemo(() => {
     const data: { [key: string]: string } = {}
