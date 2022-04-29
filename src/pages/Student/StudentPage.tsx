@@ -1,19 +1,8 @@
-import { Button, Grid, GridItem, Spinner } from "@chakra-ui/react"
+import { Grid, GridItem, Spinner } from "@chakra-ui/react"
 import axios from "axios"
-import {
-  collection,
-  doc,
-  onSnapshot,
-  query,
-  setDoc,
-  Timestamp,
-  Unsubscribe,
-  where,
-} from "firebase/firestore"
-import moment from "moment"
+import { Timestamp, Unsubscribe } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { db } from "../../firebase"
 import { useAuthContext } from "../../providers/AuthProvider"
 import Header from "../../components/header/header"
 
@@ -27,7 +16,6 @@ interface Lab {
 
 const StudentPage = () => {
   const { user } = useAuthContext()
-  const [addLabModalOpen, setAddModalOpen] = useState(false)
   const [name, setName] = useState("")
   const [labVisibility, setLabVisibility] = useState("public")
   const [loading, setLoading] = useState(false)
@@ -36,13 +24,23 @@ const StudentPage = () => {
 
   useEffect(() => {
     let unsubscribe: Unsubscribe
+    setLoading(true)
     const fetchLabs = async () => {
       const res = await axios.get(`/labs?studentUid=${user?.uid}`)
       setLabs(res.data.labs)
+      if (res.data.labs.length == 0) {
+        setEmpty(true)
+      } else {
+        setEmpty(false)
+      }
     }
+
     if (user) {
       fetchLabs()
+    } else {
+      setEmpty(true)
     }
+    setLoading(false)
     return () => {
       if (unsubscribe) {
         unsubscribe()
@@ -53,12 +51,16 @@ const StudentPage = () => {
   return (
     <>
       <Header title={"My Labs"} pathList={["labs"]} />
-      {/* <Notifications /> */}
       <div className="px-8 py-2">
-        {!labs.length && !empty && (
+        {loading && (
           <div className="mt-12 flex flex-col items-center justify-center">
             <Spinner />
             <h1>Fetching your labs...</h1>
+          </div>
+        )}
+        {empty && (
+          <div>
+            <h1>Sorry, no lab found</h1>
           </div>
         )}
 

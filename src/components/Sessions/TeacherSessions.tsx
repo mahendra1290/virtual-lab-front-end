@@ -1,42 +1,12 @@
-import { useToast, VStack } from "@chakra-ui/react"
-import { async } from "@firebase/util"
+import { useToast } from "@chakra-ui/react"
 import axios from "axios"
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocFromCache,
-  getDocs,
-  onSnapshot,
-  query,
-  Timestamp,
-  Unsubscribe,
-} from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { useAuthContext } from "../../providers/AuthProvider"
-import { Link, useParams } from "react-router-dom"
-import Header from "../header/header"
+import { Link } from "react-router-dom"
 import Loading from "../Loading"
-import { db } from "../../firebase"
 import moment from "moment"
-import { Experiment, Lab, LabSession } from "../../shared/types/Lab"
-
-interface ILabSession {
-  uid: string
-  startedAt: Timestamp
-  lab: Lab
-  exp: Experiment
-  labId: string
-  expId: string
-  active: boolean
-}
-
-interface JoinedStudent {
-  uid: string
-  email: string
-  name: string
-  active: boolean
-}
+import { GoPrimitiveDot } from "react-icons/go"
+import { Experiment, Lab } from "../../shared/types/Lab"
 
 interface TeacherSessionProps {
   lab: Lab
@@ -44,15 +14,11 @@ interface TeacherSessionProps {
 }
 
 const TeacherSessions = ({ lab, experiments }: TeacherSessionProps) => {
-  const { id } = useParams()
-  const [session, setSession] = useState<ILabSession>()
-  const [students, setStudents] = useState<JoinedStudent[]>([])
   const [sessionData, setSessionData] = useState<any[]>([])
   const toast = useToast()
   const [dataLoading, setDataLoading] = useState(false)
   const { user } = useAuthContext()
 
-  console.log(experiments, " experiemnts ")
   useEffect(() => {
     const fetchLabSessionDetails = async () => {
       try {
@@ -65,7 +31,6 @@ const TeacherSessions = ({ lab, experiments }: TeacherSessionProps) => {
                 labId: lab?.id,
               },
             })
-            console.log(result, "res")
             setSessionData(result.data)
             setDataLoading(false)
           })()
@@ -81,40 +46,9 @@ const TeacherSessions = ({ lab, experiments }: TeacherSessionProps) => {
     fetchLabSessionDetails()
   }, [])
 
-  //   useEffect(() => {
-  //     let unsubscribeSession: Unsubscribe
-  //     let unsubscribeStudent: Unsubscribe
-  //     if (id) {
-  //       // unsubscribeSession = onSnapshot(
-  //       //   doc(collection(db, "experiment-sessions"), id),
-  //       //   (doc) => {
-  //       //     console.log(doc.data(), "got data")
-  //       //     setSession(doc.data())
-  //       //   }
-  //       // )
-  //       unsubscribeStudent = onSnapshot(
-  //         doc(db, "session-students", `session-${id}`),
-  //         (data) => {
-  //           setStudents(data?.data()?.students as JoinedStudent[])
-  //           console.log(data.data(), "update")
-  //         }
-  //       )
-  //     }
-  //     return () => {
-  //       if (unsubscribeSession) {
-  //         unsubscribeSession()
-  //       }
-  //       if (unsubscribeStudent) {
-  //         unsubscribeStudent()
-  //       }
-  //     }
-  //   }, [])
-
   if (dataLoading) {
     return <Loading />
   }
-
-  console.log(sessionData, " session data")
 
   return (
     <>
@@ -122,17 +56,34 @@ const TeacherSessions = ({ lab, experiments }: TeacherSessionProps) => {
         {sessionData?.map((sess) => (
           <div className="mb-4 rounded-lg bg-gray-100 p-4" key={sess.uid}>
             <Link to={`student/${sess.uid}`}>
-              <h1 className="text-lg capitalize">
-                {experiments.find((exp) => exp.id == sess.expId)?.title}
-              </h1>
-              <h2>
-                Started At:{" "}
-                {moment(sess.startedAt._seconds * 1000).format(
-                  "YYYY-MM-DD HH:MM"
+              <div className="mb-2 flex justify-between align-middle">
+                <h1 className="text-lg capitalize">
+                  {experiments.find((exp) => exp.id == sess.expId)?.title}
+                </h1>
+                <GoPrimitiveDot
+                  style={{ fontSize: 24, color: sess.active ? "green" : "red" }}
+                />
+              </div>
+              <h2 className="text-gray-500">
+                {sess.active ? (
+                  <div>
+                    {moment(sess.startedAt._seconds * 1000).format(
+                      "YYYY-MM-DD HH:MM"
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    {moment(sess.startedAt._seconds * 1000).format(
+                      "YYYY-MM-DD HH:MM"
+                    )}
+                    {"  "}-{"  "}
+                    {moment(sess.endedAt._seconds * 1000).format(
+                      "YYYY-MM-DD HH:MM"
+                    )}
+                  </div>
                 )}
               </h2>
             </Link>
-            <div>{sess.active ? "active" : "ended"}</div>
           </div>
         ))}
       </div>

@@ -5,8 +5,6 @@ import {
   deleteDoc,
   doc,
   FirestoreError,
-  getDoc,
-  getDocs,
   onSnapshot,
   query,
   where,
@@ -14,32 +12,20 @@ import {
 import {
   Button,
   Divider,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  Input,
   Modal,
-  ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Spinner,
-  toast,
   useToast,
   VStack,
 } from "@chakra-ui/react"
 import draftToHtml from "draftjs-to-html"
 import { db } from "../firebase"
-import { CreateExperment } from "../components/experiment/CreateExperiment"
 import { ExperimentCard } from "../components/experiment/ExperimentCard"
-import { useAuthContext } from "../providers/AuthProvider"
 import axios from "axios"
-import { Lab, LabSession } from "../shared/types/Lab"
-import LabSectionMenu from "../components/labs/LabSectionMenu"
 import LabMenuPanel from "../components/labs/LabMenuPanel"
-import { RawDraftContentState } from "react-draft-wysiwyg"
 import Header from "../components/header/header"
 import { LabOptionMenu, LabMenus } from "../components/labs/LabOptionMenu"
 import { useConfirmationModal } from "../hooks/useConfirmationModal"
@@ -50,8 +36,6 @@ import LabInviteModal from "../components/LabInviteModal"
 import TeacherSessions from "../components/Sessions/TeacherSessions"
 
 const LabPage = () => {
-  const { user } = useAuthContext()
-  const { id } = useParams()
   const { lab } = useLabContext()
 
   const { makeModal, modalProps } = useConfirmationModal()
@@ -82,7 +66,6 @@ const LabPage = () => {
   const [loading, setLoading] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [experiments, setExperiments] = useState<any[]>([])
-  const [labSessions, setLabSessions] = useState<LabSession[]>([])
   const [activeSection, setActiveSection] = useState("")
   const [deleteLoading, setDeleteLoading] = useState(false)
 
@@ -137,6 +120,7 @@ const LabPage = () => {
 
   useEffect(() => {
     if (lab) {
+      setLoading(true)
       const docRef = query(
         collection(db, "experiments"),
         where("labId", "==", lab.id)
@@ -146,7 +130,9 @@ const LabPage = () => {
           snapShot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
         )
       })
+      setLoading(false)
     }
+    setLoading(false)
   }, [lab])
 
   const sectionData = useMemo(() => {

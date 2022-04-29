@@ -1,36 +1,23 @@
 import {
   Button,
-  Spinner,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  toast,
   useToast,
   VStack,
 } from "@chakra-ui/react"
-import { async } from "@firebase/util"
 import axios from "axios"
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocFromCache,
-  getDocs,
-  onSnapshot,
-  query,
-  Timestamp,
-  Unsubscribe,
-} from "firebase/firestore"
+import { doc, onSnapshot, Timestamp, Unsubscribe } from "firebase/firestore"
 import { useEffect, useState } from "react"
-import { Link, useParams, useSearchParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import Header from "../../components/header/header"
 import Loading from "../../components/Loading"
 import SectionViewer from "../../components/SectionViewer"
 import { db } from "../../firebase"
 import useLoading from "../../hooks/useLoading"
-import { Experiment, Lab, LabSession } from "../../shared/types/Lab"
+import { Experiment, Lab } from "../../shared/types/Lab"
 
 interface ILabSession {
   uid: string
