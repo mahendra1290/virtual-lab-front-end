@@ -46,6 +46,7 @@ import ConfirmationModal from "../components/modals/ConfirmationModal"
 import LabSettings from "../components/labs/LabSettings"
 import { useLabContext } from "../providers/LabProvider"
 import LabInviteModal from "../components/LabInviteModal"
+import TeacherSessions from "../components/Sessions/TeacherSessions"
 
 const LabPage = () => {
   const { user } = useAuthContext()
@@ -157,7 +158,7 @@ const LabPage = () => {
 
   const sections = useMemo(() => {
     const arr = Object.keys(sectionData).map((sectionName) => sectionName)
-    arr.push("Experiments", "Settings", "Students")
+    arr.push("Experiments", "Students", "Settings", "Sessions")
     return arr
   }, [sectionData])
 
@@ -197,6 +198,8 @@ const LabPage = () => {
           </Button>
         </>
       )
+    } else if (activeSection === "Sessions" && lab) {
+      return <TeacherSessions lab={lab} experiments={experiments} />
     } else {
       return (
         <div
