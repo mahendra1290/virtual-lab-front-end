@@ -18,7 +18,7 @@ import { ref, UploadResult, uploadString } from "firebase/storage"
 import { nanoid } from "nanoid"
 import React, { useEffect, useState } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { FormField } from "../components/forms/FormField"
 import Header from "../components/header/header"
 import { db, storage } from "../firebase"
@@ -47,6 +47,8 @@ const AssessmentCreatePage = () => {
   const [experiment, setExperiment] = useState<Experiment>()
 
   const { loading, startLoading, stopLoading } = useLoading()
+
+  const navigate = useNavigate()
 
   const {
     control,
@@ -120,6 +122,7 @@ const AssessmentCreatePage = () => {
     } catch (err) {
       console.log("Someting went wrong")
     }
+    navigate(-1)
     stopLoading()
   }
 

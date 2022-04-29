@@ -13,6 +13,8 @@ import {
 } from "@chakra-ui/react"
 import Editor from "@monaco-editor/react"
 import axios from "axios"
+import { collection, deleteDoc, doc, getDoc } from "firebase/firestore"
+import { db } from "../firebase"
 import { editor } from "monaco-editor"
 import { ChangeEvent, useEffect, useRef, useState } from "react"
 import { io } from "socket.io-client"
@@ -20,6 +22,7 @@ import useLoading from "../hooks/useLoading"
 import { useAuthContext } from "../providers/AuthProvider"
 import { GraderResult } from "../shared/types/Grader"
 import GraderPanel from "./GraderPanel"
+import { TestCase } from "../shared/types/Lab"
 
 const languageOptions = ["javascript", "typescript", "cpp", "java", "python"]
 
@@ -42,6 +45,7 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
   const { loading, startLoading, stopLoading } = useLoading()
   const [selectedLanguage, setSelectedLanguage] = useState("javascript")
   const [graderResult, setGraderResult] = useState<GraderResult>()
+  const [testCase, setTestCases] = useState<TestCase>()
 
   useEffect(() => {
     socket.auth = { uid: user?.uid }
@@ -51,6 +55,16 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
     socket.on("connect", () => {
       console.log(socket.id)
     })
+  }, [])
+
+  useEffect(() => {
+    if (expId) {
+      const testCasesRef = doc(collection(db, `test-cases`), expId)
+      getDoc(testCasesRef).then((docSnap) => {
+        const data = docSnap.data()
+        setTestCases(data as TestCase)
+      })
+    }
   }, [])
 
   const handleRun = () => {
@@ -157,7 +171,44 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
       </div>
       <div className="flex w-1/2 flex-col justify-items-stretch gap-2">
         <div className="h-1/2 flex-grow rounded border p-2">
-          Problem Statement
+          <Tabs>
+            <TabList>
+              <Tab>Problem Statement</Tab>
+              <Tab>Testcases</Tab>
+            </TabList>
+
+            <TabPanels>
+              <TabPanel>
+                <div />
+              </TabPanel>
+              <TabPanel>
+                <div className="flex">
+                  <div className="w-1/2 whitespace-pre-line border-r-2 border-gray-300 p-2">
+                    {testCase?.inputs &&
+                      testCase.inputs.map((inp) => {
+                        return (
+                          <>
+                            <div>{inp.content}</div>
+                            <br />
+                          </>
+                        )
+                      })}
+                  </div>
+                  <div className="w-1/2 px-4 py-2">
+                    {testCase?.outputs &&
+                      testCase.outputs.map((inp) => {
+                        return (
+                          <>
+                            <div>{inp.content}</div>
+                            <br />
+                          </>
+                        )
+                      })}
+                  </div>
+                </div>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
         </div>
         <Tabs className="flex h-1/2 flex-grow flex-col">
           <TabList>
