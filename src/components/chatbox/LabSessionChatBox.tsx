@@ -96,7 +96,9 @@ const LabSessionChatBox = ({
   }
 
   return (
-    <div className={`${className} flex max-h-[18rem] max-w-[50rem] flex-col`}>
+    <div
+      className={`${className} m-auto flex max-h-[20rem] max-w-[62rem] flex-col`}
+    >
       <div
         ref={scrollRef}
         className="scrollbar-thumb-rounded-full gap flex flex-grow flex-col gap-1 overflow-y-scroll scroll-smooth pr-4 scrollbar-thin scrollbar-track-slate-50 scrollbar-thumb-slate-200"
@@ -123,12 +125,17 @@ const LabSessionChatBox = ({
         ))}
       </div>
       <Divider className="my-4" />
-      <form onSubmit={handleSubmit(onMessageSend)} className="flex  gap-2">
+      <form
+        onSubmit={handleSubmit(onMessageSend)}
+        autoComplete="off"
+        className="flex  gap-2"
+      >
         <Input
           size="sm"
           autoFocus
           placeholder="Enter message"
           rounded="full"
+          autoComplete="off"
           {...register("message")}
         />
         <Button type="submit" rounded="full" className="flex-grow" size="sm">

@@ -136,7 +136,7 @@ const StudentLabSessionPage = () => {
             </TabPanel>
             <TabPanel>
               <div className="mx-auto">
-                <h1 className="text-lg">Chat</h1>
+                {/* <h1 className="text-lg">Chat</h1> */}
                 <LabSessionChatBox
                   className=" min-h-[30rem] rounded-md border p-4"
                   sessionId={id || ""}

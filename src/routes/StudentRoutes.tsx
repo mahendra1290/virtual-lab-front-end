@@ -1,13 +1,16 @@
 import React from "react"
 import { Outlet, Route } from "react-router-dom"
-const StudentLabSessionPage = React.lazy(
-  () => import("../pages/StudentLabSessionPage")
-)
-const StudentPage = React.lazy(() => import("../pages/Student/StudentPage"))
-const StudentLabPage = React.lazy(() => import("../pages/StudentLabPage"))
 import { LabProvider } from "../providers/LabProvider"
 import PrivateRoute from "./PrivateRoute"
 import StudentExperimentPage from "../pages/Experiment/StudentExperimentPage"
+
+const StudentLabSessionPage = React.lazy(
+  () => import("../pages/StudentLabSessionPage")
+)
+
+const StudentPage = React.lazy(() => import("../pages/Student/StudentPage"))
+
+const StudentLabPage = React.lazy(() => import("../pages/StudentLabPage"))
 
 const StudentRoutes = (
   <>

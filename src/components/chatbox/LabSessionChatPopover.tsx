@@ -23,7 +23,7 @@ const LabSessionChatPopover = ({
         <Button>Chat</Button>
       </PopoverTrigger>
       <Portal>
-        <PopoverContent>
+        <PopoverContent width="480px">
           <PopoverArrow />
           <PopoverHeader>Chats</PopoverHeader>
           <PopoverCloseButton />
