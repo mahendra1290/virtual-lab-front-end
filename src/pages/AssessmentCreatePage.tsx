@@ -31,7 +31,14 @@ interface AssessmentForm {
     id: string
     input: string
     output: string
+    score: number
   }[]
+}
+
+interface TestCase {
+  name: string
+  content: string
+  score: number
 }
 
 const AssessmentCreatePage = () => {
@@ -49,12 +56,12 @@ const AssessmentCreatePage = () => {
     formState: { errors },
   } = useForm<AssessmentForm>({
     defaultValues: {
-      totalScore: 0,
       testCases: [
         {
           id: nanoid(5),
           input: "",
           output: "",
+          score: 10,
         },
       ],
     },
@@ -82,57 +89,31 @@ const AssessmentCreatePage = () => {
       })
   }, [])
 
-  const saveAssessment = async ({ testCases, totalScore }: AssessmentForm) => {
+  const saveAssessment = async ({ testCases }: AssessmentForm) => {
     startLoading()
     try {
+      console.log(testCases, " test case ")
       const storageRef = ref(storage, `test-cases-${expId}`)
       const basePath = storageRef.fullPath
       const uploadPromises: Promise<UploadResult>[] = []
-      const inputsNamePath: { name: string; content: string }[] = []
-      const outputNamePath: { name: string; content: string }[] = []
+      const inputsNamePath: TestCase[] = []
+      const outputNamePath: TestCase[] = []
       testCases.forEach((value, index) => {
         inputsNamePath.push({
           name: `input-${index}.txt`,
           content: value.input,
+          score: value.score,
         })
         outputNamePath.push({
           name: `output-${index}.txt`,
           content: value.output,
+          score: value.score,
         })
-        // uploadPromises.push(
-        //   uploadString(
-        //     ref(storage, `${basePath}/input-${index}.txt`),
-        //     value.input,
-        //     "raw",
-        //     { contentType: "text/plain" }
-        //   )
-        // )
-        // uploadPromises.push(
-        //   uploadString(
-        //     ref(storage, `${basePath}/output-${index}.txt`),
-        //     value.input,
-        //     "raw",
-        //     { contentType: "text/plain" }
-        //   )
-        // )
       })
-      // const response = await Promise.all(uploadPromises)
 
-      // for (let i = 0; i < response.length; i += 2) {
-      //   const inp = response[i]
-      //   const out = response[i + 1]
-      //   inputsNamePath.push({
-      //     name: inp.metadata.name,
-      //     path: inp.metadata.fullPath,
-      //   })
-      //   outputNamePath.push({
-      //     name: inp.metadata.name,
-      //     path: inp.metadata.fullPath,
-      //   })
-      // }
+      console.log(inputsNamePath, outputNamePath, " hello bello ")
       const expRef = doc(collection(db, "test-cases"), expId)
       await setDoc(expRef, {
-        totalScore: totalScore,
         inputs: inputsNamePath,
         outputs: outputNamePath,
       })
@@ -155,20 +136,10 @@ const AssessmentCreatePage = () => {
           }
         />
         <div className="px-8 py-4">
-          <FormControl isInvalid={!!errors.totalScore}>
-            <FormField
-              label="Total Score"
-              error={errors.totalScore}
-              {...register("totalScore", {
-                required: "This is required",
-              })}
-            />
-          </FormControl>
-          <Divider className="my-4" />
           <h3 className="text-ld">Test Cases</h3>
           {fields.map((item, index) => {
             return (
-              <div className="mt-4 border p-2">
+              <div className="mt-2 mb-4 border p-2">
                 <div className="flex gap-4" key={item.id}>
                   <FormControl
                     isInvalid={!!errors.testCases?.at(index)?.input}
@@ -176,7 +147,7 @@ const AssessmentCreatePage = () => {
                   >
                     <FormLabel>Input</FormLabel>
                     <Textarea
-                      minHeight="20rem"
+                      minHeight="14rem"
                       {...register(`testCases.${index}.input`, {
                         required: "Input is required",
                       })}
@@ -188,7 +159,7 @@ const AssessmentCreatePage = () => {
                   <FormControl className="flex-grow">
                     <FormLabel>Expected Output</FormLabel>
                     <Textarea
-                      minHeight="20rem"
+                      minHeight="14rem"
                       {...register(`testCases.${index}.output`, {
                         required: "Output is required",
                       })}
@@ -206,6 +177,17 @@ const AssessmentCreatePage = () => {
                     Delete
                   </Button>
                 </div>
+                <Divider className="my-4" />{" "}
+                <FormControl isInvalid={!!errors.totalScore}>
+                  <FormField
+                    type="number"
+                    label="Total Score"
+                    error={errors.totalScore}
+                    {...register(`testCases.${index}.score`, {
+                      required: "This is required",
+                    })}
+                  />
+                </FormControl>
               </div>
             )
           })}

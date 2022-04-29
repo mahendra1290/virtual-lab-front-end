@@ -110,7 +110,6 @@ const ExperimentPage = () => {
                 </Button>
                 <Button
                   colorScheme={"blue"}
-                  isLoading={loading}
                   loadingText={"Starting..."}
                   onClick={() => {
                     localStorage.setItem(

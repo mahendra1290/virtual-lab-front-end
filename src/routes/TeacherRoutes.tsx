@@ -3,16 +3,22 @@ import { Route } from "react-router-dom"
 import { StudentActivity } from "../pages/LabSession/StudentActivity"
 import { LabProvider } from "../providers/LabProvider"
 import PrivateRoute from "./PrivateRoute"
+
 const CreateLab = React.lazy(() => import("../pages/CreateLab/CreateLab"))
+
 const ExperimentPage = React.lazy(
   () => import("../pages/Experiment/ExperimentPage")
 )
+
 const LabPage = React.lazy(() => import("../pages/LabPage"))
+
 const LabSessionPage = React.lazy(
   () => import("../pages/LabSession/LabSessionPage")
 )
 const Teacher = React.lazy(() => import("../pages/TeachersPage"))
+
 const TeachersBasePage = React.lazy(() => import("../pages/TeacherBasePage"))
+
 const CreateExperimentPage = React.lazy(
   () => import("../pages/CreateExperimentPage")
 )

@@ -11,7 +11,7 @@ import {
 import axios from "axios"
 import { doc, onSnapshot, Timestamp, Unsubscribe } from "firebase/firestore"
 import { useEffect, useState } from "react"
-
+import { GoPrimitiveDot } from "react-icons/go"
 import { Link, useParams, useSearchParams } from "react-router-dom"
 import LabSessionChatBox from "../../components/chatbox/LabSessionChatBox"
 import LabSessionChatPopover from "../../components/chatbox/LabSessionChatPopover"
@@ -100,13 +100,6 @@ const LabSessionPage = () => {
     let unsubscribeSession: Unsubscribe
     let unsubscribeStudent: Unsubscribe
     if (id) {
-      // unsubscribeSession = onSnapshot(
-      //   doc(collection(db, "experiment-sessions"), id),
-      //   (doc) => {
-      //     console.log(doc.data(), "got data")
-      //     setSession(doc.data())
-      //   }
-      // )
       unsubscribeStudent = onSnapshot(
         doc(db, "session-students", `session-${id}`),
         (data) => {
@@ -164,15 +157,22 @@ const LabSessionPage = () => {
             <TabPanel>
               {students?.map((stud) => (
                 <div className="mb-4 rounded-lg bg-gray-100 p-4" key={stud.uid}>
-                  <Link
-                    to={`student/${stud.uid}`}
-                    onClick={() => {
-                      localStorage.setItem("stdName", stud.name)
-                    }}
-                  >
-                    <h1 className="text-lg capitalize">{stud.name}</h1>
-                  </Link>
-                  <div>{stud.active ? "active" : "gone"}</div>
+                  <div className="mb-2 flex justify-between align-middle">
+                    <Link
+                      to={`student/${stud.uid}`}
+                      onClick={() => {
+                        localStorage.setItem("stdName", stud.name)
+                      }}
+                    >
+                      <h1 className="text-lg capitalize">{stud.name}</h1>
+                    </Link>
+                    <GoPrimitiveDot
+                      style={{
+                        fontSize: 24,
+                        color: stud.active ? "green" : "red",
+                      }}
+                    />
+                  </div>
                   <LabSessionChatPopover>
                     <LabSessionChatBox
                       studentId={stud.uid}
