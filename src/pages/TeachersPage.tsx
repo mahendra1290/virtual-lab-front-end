@@ -97,7 +97,12 @@ const Teacher = () => {
       <Header
         title="Labs"
         pathList={["labs"]}
-        rightContent={<Button onClick={handleCreateLab}>Create new lab</Button>}
+        rightContent={
+          // <div className="flex items-center justify-end gap-2">
+          //   <Input />
+          <Button onClick={handleCreateLab}>Create new lab</Button>
+          // </div>
+        }
       />
       <div className="px-8">
         {!labs.length && !empty && (

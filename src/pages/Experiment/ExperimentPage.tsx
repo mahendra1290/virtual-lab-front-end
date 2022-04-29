@@ -12,16 +12,16 @@ import Header from "../../components/header/header"
 import LabMenuPanel from "../../components/labs/LabMenuPanel"
 import { useConfirmationModal } from "../../hooks/useConfirmationModal"
 import ConfirmationModal from "../../components/modals/ConfirmationModal"
+import Loading from "../../components/Loading"
 import LabLoadingSkeleton from "../../components/skeletons/LabLoadingSkeleton"
 
 const ExperimentPage = () => {
-  const { user } = useAuthContext()
   const { labId, expId } = useParams()
   const [lab, setLab] = useState<Lab>()
   const [experiment, setExperiment] = useState<Experiment>()
   const [sessionData, setSessionData] = useState<any>()
   const [loading, setLoading] = useState(false)
-  const [labSessions, setLabSessions] = useState<LabSession[]>([])
+  const [fetchingExp, setFetchingExp] = useState(false)
   const [activeSection, setActiveSection] = useState("")
   const navigate = useNavigate()
   const { modalProps, makeModal } = useConfirmationModal()
@@ -45,6 +45,7 @@ const ExperimentPage = () => {
 
   useEffect(() => {
     if (labId && expId) {
+      setFetchingExp(true)
       const labCollection = collection(db, "labs")
       const expCollection = collection(db, "experiments")
       getDoc(doc(labCollection, labId)).then((docSnap) => {
@@ -58,18 +59,9 @@ const ExperimentPage = () => {
           setExperiment(expData)
           setActiveSection(expData.sections?.at(0)?.name || "")
         }
+        setFetchingExp(false)
       })
     }
-    ;(async () => {
-      const result = await axios.get<LabSession[]>("lab-sessions", {
-        params: {
-          labId,
-          expId,
-        },
-      })
-      // console.log(result, "res")
-      setLabSessions(result.data)
-    })()
   }, [labId, expId])
 
   useEffect(() => {
@@ -91,6 +83,10 @@ const ExperimentPage = () => {
     })
     return obj
   }, [experiment])
+
+  if (fetchingExp) {
+    return <LabLoadingSkeleton isLoading />
+  }
 
   return (
     <>
