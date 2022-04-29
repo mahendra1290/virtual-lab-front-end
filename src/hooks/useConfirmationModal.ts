@@ -52,6 +52,13 @@ const reducer = (state: ConfirmModalState, action: ConfirmModalAction): ConfirmM
   }
 }
 
+interface ModalOptions {
+  header: string,
+  body: string,
+  onOk?: () => void,
+  onCancel?: () => void
+}
+
 interface UseCofirmModalOptions {
   header?: string,
   body?: string,
@@ -93,11 +100,9 @@ export const useConfirmationModal = (options?: UseCofirmModalOptions) => {
     cancelBtnText: options?.onCancelBtnText
   }
   return {
-    makeModal: (header: string, body: string) => {
-      return {
-        show: (onOk: () => void, onCancel?: () => void) => {
-          dispatch({ type: ACTIONS.OPEN_MODAL, payload: { header, body, onCancelHandler: onCancel, onOkHandler: onOk } })
-        }
+    makeModal: (options?: ModalOptions) => {
+      if (options) {
+        dispatch({ type: ACTIONS.OPEN_MODAL, payload: { header: options.header, body: options.body, onOkHandler: options.onOk, onCancelHandler: options.onCancel } })
       }
     },
     modalProps

@@ -5,7 +5,9 @@ import {
   getDoc,
   getDocs,
   onSnapshot,
+  query,
   Unsubscribe,
+  where,
 } from "firebase/firestore"
 import React, { useContext, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
@@ -53,7 +55,10 @@ const LabProvider = ({ children }: LabProviderProps) => {
           const labRes = { ...docSnap.data(), id: docSnap.id } as Lab
           setLab(labRes)
           if (labRes) {
-            const docRef = collection(db, "experiments")
+            const docRef = query(
+              collection(db, "experiments"),
+              where("labId", "==", labRes.id)
+            )
             getDocs(docRef).then((res) => {
               const finalRes = res.docs.map(
                 (item) => ({ id: item.id, ...item.data() } as Experiment)

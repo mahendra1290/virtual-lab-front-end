@@ -19,6 +19,10 @@ import { Experiment, Lab, LabSession } from "../../shared/types/Lab"
 import Header from "../../components/header/header"
 import { nanoid } from "nanoid"
 import LabMenuPanel from "../../components/labs/LabMenuPanel"
+import { async } from "@firebase/util"
+import { useConfirmationModal } from "../../hooks/useConfirmationModal"
+import { ConfirmationModalContext } from "../../providers/ConfirmationModalProvider"
+import ConfirmationModal from "../../components/modals/ConfirmationModal"
 
 const ExperimentPage = () => {
   const { user } = useAuthContext()
@@ -31,6 +35,7 @@ const ExperimentPage = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [activeSection, setActiveSection] = useState("")
   const navigate = useNavigate()
+  const { modalProps, makeModal } = useConfirmationModal()
 
   const handleStartExperimentSession = async () => {
     setLoading(true)
@@ -40,6 +45,13 @@ const ExperimentPage = () => {
     })
     setLoading(false)
     setSessionData(res.data)
+  }
+
+  const handleExperimentDelete = async () => {
+    makeModal({
+      header: `Delete Experiment ${experiment?.title}`,
+      body: "This will delete all data related to this experiment. Are you sure?",
+    })
   }
 
   useEffect(() => {
@@ -75,13 +87,6 @@ const ExperimentPage = () => {
     let unsubscribe: Unsubscribe
     if (sessionData) {
       navigate(`/t/lab-session/${sessionData.id}`)
-      // console.log(sessionData, "ses data")
-      // unsubscribe = onSnapshot(
-      //   doc(collection(db, "experiment-sessions"), sessionData.id),
-      //   (doc) => {
-      //     console.log(doc.data(), "got data")
-      //   }
-      // )
     }
     return () => {
       if (unsubscribe) {
@@ -97,8 +102,6 @@ const ExperimentPage = () => {
     })
     return obj
   }, [experiment])
-
-  const handleStartSession = () => {}
 
   return (
     <>
@@ -119,14 +122,22 @@ const ExperimentPage = () => {
               colorScheme={"blue"}
               isLoading={loading}
               loadingText={"Starting..."}
-              onClick={handleStartExperimentSession}
+              onClick={() => {
+                localStorage.setItem(
+                  `assessment-${expId}`,
+                  JSON.stringify(experiment)
+                )
+                navigate(`/t/experiments/${expId}/assessment/create`)
+              }}
             >
               Add Assessment
             </Button>
             <Button colorScheme={"green"}>
               <Link to={`/t/experiments/${expId}/edit?lab=${labId}`}>Edit</Link>
             </Button>
-            <Button colorScheme={"red"}>Delete</Button>
+            <Button onClick={handleExperimentDelete} colorScheme={"red"}>
+              Delete
+            </Button>
           </HStack>
         }
       />
@@ -150,6 +161,7 @@ const ExperimentPage = () => {
           </div>
         </div>
       </div>
+      <ConfirmationModal {...modalProps} />
     </>
   )
 }

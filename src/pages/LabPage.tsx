@@ -9,6 +9,7 @@ import {
   getDocs,
   onSnapshot,
   query,
+  where,
 } from "firebase/firestore"
 import {
   Button,
@@ -97,11 +98,10 @@ const LabPage = () => {
   }
 
   const showDeleteLabConfirmation = () => {
-    makeModal(
-      `Delete ${lab?.name}`,
-      "This will delete all data. Are you sure?"
-    ).show(() => {
-      handleDeleteLab()
+    makeModal({
+      header: `Delete ${lab?.name}`,
+      body: "This will delete all data. Are you sure?",
+      onOk: handleDeleteLab,
     })
   }
 
@@ -136,7 +136,10 @@ const LabPage = () => {
 
   useEffect(() => {
     if (lab) {
-      const docRef = collection(db, "experiments")
+      const docRef = query(
+        collection(db, "experiments"),
+        where("labId", "==", lab.id)
+      )
       onSnapshot(docRef, (snapShot) => {
         setExperiments(
           snapShot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))

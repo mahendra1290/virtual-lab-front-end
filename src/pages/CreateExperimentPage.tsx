@@ -114,7 +114,7 @@ const CreateExperimentPage = ({ edit = false }: { edit?: boolean }) => {
         await setDoc(
           doc(collection(db, "experiments"), tId),
           {
-            tId,
+            id: tId,
             title: expName,
             labId: labId,
             sections: mappedSectionData,
