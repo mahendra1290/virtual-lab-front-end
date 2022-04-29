@@ -1,8 +1,6 @@
 import {
   FormControl,
   FormHelperText,
-  FormLabel,
-  Input,
   HStack,
   Tag,
   TagLabel,
@@ -26,6 +24,7 @@ const LabInviteModal = ({ onSubmit }: Props) => {
     register,
     formState: { errors },
     handleSubmit,
+    getValues,
     resetField,
   } = useForm({
     defaultValues: {
@@ -33,6 +32,12 @@ const LabInviteModal = ({ onSubmit }: Props) => {
     },
   })
   const toast = useToast()
+
+  const somethingWentWrongToast = useToast({
+    title: "Please provide email",
+    status: "warning",
+    duration: 2000,
+  })
 
   const handleEnter = (data: { email: string }) => {
     const exist = emails.find((mail) => mail == data.email)
@@ -84,7 +89,21 @@ const LabInviteModal = ({ onSubmit }: Props) => {
         </FormControl>
       </form>
       <ModalFooter>
-        <Button onClick={() => onSubmit(emails)}>Send</Button>
+        <Button
+          onClick={() => {
+            const val = getValues("email")
+            if (val) {
+              emails.push(val)
+              onSubmit(emails)
+            } else if (emails.length == 0) {
+              somethingWentWrongToast()
+            } else {
+              onSubmit(emails)
+            }
+          }}
+        >
+          Send
+        </Button>
         <Button className="ml-4">Cancel</Button>
       </ModalFooter>
     </ModalBody>

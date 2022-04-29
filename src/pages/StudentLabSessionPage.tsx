@@ -110,7 +110,6 @@ const StudentLabSessionPage = () => {
       <Header
         title={`${exp?.title}`}
         pathList={lab && exp ? [lab?.name, exp?.title] : []}
-        rightContent={<Button colorScheme="blue">Join</Button>}
       />
       <div className="py-4">
         <Tabs className="min-h-screen">
