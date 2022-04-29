@@ -20,7 +20,13 @@ const socket = io("http://localhost:5000", {
   autoConnect: false,
 })
 
-export const CodeEditor = () => {
+interface Props {
+  sessionId?: string
+  expId?: string
+  labId?: string
+}
+
+export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
   const { user } = useAuthContext()
 
   const editorRef = useRef<editor.IStandaloneCodeEditor>()
@@ -46,7 +52,7 @@ export const CodeEditor = () => {
       setRes("")
       setError("")
       axios
-        .post(`/code/run/${selectedLanguage}`, { code })
+        .post(`/code/run/${selectedLanguage}`, { code, expId, sessionId })
         .then((res) => {
           if (res.status == 400) {
             stopLoading()

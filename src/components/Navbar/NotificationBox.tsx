@@ -64,7 +64,7 @@ const NotificationBox = () => {
         sub()
       }
     }
-  }, [])
+  }, [user])
 
   return (
     <Popover closeOnBlur={true} placement="bottom-start">
