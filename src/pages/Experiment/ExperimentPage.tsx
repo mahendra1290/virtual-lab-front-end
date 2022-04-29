@@ -1,12 +1,28 @@
-import { Button, Divider, HStack } from "@chakra-ui/react"
+import {
+  Button,
+  Divider,
+  HStack,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+} from "@chakra-ui/react"
 import axios from "axios"
-import { collection, doc, getDoc, Unsubscribe } from "firebase/firestore"
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  Unsubscribe,
+} from "firebase/firestore"
 import { useEffect, useMemo, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import draftToHtml from "draftjs-to-html"
 
 import { db } from "../../firebase"
-import { Experiment, Lab, LabSession } from "../../shared/types/Lab"
+import { Experiment, Lab, LabSession, TestCase } from "../../shared/types/Lab"
 import Header from "../../components/header/header"
 import LabMenuPanel from "../../components/labs/LabMenuPanel"
 import { useConfirmationModal } from "../../hooks/useConfirmationModal"
@@ -23,6 +39,7 @@ const ExperimentPage = () => {
   const [activeSection, setActiveSection] = useState("")
   const navigate = useNavigate()
   const { modalProps, makeModal } = useConfirmationModal()
+  const [testCase, setTestCases] = useState<TestCase>()
 
   const handleStartExperimentSession = async () => {
     setLoading(true)
@@ -82,6 +99,20 @@ const ExperimentPage = () => {
     return obj
   }, [experiment])
 
+  useEffect(() => {
+    if (expId) {
+      const testCasesRef = doc(collection(db, `test-cases`), expId)
+      getDoc(testCasesRef).then((docSnap) => {
+        const data = docSnap.data()
+        setTestCases(data as TestCase)
+      })
+    }
+  }, [])
+
+  const deleteTestCases = () => {
+    deleteDoc(doc(collection(db, `test-cases`), expId))
+  }
+
   if (fetchingExp) {
     return <LabLoadingSkeleton isLoading />
   }
@@ -129,6 +160,7 @@ const ExperimentPage = () => {
                 <Button onClick={handleExperimentDelete} colorScheme={"red"}>
                   Delete
                 </Button>
+                <Button onClick={deleteTestCases}>Delete test case</Button>
               </HStack>
             }
           />
@@ -151,6 +183,46 @@ const ExperimentPage = () => {
                 />
               </div>
             </div>
+          </div>
+          <div className="min-h-4 flex-grow rounded border p-2">
+            <Tabs>
+              <TabList>
+                <Tab>Problem Statement</Tab>
+                <Tab>Testcases</Tab>
+              </TabList>
+
+              <TabPanels>
+                <TabPanel>
+                  <div />
+                </TabPanel>
+                <TabPanel>
+                  <div className="flex">
+                    <div className="w-1/2 whitespace-pre-line border-r-2 border-gray-300 p-2">
+                      {testCase?.inputs &&
+                        testCase.inputs.map((inp: any) => {
+                          return (
+                            <>
+                              <div>{inp.content}</div>
+                              <br />
+                            </>
+                          )
+                        })}
+                    </div>
+                    <div className="w-1/2 px-4 py-2">
+                      {testCase?.outputs &&
+                        testCase.outputs.map((inp: any) => {
+                          return (
+                            <>
+                              <div>{inp.content}</div>
+                              <br />
+                            </>
+                          )
+                        })}
+                    </div>
+                  </div>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
           </div>
           <ConfirmationModal {...modalProps} />
         </>

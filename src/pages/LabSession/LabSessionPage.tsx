@@ -104,7 +104,6 @@ const LabSessionPage = () => {
         doc(db, "session-students", `session-${id}`),
         (data) => {
           setStudents(data?.data()?.students as JoinedStudent[])
-          console.log(data.data(), "update")
         }
       )
     }
@@ -162,6 +161,7 @@ const LabSessionPage = () => {
                       to={`student/${stud.uid}`}
                       onClick={() => {
                         localStorage.setItem("stdName", stud.name)
+                        localStorage.setItem("expId", exp?.id || "")
                       }}
                     >
                       <h1 className="text-lg capitalize">{stud.name}</h1>

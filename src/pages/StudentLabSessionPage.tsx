@@ -1,42 +1,24 @@
 import {
-  Button,
-  Spinner,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  toast,
   useToast,
-  VStack,
 } from "@chakra-ui/react"
-import { async } from "@firebase/util"
 import axios from "axios"
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocFromCache,
-  getDocs,
-  onSnapshot,
-  query,
-  Timestamp,
-  Unsubscribe,
-} from "firebase/firestore"
+import { Timestamp } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
 import { io } from "socket.io-client"
 import LabSessionChatBox from "../components/chatbox/LabSessionChatBox"
-import LabSessionChatPopover from "../components/chatbox/LabSessionChatPopover"
 import { CodeEditor } from "../components/CodeEditor"
 import Header from "../components/header/header"
 import Loading from "../components/Loading"
 import SectionViewer from "../components/SectionViewer"
-import { db } from "../firebase"
 import useLoading from "../hooks/useLoading"
 import { useAuthContext } from "../providers/AuthProvider"
 import { Experiment, Lab, LabSession } from "../shared/types/Lab"
-import CodeEditorPage from "./CodeEditorPage/CodeEditorPage"
 
 const socket = io("http://localhost:5000", {
   autoConnect: false,
@@ -136,7 +118,6 @@ const StudentLabSessionPage = () => {
             </TabPanel>
             <TabPanel>
               <div className="mx-auto">
-                {/* <h1 className="text-lg">Chat</h1> */}
                 <LabSessionChatBox
                   className=" min-h-[30rem] rounded-md border p-4"
                   sessionId={id || ""}
