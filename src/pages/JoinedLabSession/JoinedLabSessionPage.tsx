@@ -46,7 +46,7 @@ export const JoinedLabSessionPage = () => {
     })
     console.log(res)
     setLoading(false)
-    setResult(res)
+    // setResult(res)
   }
 
   useEffect(() => {
@@ -116,10 +116,10 @@ export const JoinedLabSessionPage = () => {
             theme="vs-light"
             defaultLanguage="javascript"
             value={code}
-            onChange={(value) => {
-              setInp(value)
-              debouncedHandleCodeChange(value)
-            }}
+            // onChange={(value) => {
+            //   setInp(value)
+            //   debouncedHandleCodeChange(value)
+            // }}
           />
           <div className="mt-4 flex justify-center gap-4">
             <Button>Run</Button>

@@ -66,25 +66,18 @@ const NotificationBox = () => {
     }
   }, [])
 
-  // console.log(notifications, "notes")
-
-  const initRef = useRef()
   return (
     <Popover closeOnBlur={true} placement="bottom-start">
       {({ isOpen, onClose }) => {
-        if (isOpen) {
-          if (newNot) {
-            setNewNot(false)
-          }
-        }
         return (
           <>
             <PopoverTrigger>
               <IconButton
                 variant="link"
-                colorScheme={newNot ? "red" : "teal"}
+                colorScheme={"teal"}
                 aria-label="Call Segun"
                 size="lg"
+                outline={"none"}
                 icon={<FaBell />}
               />
             </PopoverTrigger>

@@ -8,7 +8,6 @@ import { ProfileForm } from "./pages/Signup/ProfileForm"
 import { useAuthContext } from "./providers/AuthProvider"
 import ExperimentPage from "./pages/Experiment/ExperimentPage"
 import { JoinedLabSessionPage } from "./pages/JoinedLabSession/JoinedLabSessionPage"
-import { StudentPage } from "./pages/Student/StudentPage"
 import TeachersBasePage from "./pages/TeacherBasePage"
 import NotFoundPage from "./pages/404/NotFoundPage"
 import axios from "axios"
@@ -19,6 +18,7 @@ import PrivateRoute from "./routes/PrivateRoute"
 import CodeEditorPage from "./pages/CodeEditorPage/CodeEditorPage"
 import StudentLabSessionView from "./pages/StudentLabSessionView/StudentLabSessionVie"
 import StudentRoutes from "./routes/StudentRoutes"
+import Loading from "./components/Loading"
 
 function App() {
   const { authLoading, user } = useAuthContext()
@@ -39,7 +39,7 @@ function App() {
   return (
     <div className="App relative min-h-screen">
       <Navbar />
-      <Suspense fallback={<Spinner />}>
+      <Suspense fallback={<Loading />}>
         <Routes>
           {TeacherRoutes}
           {StudentRoutes}
