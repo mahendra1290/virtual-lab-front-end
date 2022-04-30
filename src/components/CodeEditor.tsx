@@ -20,6 +20,8 @@ import { ChangeEvent, useEffect, useRef, useState } from "react"
 import { io } from "socket.io-client"
 import useLoading from "../hooks/useLoading"
 import { useAuthContext } from "../providers/AuthProvider"
+import { GraderResult } from "../shared/types/Grader"
+import GraderPanel from "./GraderPanel"
 import { TestCase } from "../shared/types/Lab"
 
 const languageOptions = ["javascript", "typescript", "cpp", "java", "python"]
@@ -42,6 +44,7 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
   const [error, setError] = useState("")
   const { loading, startLoading, stopLoading } = useLoading()
   const [selectedLanguage, setSelectedLanguage] = useState("javascript")
+  const [graderResult, setGraderResult] = useState<GraderResult>()
   const [testCase, setTestCases] = useState<TestCase>()
 
   useEffect(() => {
@@ -82,6 +85,7 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
           } else {
             setRes(res.data.output)
             setError("")
+            setGraderResult(res.data.graderResponse as GraderResult)
           }
           stopLoading()
         })
@@ -93,9 +97,16 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
 
   const handleCodeChange = (value: string | undefined) => {
     if (value !== undefined) {
-      socket.emit("save-code", value)
+      socket.emit("save-code", {
+        lang: selectedLanguage,
+        code: value,
+      })
     }
   }
+
+  useEffect(() => {
+    handleCodeChange(editorRef.current?.getValue())
+  }, [selectedLanguage])
 
   const handleLanguageChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const newLangCode = localStorage.getItem(`${e.target.value}-code`) || ""
@@ -159,7 +170,7 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
         />
       </div>
       <div className="flex w-1/2 flex-col justify-items-stretch gap-2">
-        <div className="flex-grow rounded border p-2">
+        <div className="h-1/2 flex-grow rounded border p-2">
           <Tabs>
             <TabList>
               <Tab>Problem Statement</Tab>
@@ -199,20 +210,30 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
             </TabPanels>
           </Tabs>
         </div>
-        <div className="flex flex-grow flex-col">
-          <h1>Output:</h1>
-          <Textarea
-            readOnly
-            value={res ? res : error}
-            background="gray.800"
-            fontSize="sm"
-            padding="2"
-            className={
-              "flex-grow rounded border bg-gray-900 font-mono text-white" +
-              (error ? " text-red-500" : "")
-            }
-          />
-        </div>
+        <Tabs className="flex h-1/2 flex-grow flex-col">
+          <TabList>
+            <Tab>Output</Tab>
+            <Tab>Grader Output</Tab>
+          </TabList>
+          <TabPanels className="h-[90%]">
+            <TabPanel className="h-full">
+              <Textarea
+                readOnly
+                value={res ? res : error}
+                background="gray.800"
+                fontSize="sm"
+                padding="2"
+                className={
+                  "h-full rounded border bg-gray-900 font-mono text-white" +
+                  (error ? " text-red-500" : "")
+                }
+              />
+            </TabPanel>
+            <TabPanel className="h-full">
+              <GraderPanel gradeResult={graderResult} />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
       </div>
     </div>
   )
