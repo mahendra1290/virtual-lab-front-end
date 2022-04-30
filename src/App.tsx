@@ -19,6 +19,7 @@ import CodeEditorPage from "./pages/CodeEditorPage/CodeEditorPage"
 import StudentLabSessionView from "./pages/StudentLabSessionView/StudentLabSessionVie"
 import StudentRoutes from "./routes/StudentRoutes"
 import Loading from "./components/Loading"
+import Footer from "./components/Footer"
 
 function App() {
   const { authLoading, user } = useAuthContext()
@@ -79,6 +80,9 @@ function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
+      <div className="absolute bottom-0 mt-4 w-full">
+        <Footer />
+      </div>
       {/* <ConfirmationModal
         body={"You wont be able to undo this action"}
         isOpen={true}
