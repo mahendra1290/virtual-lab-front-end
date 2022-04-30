@@ -38,57 +38,58 @@ function App() {
     )
 
   return (
-    <div className="App relative min-h-screen">
-      <Navbar />
-      <Suspense fallback={<Loading />}>
-        <Routes>
-          {TeacherRoutes}
-          {StudentRoutes}
-          <Route
-            path="join-lab"
-            element={
-              <PrivateRoute roles={["student"]}>
-                <JoinLabPage />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/"
-            element={
-              user?.role === "teacher" ? (
-                <Navigate to="/t" />
-              ) : (
-                <Navigate to="/s" />
-              )
-            }
-          />
-          <Route
-            path="/login"
-            element={user ? <Navigate to="/" /> : <Login />}
-          />
-          <Route
-            path="/sign-up"
-            element={user ? <Navigate to="/" /> : <Signup />}
-          />
-          <Route
-            path="/initial-profile"
-            element={user ? <ProfileForm /> : <Navigate to="/login" />}
-          />
-          <Route path="/s/lab-session/:id" element={<JoinedLabSessionPage />} />
-          <Route path="/editor" element={<CodeEditorPage />} />
-          <Route path="/student-view/:id" element={<StudentLabSessionView />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </Suspense>
-      <div className="absolute bottom-0 mt-4 w-full">
-        <Footer />
+    <>
+      <div className="App relative min-h-screen">
+        <Navbar />
+        <Suspense fallback={<Loading />}>
+          <Routes>
+            {TeacherRoutes}
+            {StudentRoutes}
+            <Route
+              path="join-lab"
+              element={
+                <PrivateRoute roles={["student"]}>
+                  <JoinLabPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/"
+              element={
+                user?.role === "teacher" ? (
+                  <Navigate to="/t" />
+                ) : (
+                  <Navigate to="/s" />
+                )
+              }
+            />
+            <Route
+              path="/login"
+              element={user ? <Navigate to="/" /> : <Login />}
+            />
+            <Route
+              path="/sign-up"
+              element={user ? <Navigate to="/" /> : <Signup />}
+            />
+            <Route
+              path="/initial-profile"
+              element={user ? <ProfileForm /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/s/lab-session/:id"
+              element={<JoinedLabSessionPage />}
+            />
+            <Route path="/editor" element={<CodeEditorPage />} />
+            <Route
+              path="/student-view/:id"
+              element={<StudentLabSessionView />}
+            />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
       </div>
-      {/* <ConfirmationModal
-        body={"You wont be able to undo this action"}
-        isOpen={true}
-        onClose={() => {}}
-      /> */}
-    </div>
+      <Footer />
+    </>
   )
 }
 

@@ -12,7 +12,7 @@ import { AuthProvider } from "./providers/AuthProvider"
 import { extendTheme } from "@chakra-ui/react"
 import { auth } from "./firebase"
 
-axios.defaults.baseURL = "http://localhost:5000/api"
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL
 
 axios.interceptors.request.use(
   async (config: AxiosRequestConfig) => {

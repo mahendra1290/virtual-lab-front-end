@@ -3,7 +3,7 @@ import React from "react"
 function Footer() {
   return (
     <div className="border-t-2 dark:border-gray-700">
-      <footer className="rounded-lg bg-white p-4 shadow dark:bg-gray-800 md:px-6 md:py-8">
+      {/* <footer className="rounded-lg bg-white p-4 shadow dark:bg-gray-800 md:px-6 md:py-8">
         <div className="sm:flex sm:items-center sm:justify-between">
           <a href="/" className="mb-4 flex items-center sm:mb-0">
             <h1 className="text-xl font-bold first-letter:text-2xl first-letter:text-blue-600">
@@ -61,6 +61,32 @@ function Footer() {
           </a>
           . All Rights Reserved.
         </span>
+      </footer> */}
+      <footer className="rounded-lg bg-white p-4 shadow dark:bg-gray-800 md:flex md:items-center md:justify-between md:p-6">
+        <span className="text-sm text-gray-500 dark:text-gray-400 sm:text-center">
+          © 2022{" "}
+          <a href="https://flowbite.com" className="hover:underline">
+            Virtual Lab
+          </a>
+          . All Rights Reserved.
+        </span>
+        <ul className="mt-3 flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400 sm:mt-0">
+          <li>
+            <a href="#" className="mr-4 hover:underline md:mr-6 ">
+              About
+            </a>
+          </li>
+          <li>
+            <a href="#" className="mr-4 hover:underline md:mr-6">
+              Licensing
+            </a>
+          </li>
+          <li>
+            <a href="#" className="hover:underline">
+              Contact
+            </a>
+          </li>
+        </ul>
       </footer>
     </div>
   )

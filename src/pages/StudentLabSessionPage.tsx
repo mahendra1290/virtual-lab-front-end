@@ -19,10 +19,7 @@ import SectionViewer from "../components/SectionViewer"
 import useLoading from "../hooks/useLoading"
 import { useAuthContext } from "../providers/AuthProvider"
 import { Experiment, Lab, LabSession } from "../shared/types/Lab"
-
-const socket = io("http://localhost:5000", {
-  autoConnect: false,
-})
+import { socket } from "../socket"
 
 interface ILabSession {
   id: string

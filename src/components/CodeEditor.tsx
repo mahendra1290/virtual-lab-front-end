@@ -23,12 +23,9 @@ import { useAuthContext } from "../providers/AuthProvider"
 import { GraderResult } from "../shared/types/Grader"
 import GraderPanel from "./GraderPanel"
 import { TestCase } from "../shared/types/Lab"
+import { socket } from "../socket"
 
 const languageOptions = ["javascript", "typescript", "cpp", "java", "python"]
-
-const socket = io("http://localhost:5000", {
-  autoConnect: false,
-})
 
 interface Props {
   sessionId?: string
@@ -53,7 +50,7 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
 
     socket.connect()
     socket.on("connect", () => {
-      console.log(socket.id)
+      console.log(socket.id, "connected")
     })
   }, [])
 
