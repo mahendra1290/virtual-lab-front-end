@@ -74,7 +74,12 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
       setRes("")
       setError("")
       axios
-        .post(`/code/run/${selectedLanguage}`, { code, expId, sessionId })
+        .post(`/code/run/${selectedLanguage}`, {
+          code,
+          expId,
+          sessionId,
+          labId,
+        })
         .then((res) => {
           if (res.status == 400) {
             stopLoading()
