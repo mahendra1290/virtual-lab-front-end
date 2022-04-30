@@ -22,7 +22,7 @@ import useLoading from "../hooks/useLoading"
 import { useAuthContext } from "../providers/AuthProvider"
 import { GraderResult } from "../shared/types/Grader"
 import GraderPanel from "./GraderPanel"
-import { TestCase } from "../shared/types/Lab"
+import { Experiment, TestCase } from "../shared/types/Lab"
 
 const languageOptions = ["javascript", "typescript", "cpp", "java", "python"]
 
@@ -46,6 +46,7 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
   const [selectedLanguage, setSelectedLanguage] = useState("javascript")
   const [graderResult, setGraderResult] = useState<GraderResult>()
   const [testCase, setTestCases] = useState<TestCase>()
+  const [expData, setExpData] = useState<Experiment>()
 
   useEffect(() => {
     socket.auth = { uid: user?.uid }
@@ -60,9 +61,13 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
   useEffect(() => {
     if (expId) {
       const testCasesRef = doc(collection(db, `test-cases`), expId)
+      const expCollection = doc(collection(db, "experiments"), expId)
       getDoc(testCasesRef).then((docSnap) => {
         const data = docSnap.data()
         setTestCases(data as TestCase)
+      })
+      getDoc(expCollection).then((docSnap) => {
+        setExpData(docSnap?.data() as Experiment)
       })
     }
   }, [])
@@ -184,7 +189,7 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
 
             <TabPanels>
               <TabPanel>
-                <div />
+                <div>{expData?.problemStatement} </div>
               </TabPanel>
               <TabPanel>
                 <div className="flex">
