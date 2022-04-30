@@ -6,7 +6,9 @@ import {
   TabList,
   TabPanel,
   TabPanels,
+  useToast,
   Tabs,
+  Textarea,
 } from "@chakra-ui/react"
 import axios from "axios"
 import {
@@ -16,6 +18,7 @@ import {
   getDoc,
   getDocs,
   Unsubscribe,
+  updateDoc,
 } from "firebase/firestore"
 import { useEffect, useMemo, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
@@ -40,6 +43,22 @@ const ExperimentPage = () => {
   const navigate = useNavigate()
   const { modalProps, makeModal } = useConfirmationModal()
   const [testCase, setTestCases] = useState<TestCase>()
+
+  const [problemLoading, setProblemLoading] = useState(false)
+  const [prblmStatement, setPrblmStatement] = useState("")
+
+  const toast = useToast()
+
+  const successToast = useToast({
+    title: "Problem statement submitted successfully",
+    status: "success",
+    duration: 2000,
+  })
+  const errorToast = useToast({
+    title: "Something went wrong, Unable to add problem statement",
+    status: "error",
+    duration: 2000,
+  })
 
   const handleStartExperimentSession = async () => {
     setLoading(true)
@@ -72,6 +91,9 @@ const ExperimentPage = () => {
         if (expDocSnap.exists()) {
           const expData = expDocSnap.data() as Experiment
           setExperiment(expData)
+          if (expData.problemStatement) {
+            setPrblmStatement(expData.problemStatement)
+          }
           setActiveSection(expData.sections?.at(0)?.name || "")
         }
         setFetchingExp(false)
@@ -111,6 +133,24 @@ const ExperimentPage = () => {
 
   const deleteTestCases = () => {
     deleteDoc(doc(collection(db, `test-cases`), expId))
+  }
+
+  const handlePrblmStatement = async () => {
+    try {
+      if (prblmStatement) {
+        setProblemLoading(true)
+        const docRef = doc(collection(db, "experiments"), expId)
+        await updateDoc(docRef, {
+          problemStatement: prblmStatement,
+        })
+        successToast()
+      }
+    } catch (err) {
+      errorToast()
+      console.error(err)
+    }
+
+    setProblemLoading(false)
   }
 
   if (fetchingExp) {
@@ -192,10 +232,27 @@ const ExperimentPage = () => {
               </TabList>
 
               <TabPanels>
-                <TabPanel>
-                  <div />
+                <TabPanel key="problem_statement_exp">
+                  <Textarea
+                    value={prblmStatement}
+                    onChange={(e) => setPrblmStatement(e.target.value)}
+                    placeholder="Here is a sample placeholder"
+                    size="sm"
+                    fontSize="sm"
+                    minHeight="128px"
+                    padding="2"
+                    className={"h-full rounded border font-mono "}
+                  />
+                  <Button
+                    className="mt-2 ml-auto"
+                    onClick={handlePrblmStatement}
+                    colorScheme={"green"}
+                    isLoading={problemLoading}
+                  >
+                    Submit
+                  </Button>
                 </TabPanel>
-                <TabPanel>
+                <TabPanel key="test_cases_exp">
                   <div className="flex">
                     <div className="w-1/2 whitespace-pre-line border-r-2 border-gray-300 p-2">
                       {testCase?.inputs &&
