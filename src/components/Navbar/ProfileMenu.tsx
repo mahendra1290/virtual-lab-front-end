@@ -16,9 +16,7 @@ const ProfileMenu = () => {
         <MenuItem className="capitalize" icon={<FaUserAlt />}>
           {user?.name}
         </MenuItem>
-        <MenuItem className="capitalize" icon={<MdEmail />}>
-          {user?.email}
-        </MenuItem>
+        <MenuItem icon={<MdEmail />}>{user?.email}</MenuItem>
         <MenuItem icon={<FaSignOutAlt />} onClick={signOut}>
           Sign out
         </MenuItem>
