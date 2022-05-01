@@ -194,17 +194,6 @@ const LabSessionPage = () => {
           </TabPanels>
         </Tabs>
       </div>
-      <div className="px-8 py-4">
-        <h1 className="mb-2 text-2xl">Students: </h1>
-        <VStack align="stretch">
-          {/* {students?.map((stud: any) => (
-            <div className="rounded border-2  p-2 shadow-md">
-              {stud.name}
-              <p className="font-mono">Code: {stud.code}</p>
-            </div>
-          ))} */}
-        </VStack>
-      </div>
     </>
   )
 }
