@@ -224,62 +224,64 @@ const ExperimentPage = () => {
               </div>
             </div>
           </div>
-          <div className="min-h-4 flex-grow rounded border p-2">
-            <Tabs>
-              <TabList>
-                <Tab>Problem Statement</Tab>
-                <Tab>Testcases</Tab>
-              </TabList>
+          <div className="px-8 py-4">
+            <div className="min-h-4 flex-grow rounded border">
+              <Tabs>
+                <TabList>
+                  <Tab>Problem Statement</Tab>
+                  <Tab>Testcases</Tab>
+                </TabList>
 
-              <TabPanels>
-                <TabPanel key="problem_statement_exp">
-                  <Textarea
-                    value={prblmStatement}
-                    onChange={(e) => setPrblmStatement(e.target.value)}
-                    placeholder="Here is a sample placeholder"
-                    size="sm"
-                    fontSize="sm"
-                    minHeight="128px"
-                    padding="2"
-                    className={"h-full rounded border font-mono "}
-                  />
-                  <Button
-                    className="mt-2 ml-auto"
-                    onClick={handlePrblmStatement}
-                    colorScheme={"green"}
-                    isLoading={problemLoading}
-                  >
-                    Submit
-                  </Button>
-                </TabPanel>
-                <TabPanel key="test_cases_exp">
-                  <div className="flex">
-                    <div className="w-1/2 whitespace-pre-line border-r-2 border-gray-300 p-2">
-                      {testCase?.inputs &&
-                        testCase.inputs.map((inp: any) => {
-                          return (
-                            <>
-                              <div>{inp.content}</div>
-                              <br />
-                            </>
-                          )
-                        })}
+                <TabPanels>
+                  <TabPanel key="problem_statement_exp">
+                    <Textarea
+                      value={prblmStatement}
+                      onChange={(e) => setPrblmStatement(e.target.value)}
+                      placeholder="Here is a sample placeholder"
+                      size="sm"
+                      fontSize="sm"
+                      minHeight="128px"
+                      padding="2"
+                      className={"h-full rounded border font-mono "}
+                    />
+                    <Button
+                      className="mt-2 ml-auto"
+                      onClick={handlePrblmStatement}
+                      colorScheme={"green"}
+                      isLoading={problemLoading}
+                    >
+                      Submit
+                    </Button>
+                  </TabPanel>
+                  <TabPanel key="test_cases_exp">
+                    <div className="flex">
+                      <div className="w-1/2 whitespace-pre-line border-r-2 border-gray-300 p-2">
+                        {testCase?.inputs &&
+                          testCase.inputs.map((inp: any) => {
+                            return (
+                              <>
+                                <div>{inp.content}</div>
+                                <br />
+                              </>
+                            )
+                          })}
+                      </div>
+                      <div className="w-1/2 px-4 py-2">
+                        {testCase?.outputs &&
+                          testCase.outputs.map((inp: any) => {
+                            return (
+                              <>
+                                <div>{inp.content}</div>
+                                <br />
+                              </>
+                            )
+                          })}
+                      </div>
                     </div>
-                    <div className="w-1/2 px-4 py-2">
-                      {testCase?.outputs &&
-                        testCase.outputs.map((inp: any) => {
-                          return (
-                            <>
-                              <div>{inp.content}</div>
-                              <br />
-                            </>
-                          )
-                        })}
-                    </div>
-                  </div>
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </div>
           </div>
           <ConfirmationModal {...modalProps} />
         </>

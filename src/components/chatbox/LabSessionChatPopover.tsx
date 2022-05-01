@@ -9,7 +9,9 @@ import {
   PopoverHeader,
   PopoverTrigger,
   Portal,
+  IconButton,
 } from "@chakra-ui/react"
+import { IoMdChatbubbles } from "react-icons/io"
 import React from "react"
 
 const LabSessionChatPopover = ({
@@ -20,7 +22,14 @@ const LabSessionChatPopover = ({
   return (
     <Popover placement="top-end">
       <PopoverTrigger>
-        <Button>Chat</Button>
+        <IconButton
+          variant="link"
+          colorScheme={"teal"}
+          aria-label="Call Segun"
+          size="lg"
+          outline={"none"}
+          icon={<IoMdChatbubbles />}
+        />
       </PopoverTrigger>
       <Portal>
         <PopoverContent width="480px">

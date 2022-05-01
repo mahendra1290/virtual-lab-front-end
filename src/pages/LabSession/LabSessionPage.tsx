@@ -154,33 +154,39 @@ const LabSessionPage = () => {
               <SectionViewer sections={exp?.sections || []} />
             </TabPanel>
             <TabPanel>
-              {students?.map((stud) => (
-                <div className="mb-4 rounded-lg bg-gray-100 p-4" key={stud.uid}>
-                  <div className="mb-2 flex justify-between align-middle">
-                    <Link
-                      to={`student/${stud.uid}`}
-                      onClick={() => {
-                        localStorage.setItem("stdName", stud.name)
-                        localStorage.setItem("expId", exp?.id || "")
-                      }}
-                    >
-                      <h1 className="text-lg capitalize">{stud.name}</h1>
-                    </Link>
-                    <GoPrimitiveDot
-                      style={{
-                        fontSize: 24,
-                        color: stud.active ? "green" : "red",
-                      }}
-                    />
+              <div className="flex">
+                {students?.map((stud) => (
+                  <div
+                    className="m-2 w-full rounded-lg bg-gray-100 p-4 lg:w-1/3 xl:w-1/4"
+                    key={stud.uid}
+                  >
+                    <div className="flex justify-between align-middle">
+                      <GoPrimitiveDot
+                        style={{
+                          fontSize: 24,
+                          color: stud.active ? "green" : "red",
+                        }}
+                      />
+                      <Link
+                        className="mr-auto"
+                        to={`student/${stud.uid}`}
+                        onClick={() => {
+                          localStorage.setItem("stdName", stud.name)
+                          localStorage.setItem("expId", exp?.id || "")
+                        }}
+                      >
+                        <h1 className="text-lg capitalize">{stud.name}</h1>
+                      </Link>
+                      <LabSessionChatPopover>
+                        <LabSessionChatBox
+                          studentId={stud.uid}
+                          sessionId={id || ""}
+                        />
+                      </LabSessionChatPopover>
+                    </div>
                   </div>
-                  <LabSessionChatPopover>
-                    <LabSessionChatBox
-                      studentId={stud.uid}
-                      sessionId={id || ""}
-                    />
-                  </LabSessionChatPopover>
-                </div>
-              ))}
+                ))}
+              </div>
             </TabPanel>
             <TabPanel>
               <p>three!</p>

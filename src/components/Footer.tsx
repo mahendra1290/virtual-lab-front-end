@@ -2,6 +2,8 @@ import React from "react"
 
 function Footer() {
   return (
+    <div className="mt-4 border-t-2 bg-gray-100 dark:border-gray-700">
+      <footer className="rounded-lg p-4 shadow dark:bg-gray-800 md:px-8 md:py-6">
     <div className="border-t-2 dark:border-gray-700">
       {/* <footer className="rounded-lg bg-white p-4 shadow dark:bg-gray-800 md:px-6 md:py-8">
         <div className="sm:flex sm:items-center sm:justify-between">
@@ -10,7 +12,7 @@ function Footer() {
               Virtual Lab
             </h1>
           </a>
-          <ul className="mb-6 flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400 sm:mb-0">
+          <ul className="mb-6 flex flex-wrap items-center text-sm text-gray-600 dark:text-gray-500 sm:mb-0">
             <li>
               <a href="#" className="mr-4 hover:underline md:mr-6 ">
                 About
@@ -54,7 +56,7 @@ function Footer() {
 
         <hr className="my-2 border-gray-200 dark:border-gray-700 sm:mx-auto lg:my-4" />
 
-        <span className="block text-sm text-gray-500 dark:text-gray-400 sm:text-center">
+        <span className="block text-sm text-gray-500  dark:text-gray-400 sm:text-center">
           © 2022{" "}
           <a href="/" className="hover:underline">
             Virtual Lab™

@@ -24,6 +24,7 @@ import useLoading from "../../hooks/useLoading"
 import { useAuthContext } from "../../providers/AuthProvider"
 import LabSessionChatBox from "../../components/chatbox/LabSessionChatBox"
 import LabSessionChatPopover from "../../components/chatbox/LabSessionChatPopover"
+import { Experiment, TestCase } from "../../shared/types/Lab"
 import { TestCase } from "../../shared/types/Lab"
 import { socket } from "../../socket"
 
@@ -39,6 +40,7 @@ export const StudentActivity = () => {
   const { loading, startLoading, stopLoading } = useLoading()
   const [selectedLanguage, setSelectedLanguage] = useState("javascript")
   const [testCase, setTestCases] = useState<TestCase>()
+  const [expData, setExpData] = useState<Experiment>()
 
   const selectLangRef = useRef("javascript")
 
@@ -65,9 +67,13 @@ export const StudentActivity = () => {
   useEffect(() => {
     if (expId) {
       const testCasesRef = doc(collection(db, `test-cases`), expId)
+      const expCollection = doc(collection(db, "experiments"), expId)
       getDoc(testCasesRef).then((docSnap) => {
         const data = docSnap.data()
         setTestCases(data as TestCase)
+      })
+      getDoc(expCollection).then((docSnap) => {
+        setExpData(docSnap?.data() as Experiment)
       })
     }
   }, [])
@@ -170,7 +176,7 @@ export const StudentActivity = () => {
 
               <TabPanels>
                 <TabPanel>
-                  <div />
+                  <div>{expData?.problemStatement} </div>
                 </TabPanel>
                 <TabPanel>
                   <div className="flex">
