@@ -25,7 +25,6 @@ import { useAuthContext } from "../../providers/AuthProvider"
 import LabSessionChatBox from "../../components/chatbox/LabSessionChatBox"
 import LabSessionChatPopover from "../../components/chatbox/LabSessionChatPopover"
 import { Experiment, TestCase } from "../../shared/types/Lab"
-import { TestCase } from "../../shared/types/Lab"
 import { socket } from "../../socket"
 
 const languageOptions = ["javascript", "typescript", "cpp", "java", "python"]

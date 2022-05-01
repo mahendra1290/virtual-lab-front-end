@@ -3,8 +3,6 @@ import React from "react"
 function Footer() {
   return (
     <div className="mt-4 border-t-2 bg-gray-100 dark:border-gray-700">
-      <footer className="rounded-lg p-4 shadow dark:bg-gray-800 md:px-8 md:py-6">
-    <div className="border-t-2 dark:border-gray-700">
       {/* <footer className="rounded-lg bg-white p-4 shadow dark:bg-gray-800 md:px-6 md:py-8">
         <div className="sm:flex sm:items-center sm:justify-between">
           <a href="/" className="mb-4 flex items-center sm:mb-0">
