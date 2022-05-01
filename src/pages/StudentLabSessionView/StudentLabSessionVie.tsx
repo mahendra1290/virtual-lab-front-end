@@ -4,10 +4,7 @@ import React, { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { io } from "socket.io-client"
 import { useAuthContext } from "../../providers/AuthProvider"
-
-const socket = io("http://localhost:5000", {
-  autoConnect: false,
-})
+import { socket } from "../../socket"
 
 const StudentLabSessionView = () => {
   const { user } = useAuthContext()

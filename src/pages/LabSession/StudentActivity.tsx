@@ -25,12 +25,10 @@ import { useAuthContext } from "../../providers/AuthProvider"
 import LabSessionChatBox from "../../components/chatbox/LabSessionChatBox"
 import LabSessionChatPopover from "../../components/chatbox/LabSessionChatPopover"
 import { Experiment, TestCase } from "../../shared/types/Lab"
+import { TestCase } from "../../shared/types/Lab"
+import { socket } from "../../socket"
 
 const languageOptions = ["javascript", "typescript", "cpp", "java", "python"]
-
-const socket = io("http://localhost:5000", {
-  autoConnect: false,
-})
 
 export const StudentActivity = () => {
   const { user } = useAuthContext()
@@ -52,6 +50,9 @@ export const StudentActivity = () => {
   useEffect(() => {
     socket.auth = { uid: stdId }
     socket.connect()
+    socket.on("connect", () => {
+      console.log(socket.id, "connected")
+    })
     socket.emit("view-student", stdId)
     socket.on(`code-update-${stdId}`, ({ lang, code }) => {
       if (selectLangRef.current !== lang) {
