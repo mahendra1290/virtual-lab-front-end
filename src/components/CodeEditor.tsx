@@ -136,20 +136,12 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
         new Set([editorRef.current]),
         wsProvider.awareness
       )
+      if (wsProvider.shouldConnect) {
+        wsProvider.connect()
+      }
       monacoBinding.current = bind
     }
   }
-
-  useEffect(() => {
-    if (provider && provider.shouldConnect) {
-      provider.connect()
-    }
-    return () => {
-      if (provider && provider.wsconnected) {
-        provider.disconnect()
-      }
-    }
-  }, [provider])
 
   const handleLanguageChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const newLangCode = localStorage.getItem(`${e.target.value}-code`) || ""
