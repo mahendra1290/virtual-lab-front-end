@@ -53,13 +53,16 @@ export const StudentActivity = () => {
       console.log(socket.id, "connected")
     })
     socket.emit("view-student", stdId)
-    socket.on(`code-update-${stdId}`, ({ lang, code }) => {
-      if (selectLangRef.current !== lang) {
-        selectLangRef.current = lang
-        setSelectedLanguage(lang)
+    socket.on(`code-update-${stdId}`, (data) => {
+      if (data && data.lang && data.code) {
+        const { lang, code } = data
+        if (selectLangRef.current !== lang) {
+          selectLangRef.current = lang
+          setSelectedLanguage(lang)
+        }
+        setCodeData(code)
+        editorRef.current?.setValue(code)
       }
-      setCodeData(code)
-      editorRef.current?.setValue(code)
     })
   }, [])
 
