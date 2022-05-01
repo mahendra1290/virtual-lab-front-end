@@ -11,7 +11,7 @@ import {
   Tabs,
   Textarea,
 } from "@chakra-ui/react"
-import Editor from "@monaco-editor/react"
+import Editor, { Monaco } from "@monaco-editor/react"
 import axios from "axios"
 import { collection, deleteDoc, doc, getDoc } from "firebase/firestore"
 import { db } from "../firebase"
@@ -25,6 +25,9 @@ import GraderPanel from "./GraderPanel"
 import { Experiment, TestCase } from "../shared/types/Lab"
 import { socket } from "../socket"
 
+import * as Y from "yjs"
+import { WebsocketProvider } from "y-websocket"
+import { MonacoBinding } from "y-monaco"
 
 const languageOptions = ["javascript", "typescript", "cpp", "java", "python"]
 
@@ -36,8 +39,9 @@ interface Props {
 
 export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
   const { user } = useAuthContext()
-
   const editorRef = useRef<editor.IStandaloneCodeEditor>()
+  const monacoBinding = useRef()
+  const [provider, setProvider] = useState<WebsocketProvider>()
   const [res, setRes] = useState("")
   const [error, setError] = useState("")
   const { loading, startLoading, stopLoading } = useLoading()
@@ -116,6 +120,37 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
     handleCodeChange(editorRef.current?.getValue())
   }, [selectedLanguage])
 
+  const onMonacoMount = (editor: editor.IStandaloneCodeEditor) => {
+    const ydocument = new Y.Doc()
+    const wsProvider = new WebsocketProvider(
+      `wss://mahendrasuthar.engineer/yjs`,
+      `lab-session-${sessionId}-student=${user?.uid}`,
+      ydocument
+    )
+    const type = ydocument.getText("monaco")
+    setProvider(wsProvider)
+    if (!monacoBinding.current) {
+      const bind = new MonacoBinding(
+        type,
+        editor.getModel(),
+        new Set([editorRef.current]),
+        wsProvider.awareness
+      )
+      monacoBinding.current = bind
+    }
+  }
+
+  useEffect(() => {
+    if (provider && provider.shouldConnect) {
+      provider.connect()
+    }
+    return () => {
+      if (provider && provider.wsconnected) {
+        provider.disconnect()
+      }
+    }
+  }, [provider])
+
   const handleLanguageChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const newLangCode = localStorage.getItem(`${e.target.value}-code`) || ""
     const currLang = selectedLanguage
@@ -174,6 +209,7 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
           onChange={handleCodeChange}
           onMount={(editor, monaco) => {
             editorRef.current = editor
+            onMonacoMount(editor)
           }}
         />
       </div>
@@ -196,7 +232,7 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
                       testCase.inputs.map((inp) => {
                         return (
                           <>
-                            <div>{inp.content}</div>
+                            <div key={inp.name}> {inp.content}</div>
                             <br />
                           </>
                         )
@@ -231,6 +267,7 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
                 background="gray.800"
                 fontSize="sm"
                 padding="2"
+                height="100%"
                 className={
                   "h-full rounded border bg-gray-900 font-mono text-white" +
                   (error ? " text-red-500" : "")

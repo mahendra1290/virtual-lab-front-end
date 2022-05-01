@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.yRemoteSelectionHead {
+  @apply border-2 border-green-400
+}
+
+.yRemoteSelection {
+  @apply bg-green-300
+}
+
 /**
  * Unreset CSS
  *

@@ -27,12 +27,19 @@ import LabSessionChatPopover from "../../components/chatbox/LabSessionChatPopove
 import { Experiment, TestCase } from "../../shared/types/Lab"
 import { socket } from "../../socket"
 
+import * as Y from "yjs"
+import { WebsocketProvider } from "y-websocket"
+import { MonacoBinding } from "y-monaco"
+
 const languageOptions = ["javascript", "typescript", "cpp", "java", "python"]
 
 export const StudentActivity = () => {
   const { user } = useAuthContext()
   const { stdId, id } = useParams()
   const editorRef = useRef<editor.IStandaloneCodeEditor>()
+  const monacoBinding = useRef()
+  const [provider, setProvider] = useState<WebsocketProvider>()
+
   const [res, setRes] = useState("")
   const [error, setError] = useState("")
   const [codeData, setCodeData] = useState("")
@@ -60,8 +67,8 @@ export const StudentActivity = () => {
           selectLangRef.current = lang
           setSelectedLanguage(lang)
         }
-        setCodeData(code)
-        editorRef.current?.setValue(code)
+        // setCodeData(code)
+        // editorRef.current?.setValue(code)
       }
     })
   }, [])
@@ -115,6 +122,37 @@ export const StudentActivity = () => {
     }
   }
 
+  const onMonacoMount = (editor: editor.IStandaloneCodeEditor) => {
+    const ydocument = new Y.Doc()
+    const wsProvider = new WebsocketProvider(
+      `wss://mahendrasuthar.engineer/yjs`,
+      `lab-session-${id}-student=${stdId}`,
+      ydocument
+    )
+    const type = ydocument.getText("monaco")
+    setProvider(wsProvider)
+    if (!monacoBinding.current) {
+      const bind = new MonacoBinding(
+        type,
+        editor.getModel(),
+        new Set([editorRef.current]),
+        wsProvider.awareness
+      )
+      monacoBinding.current = bind
+    }
+  }
+
+  useEffect(() => {
+    if (provider && provider.shouldConnect) {
+      provider.connect()
+    }
+    return () => {
+      if (provider && provider.wsconnected) {
+        provider.disconnect()
+      }
+    }
+  }, [provider])
+
   return (
     <div>
       <Header
@@ -165,6 +203,7 @@ export const StudentActivity = () => {
             // onChange={handleCodeChange}
             onMount={(editor, monaco) => {
               editorRef.current = editor
+              onMonacoMount(editor)
             }}
           />
         </div>
