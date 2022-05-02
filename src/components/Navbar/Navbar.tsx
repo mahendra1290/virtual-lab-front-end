@@ -1,4 +1,4 @@
-import { Avatar, Button } from "@chakra-ui/react"
+import { Avatar, Button, useColorMode } from "@chakra-ui/react"
 import React from "react"
 import { Link } from "react-router-dom"
 import { useAuthContext } from "../../providers/AuthProvider"
@@ -21,6 +21,9 @@ export const Navbar = () => {
           <NotificationBox />
           <li>About</li>
           <li>Contact Us</li>
+          {/* <Button onClick={toggleColorMode}>
+            Toggle {colorMode === "light" ? "Dark" : "Light"}
+          </Button> */}
           {!user && (
             <li>
               <Link to="/login">Login</Link>

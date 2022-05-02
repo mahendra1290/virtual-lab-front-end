@@ -69,66 +69,73 @@ const NotificationBox = () => {
 
   return (
     <Popover closeOnBlur={true} placement="bottom-start">
-      <PopoverTrigger>
-        <IconButton
-          variant="link"
-          colorScheme={"teal"}
-          aria-label="Call Segun"
-          size="lg"
-          outline={"none"}
-          icon={<FaBell />}
-        />
-      </PopoverTrigger>
-      <Portal>
-        <PopoverContent width="500px">
-          <PopoverHeader>Notifications</PopoverHeader>
-          <PopoverCloseButton />
-          <PopoverBody>
-            <VStack
-              align="stretch"
-              className="max-h-[400px] min-h-[150px] overflow-y-auto overflow-x-hidden"
-            >
-              {notifications.length > 0 ? (
-                notifications.map((note) => {
-                  return (
-                    <Box key={nanoid()} className="rounded-lg border p-2">
-                      <h1>{note.title}</h1>
-                      <h1 className="text-sm text-gray-600">
-                        {note.description}
-                      </h1>
+      {({ isOpen, onClose }) => (
+        <>
+          <PopoverTrigger>
+            <IconButton
+              variant="link"
+              colorScheme={"teal"}
+              aria-label="Call Segun"
+              size="lg"
+              outline={"none"}
+              icon={<FaBell />}
+            />
+          </PopoverTrigger>
+          <Portal>
+            <PopoverContent width="500px">
+              <PopoverHeader>Notifications</PopoverHeader>
+              <PopoverCloseButton />
+              <PopoverBody>
+                <VStack
+                  align="stretch"
+                  className="max-h-[400px] min-h-[150px] overflow-y-auto overflow-x-hidden"
+                >
+                  {notifications.length > 0 ? (
+                    notifications.map((note) => {
+                      return (
+                        <Box key={nanoid()} className="rounded-lg border p-2">
+                          <h1>{note.title}</h1>
+                          <h1 className="text-sm text-gray-600">
+                            {note.description}
+                          </h1>
 
-                      {note?.actions?.map((act) => {
-                        return (
-                          <div
-                            className="flex justify-between"
-                            key={act.action}
-                          >
-                            <div className="text-xs text-gray-400">
-                              {moment(note.createdAt.seconds * 1000).fromNow()}
-                            </div>
-                            <div className="flex justify-end">
-                              <Link
-                                to={act.action}
-                                className="text-sm uppercase text-blue-500"
+                          {note?.actions?.map((act) => {
+                            return (
+                              <div
+                                className="flex justify-between"
+                                key={act.action}
                               >
-                                {act.name}
-                              </Link>
-                            </div>
-                          </div>
-                        )
-                      })}
+                                <div className="text-xs text-gray-400">
+                                  {moment(
+                                    note.createdAt.seconds * 1000
+                                  ).fromNow()}
+                                </div>
+                                <div className="flex justify-end">
+                                  <Link
+                                    to={act.action}
+                                    onClick={onClose}
+                                    className="text-sm uppercase text-blue-500"
+                                  >
+                                    {act.name}
+                                  </Link>
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </Box>
+                      )
+                    })
+                  ) : (
+                    <Box className="rounded-lg border p-2 text-center">
+                      <h1>No new notifications</h1>
                     </Box>
-                  )
-                })
-              ) : (
-                <Box className="rounded-lg border p-2 text-center">
-                  <h1>No new notifications</h1>
-                </Box>
-              )}
-            </VStack>
-          </PopoverBody>
-        </PopoverContent>
-      </Portal>
+                  )}
+                </VStack>
+              </PopoverBody>
+            </PopoverContent>
+          </Portal>
+        </>
+      )}
     </Popover>
   )
 }

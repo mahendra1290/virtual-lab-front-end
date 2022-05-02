@@ -1,22 +1,15 @@
 import { Spinner } from "@chakra-ui/react"
-import { Suspense, useState } from "react"
+import { Suspense } from "react"
 import { Navigate, Route, Routes } from "react-router-dom"
 import { Navbar } from "./components/Navbar/Navbar"
 import { Login } from "./pages/Login"
 import { Signup } from "./pages/Signup"
 import { ProfileForm } from "./pages/Signup/ProfileForm"
 import { useAuthContext } from "./providers/AuthProvider"
-import ExperimentPage from "./pages/Experiment/ExperimentPage"
-import { JoinedLabSessionPage } from "./pages/JoinedLabSession/JoinedLabSessionPage"
-import TeachersBasePage from "./pages/TeacherBasePage"
 import NotFoundPage from "./pages/404/NotFoundPage"
-import axios from "axios"
-import ConfirmationModal from "./components/modals/ConfirmationModal"
 import JoinLabPage from "./pages/JoinLabPage/JoinLabPage"
 import TeacherRoutes from "./routes/TeacherRoutes"
 import PrivateRoute from "./routes/PrivateRoute"
-import CodeEditorPage from "./pages/CodeEditorPage/CodeEditorPage"
-import StudentLabSessionView from "./pages/StudentLabSessionView/StudentLabSessionVie"
 import StudentRoutes from "./routes/StudentRoutes"
 import Loading from "./components/Loading"
 import Footer from "./components/Footer"
@@ -74,15 +67,6 @@ function App() {
             <Route
               path="/initial-profile"
               element={user ? <ProfileForm /> : <Navigate to="/login" />}
-            />
-            <Route
-              path="/s/lab-session/:id"
-              element={<JoinedLabSessionPage />}
-            />
-            <Route path="/editor" element={<CodeEditorPage />} />
-            <Route
-              path="/student-view/:id"
-              element={<StudentLabSessionView />}
             />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>

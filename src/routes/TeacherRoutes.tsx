@@ -27,6 +27,10 @@ const AssessmentCreatePage = React.lazy(
   () => import("../pages/AssessmentCreatePage")
 )
 
+const StudentLabProfile = React.lazy(
+  () => import("../pages/StudentLabProfile/StudentLabProfilePage")
+)
+
 const TeacherRoutes = (
   <>
     <Route
@@ -41,9 +45,9 @@ const TeacherRoutes = (
       <Route
         path="/t/labs/:id"
         element={
-          <LabProvider>
-            <LabPage />
-          </LabProvider>
+          // <LabProvider>
+          <LabPage />
+          // </LabProvider>
         }
       />
       <Route path="/t/labs/create" element={<CreateLab />} />
@@ -60,6 +64,10 @@ const TeacherRoutes = (
       <Route
         path="/t/labs/:labId/experiments/:expId"
         element={<ExperimentPage />}
+      />
+      <Route
+        path="/t/labs/:labId/students/:studentId"
+        element={<StudentLabProfile />}
       />
       <Route
         path="/t/lab-session/:id/student/:stdId"

@@ -9,6 +9,10 @@ import {
   useToast,
   Tabs,
   Textarea,
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionButton,
 } from "@chakra-ui/react"
 import axios from "axios"
 import {
@@ -31,6 +35,7 @@ import LabMenuPanel from "../../components/labs/LabMenuPanel"
 import { useConfirmationModal } from "../../hooks/useConfirmationModal"
 import ConfirmationModal from "../../components/modals/ConfirmationModal"
 import LabLoadingSkeleton from "../../components/skeletons/LabLoadingSkeleton"
+import TestCaseViewer from "../../components/TestCaseViewer"
 
 const ExperimentPage = () => {
   const { labId, expId } = useParams()
@@ -200,7 +205,6 @@ const ExperimentPage = () => {
                 <Button onClick={handleExperimentDelete} colorScheme={"red"}>
                   Delete
                 </Button>
-                <Button onClick={deleteTestCases}>Delete test case</Button>
               </HStack>
             }
           />
@@ -254,29 +258,18 @@ const ExperimentPage = () => {
                     </Button>
                   </TabPanel>
                   <TabPanel key="test_cases_exp">
-                    <div className="flex">
-                      <div className="w-1/2 whitespace-pre-line border-r-2 border-gray-300 p-2">
-                        {testCase?.inputs &&
-                          testCase.inputs.map((inp: any) => {
-                            return (
-                              <>
-                                <div>{inp.content}</div>
-                                <br />
-                              </>
-                            )
-                          })}
-                      </div>
-                      <div className="w-1/2 px-4 py-2">
-                        {testCase?.outputs &&
-                          testCase.outputs.map((inp: any) => {
-                            return (
-                              <>
-                                <div>{inp.content}</div>
-                                <br />
-                              </>
-                            )
-                          })}
-                      </div>
+                    <div>
+                      <TestCaseViewer testCases={testCase} />
+                      {testCase && (
+                        <Button
+                          marginTop="4"
+                          colorScheme={"red"}
+                          size="sm"
+                          onClick={deleteTestCases}
+                        >
+                          Delete all test cases
+                        </Button>
+                      )}
                     </div>
                   </TabPanel>
                 </TabPanels>

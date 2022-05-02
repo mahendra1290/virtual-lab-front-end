@@ -1,40 +1,21 @@
-import React, {
-  ChangeEvent,
-  ChangeEventHandler,
-  Children,
-  useEffect,
-  useMemo,
-  useReducer,
-  useState,
-} from "react"
+import React, { useEffect, useMemo, useReducer, useState } from "react"
 import { FiDelete } from "react-icons/fi"
-import { BiRename } from "react-icons/bi"
 import {
   Button,
   Divider,
   Editable,
   EditableInput,
   EditablePreview,
-  FormControl,
-  FormHelperText,
   IconButton,
-  Input,
   Tooltip,
 } from "@chakra-ui/react"
-import TextEditor from "../TextEditor/TextEditor"
-import { nanoid } from "nanoid"
-import { FcDeleteRow } from "react-icons/fc"
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd"
 import { reducer } from "./reducer"
-import {
-  EditorState as DraftEditorState,
-  convertToRaw,
-  convertFromRaw,
-} from "draft-js"
+import { EditorState as DraftEditorState, convertToRaw } from "draft-js"
 import { EditorState } from "react-draft-wysiwyg"
 import { ACTIONS } from "./actions"
 import FileUpload from "../file-uploader/FileUpload"
 
+import TextEditor from "../TextEditor/TextEditor"
 export type SectionEditorValue = {
   id: string
   name: string

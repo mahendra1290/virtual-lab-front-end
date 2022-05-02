@@ -21,6 +21,7 @@ export type Lab = {
   students?: {
     uid: string
     name: string
+    joinedAt: Timestamp
     email: string
   }[]
   joiningLink?: LabJoiningLink

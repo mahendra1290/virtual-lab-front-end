@@ -1,7 +1,4 @@
-import {
-  Divider,
-  VStack,
-} from "@chakra-ui/react"
+import { Divider, VStack } from "@chakra-ui/react"
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace"
 import draftToHtml from "draftjs-to-html"
 import React, { useEffect, useMemo, useState } from "react"
@@ -23,7 +20,7 @@ export interface SectionViewerComponentItem {
 }
 
 interface SectionViewerProps {
-  sections: SectionViewerItem[],
+  sections: SectionViewerItem[]
   otherComponents?: SectionViewerComponentItem[]
 }
 
@@ -37,7 +34,7 @@ const SectionViewer = ({ sections, otherComponents }: SectionViewerProps) => {
         secMenus.push(comp.name)
       })
     }
-    return secMenus;
+    return secMenus
   }, [sections])
 
   const sectionData = useMemo(() => {
@@ -51,13 +48,13 @@ const SectionViewer = ({ sections, otherComponents }: SectionViewerProps) => {
 
   useEffect(() => {
     const firstSection = sections.at(0)
+
     if (firstSection && !activeSection) {
       setActiveSection(firstSection?.name)
     }
   }, [sections])
 
   const RightSection = useMemo(() => {
-
     if (sectionData[activeSection]) {
       return (
         <div
@@ -69,9 +66,7 @@ const SectionViewer = ({ sections, otherComponents }: SectionViewerProps) => {
       const comp = otherComponents?.find((item) => item.name === activeSection)
       return comp?.component
     }
-
   }, [activeSection, otherComponents])
-
 
   return (
     <div className="flex gap-4">

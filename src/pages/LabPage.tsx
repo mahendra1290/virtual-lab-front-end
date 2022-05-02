@@ -33,9 +33,11 @@ import { useConfirmationModal } from "../hooks/useConfirmationModal"
 import ConfirmationModal from "../components/modals/ConfirmationModal"
 import LabSettings from "../components/labs/LabSettings"
 import { useLabContext } from "../providers/LabProvider"
+import { useLab } from "../hooks/useLab"
 import LabInviteModal from "../components/LabInviteModal"
 import TeacherSessions from "../components/Sessions/TeacherSessions"
 import { getDownloadURL, getMetadata, ref } from "firebase/storage"
+import LabLoadingSkeleton from "../components/skeletons/LabLoadingSkeleton"
 
 interface LabFiles {
   sectionId: string
@@ -47,7 +49,15 @@ interface LabFileMap {
 }
 
 const LabPage = () => {
-  const { lab } = useLabContext()
+  const { id } = useParams()
+
+  const {
+    lab,
+    loading: labLoading,
+    error: labError,
+    experiments,
+    expLoading,
+  } = useLab(id || "")
 
   const { makeModal, modalProps } = useConfirmationModal()
   const navigate = useNavigate()
@@ -73,10 +83,7 @@ const LabPage = () => {
     duration: 2000,
   })
 
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
-  const [experiments, setExperiments] = useState<any[]>([])
   const [activeSection, setActiveSection] = useState("")
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [labFilesMap, setLabFilesMap] = useState<LabFileMap>()
@@ -132,23 +139,6 @@ const LabPage = () => {
 
   useEffect(() => {
     if (lab) {
-      setLoading(true)
-      const docRef = query(
-        collection(db, "experiments"),
-        where("labId", "==", lab.id)
-      )
-      onSnapshot(docRef, (snapShot) => {
-        setExperiments(
-          snapShot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-        )
-      })
-      setLoading(false)
-    }
-    setLoading(false)
-  }, [lab])
-
-  useEffect(() => {
-    if (lab) {
       const labFilesRef = collection(db, `lab-files-${lab.id}`)
       getDocs(labFilesRef).then((files) => {
         const promises: Promise<[string, string]>[] = []
@@ -194,49 +184,67 @@ const LabPage = () => {
   }, [lab])
 
   const sections = useMemo(() => {
-    const arr = Object.keys(sectionData).map((sectionName) => sectionName)
-    arr.push("Experiments", "Students", "Settings", "Sessions")
-    return arr
+    if (!labLoading && lab) {
+      const arr = Object.keys(sectionData).map((sectionName) => sectionName)
+      arr.push("Experiments", "Students", "Settings", "Sessions")
+      return arr
+    }
+    return []
   }, [sectionData])
 
   if (!activeSection && sections.length > 0) {
-    setActiveSection(sections[0])
+    setActiveSection(sections.at(0) || "")
   }
 
   const RightSection = useMemo(() => {
     if (activeSection === "Experiments") {
       return (
-        <VStack spacing={4} align={"strecth"} className="mt-4 w-1/2">
-          {experiments.map((item, idx) => (
-            <Link key={item.id} to={`experiments/${item.id}`}>
-              <ExperimentCard srNo={idx + 1} {...item} key={item.id} />
-            </Link>
-          ))}
-        </VStack>
+        <>
+          {expLoading && (
+            <div className="mt-4 flex flex-col items-center p-8 p-4">
+              <Spinner />
+              Fetching Experiments...Please wait
+            </div>
+          )}
+          <VStack spacing={4} align={"strecth"} className="mt-4 w-1/2">
+            {experiments?.map((item, idx) => (
+              <Link key={item.id} to={`experiments/${item.id}`}>
+                <ExperimentCard srNo={idx + 1} {...item} key={item.id} />
+              </Link>
+            ))}
+          </VStack>
+          {!expLoading && experiments && experiments?.length === 0 && (
+            <h1>No experiments found</h1>
+          )}
+        </>
       )
     } else if (activeSection === "Settings") {
       return <LabSettings lab={lab} />
     } else if (activeSection === "Students") {
       return (
         <>
-          <VStack align="strecth">
+          <VStack align="strecth" marginTop="3">
             {lab?.students?.map((student) => (
               <div
                 key={student.uid}
-                className="rounded border bg-blue-100 px-4 py-2 text-gray-800"
+                onClick={() =>
+                  navigate(`/t/labs/${lab.id}/students/${student.uid}`)
+                }
+                role="button"
+                className="w-full rounded border bg-slate-100 px-4 py-2 text-gray-800 shadow-sm hover:bg-slate-200  lg:w-1/2"
               >
                 <h2 className="text-lg">{student.name}</h2>
                 <p className="text-sm">{student.email}</p>
               </div>
             ))}
           </VStack>
-          <Button className="mt-4" onClick={openModal}>
+          <Button size="sm" className="mt-4" onClick={openModal}>
             Invite Students
           </Button>
         </>
       )
     } else if (activeSection === "Sessions" && lab) {
-      return <TeacherSessions lab={lab} experiments={experiments} />
+      return <TeacherSessions lab={lab} experiments={experiments || []} />
     } else {
       return (
         <div
@@ -275,16 +283,8 @@ const LabPage = () => {
     }
   }, [activeSection, experiments, labFilesMap])
 
-  if (loading) {
-    return <Spinner size="xl" />
-  }
-
-  if (error) {
-    return (
-      <h1 className="mx-auto w-fit p-20 text-4xl">
-        {error} <Button>Back</Button>
-      </h1>
-    )
+  if (labLoading) {
+    return <LabLoadingSkeleton isLoading />
   }
 
   const handleLabOptionMenuClick = (menu: LabMenus) => {
@@ -304,7 +304,6 @@ const LabPage = () => {
         rightContent={
           <div className="space-x-4">
             <Button onClick={handleAddExperiment}>Add Experiment</Button>
-            <Button colorScheme="blue">Start Lab Session</Button>
             <LabOptionMenu onMenuClick={handleLabOptionMenuClick} />
           </div>
         }

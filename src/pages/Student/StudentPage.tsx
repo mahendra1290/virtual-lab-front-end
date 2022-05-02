@@ -16,8 +16,6 @@ interface Lab {
 
 const StudentPage = () => {
   const { user } = useAuthContext()
-  const [name, setName] = useState("")
-  const [labVisibility, setLabVisibility] = useState("public")
   const [loading, setLoading] = useState(false)
   const [labs, setLabs] = useState<Lab[]>([])
   const [empty, setEmpty] = useState(false)
@@ -28,6 +26,7 @@ const StudentPage = () => {
     const fetchLabs = async () => {
       const res = await axios.get(`/labs?studentUid=${user?.uid}`)
       setLabs(res.data.labs)
+      setLoading(false)
       if (res.data.labs.length == 0) {
         setEmpty(true)
       } else {
@@ -40,7 +39,6 @@ const StudentPage = () => {
     } else {
       setEmpty(true)
     }
-    setLoading(false)
     return () => {
       if (unsubscribe) {
         unsubscribe()

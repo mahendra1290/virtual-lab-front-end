@@ -24,9 +24,10 @@ import { GraderResult } from "../shared/types/Grader"
 import GraderPanel from "./GraderPanel"
 import { Experiment, TestCase } from "../shared/types/Lab"
 import { socket } from "../socket"
+import TestCaseViewer from "./TestCaseViewer"
 
-
-const languageOptions = ["javascript", "typescript", "cpp", "java", "python"]
+// const languageOptions = ["javascript", "typescript", "cpp", "java", "python"]
+const languageOptions = ["cpp", "python", "java"]
 
 interface Props {
   sessionId?: string
@@ -41,6 +42,7 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
   const [res, setRes] = useState("")
   const [error, setError] = useState("")
   const { loading, startLoading, stopLoading } = useLoading()
+  const [loadingSubmit, setLoadingSubmit] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState("javascript")
   const [graderResult, setGraderResult] = useState<GraderResult>()
   const [testCase, setTestCases] = useState<TestCase>()
@@ -103,6 +105,40 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
     }
   }
 
+  const handleSubmit = () => {
+    if (editorRef.current) {
+      const code = editorRef.current.getValue()
+      setLoadingSubmit(true)
+      setRes("")
+      setError("")
+      axios
+        .post(`/code/submit`, {
+          lang: selectedLanguage,
+          code,
+          expId,
+          sessionId,
+          labId,
+        })
+        .then((res) => {
+          if (res.status == 400) {
+            setLoadingSubmit(false)
+          }
+          if (res.data.error) {
+            setError(res.data.error)
+            setRes("")
+          } else {
+            setRes(res.data.output)
+            setError("")
+            setGraderResult(res.data.graderResponse as GraderResult)
+          }
+          setLoadingSubmit(false)
+        })
+        .catch((err) => setLoadingSubmit(false))
+
+      console.log(editorRef.current.getValue())
+    }
+  }
+
   const handleCodeChange = (value: string | undefined) => {
     if (value !== undefined) {
       socket.emit("save-code", {
@@ -127,9 +163,9 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
   }
 
   return (
-    <div className="flex gap-2 border p-4">
+    <div className="flex gap-2">
       <div className="w-1/2 rounded-md border p-2">
-        <div className="flex gap-4 rounded  p-2">
+        <div className="flex gap-2 rounded  p-2">
           <div className="flex flex-grow gap-4">
             <FormControl size="sm" className="flex items-center">
               <FormLabel htmlFor="language">Language</FormLabel>
@@ -164,6 +200,15 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
           >
             Run
           </Button>
+          <Button
+            isLoading={loadingSubmit}
+            loadingText="Submitting..."
+            size="sm"
+            colorScheme="blue"
+            onClick={handleSubmit}
+          >
+            Submit
+          </Button>
         </div>
         <Divider />
         <Editor
@@ -190,49 +235,27 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
                 <div>{expData?.problemStatement} </div>
               </TabPanel>
               <TabPanel>
-                <div className="flex">
-                  <div className="w-1/2 whitespace-pre-line border-r-2 border-gray-300 p-2">
-                    {testCase?.inputs &&
-                      testCase.inputs.map((inp) => {
-                        return (
-                          <>
-                            <div>{inp.content}</div>
-                            <br />
-                          </>
-                        )
-                      })}
-                  </div>
-                  <div className="w-1/2 px-4 py-2">
-                    {testCase?.outputs &&
-                      testCase.outputs.map((inp) => {
-                        return (
-                          <>
-                            <div>{inp.content}</div>
-                            <br />
-                          </>
-                        )
-                      })}
-                  </div>
-                </div>
+                <TestCaseViewer testCases={testCase} />
               </TabPanel>
             </TabPanels>
           </Tabs>
         </div>
-        <Tabs className="flex h-1/2 flex-grow flex-col">
+        <Tabs className="flex h-1/2 flex-grow flex-col p-2">
           <TabList>
             <Tab>Output</Tab>
             <Tab>Grader Output</Tab>
           </TabList>
           <TabPanels className="h-[90%]">
-            <TabPanel className="h-full">
+            <TabPanel padding="0" paddingTop="4" className="h-full">
               <Textarea
                 readOnly
                 value={res ? res : error}
                 background="gray.800"
                 fontSize="sm"
                 padding="2"
+                height="100%"
                 className={
-                  "h-full rounded border bg-gray-900 font-mono text-white" +
+                  "min-h-full rounded border bg-gray-900 font-mono text-white" +
                   (error ? " text-red-500" : "")
                 }
               />

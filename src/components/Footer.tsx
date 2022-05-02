@@ -1,4 +1,5 @@
 import React from "react"
+import CodeViewer from "./CodeViewer"
 
 function Footer() {
   return (
@@ -29,6 +30,7 @@ function Footer() {
           </li>
         </ul>
       </footer>
+      <CodeViewer code={"print('helo')"} lang="python" />
     </div>
   )
 }
