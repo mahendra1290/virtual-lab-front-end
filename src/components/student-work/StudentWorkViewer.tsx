@@ -9,7 +9,7 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react"
-import { collection, getDocs } from "firebase/firestore"
+import { collection, getDocs, query, where } from "firebase/firestore"
 import { groupBy } from "lodash"
 import React, { useEffect, useState } from "react"
 import { db } from "../../firebase"
@@ -24,9 +24,14 @@ import CodeViewer from "../CodeViewer"
 interface StudentWorkProps {
   studentUid: string
   experiments: Experiment[]
+  labId?: string
 }
 
-const StudentWorkViewer = ({ studentUid, experiments }: StudentWorkProps) => {
+const StudentWorkViewer = ({
+  studentUid,
+  labId,
+  experiments,
+}: StudentWorkProps) => {
   const [workLoading, setWorkLoading] = useState(false)
   const [studentWork, setStudentWork] =
     useState<{ [key: string]: StudentWork[] }>()
@@ -36,7 +41,15 @@ const StudentWorkViewer = ({ studentUid, experiments }: StudentWorkProps) => {
   useEffect(() => {
     if (studentUid && experiments.length > 0) {
       setWorkLoading(true)
-      const workCol = collection(db, `student-work-${studentUid}`)
+      let workCol: any = null
+      if (labId) {
+        workCol = query(
+          collection(db, `student-work-${studentUid}`),
+          where("labId", "==", labId)
+        )
+      } else {
+        workCol = collection(db, `student-work-${studentUid}`)
+      }
       getDocs(workCol)
         .then((docSnaps) => {
           const data = docSnaps.docs.map((doc) => doc.data())

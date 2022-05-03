@@ -68,6 +68,7 @@ const StudentLabProfilePage = () => {
         <h1 className="mt-4 text-lg">Sessions: </h1>
         <StudentWork
           studentUid={studentId || ""}
+          labId={labId}
           experiments={experiments || []}
         />
 
