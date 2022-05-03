@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react"
 import Editor from "@monaco-editor/react"
 import axios from "axios"
-import { collection, doc, getDoc } from "firebase/firestore"
+import { collection, doc, getDoc, onSnapshot } from "firebase/firestore"
 import { db } from "../../firebase"
 import { useParams } from "react-router-dom"
 import { editor } from "monaco-editor"
@@ -26,8 +26,11 @@ import LabSessionChatBox from "../../components/chatbox/LabSessionChatBox"
 import LabSessionChatPopover from "../../components/chatbox/LabSessionChatPopover"
 import { Experiment, TestCase } from "../../shared/types/Lab"
 import { socket } from "../../socket"
+import GraderPanel from "../../components/GraderPanel"
+import TestCaseViewer from "../../components/TestCaseViewer"
+import { GraderResult } from "../../shared/types/Grader"
 
-const languageOptions = ["javascript", "typescript", "cpp", "java", "python"]
+const languageOptions = ["cpp", "java", "python"]
 
 export const StudentActivity = () => {
   const { user } = useAuthContext()
@@ -37,9 +40,10 @@ export const StudentActivity = () => {
   const [error, setError] = useState("")
   const [codeData, setCodeData] = useState("")
   const { loading, startLoading, stopLoading } = useLoading()
-  const [selectedLanguage, setSelectedLanguage] = useState("javascript")
+  const [selectedLanguage, setSelectedLanguage] = useState("python")
   const [testCase, setTestCases] = useState<TestCase>()
   const [expData, setExpData] = useState<Experiment>()
+  const [graderResult, setGraderResult] = useState<GraderResult>()
 
   const selectLangRef = useRef("javascript")
 
@@ -115,6 +119,29 @@ export const StudentActivity = () => {
     }
   }
 
+  useEffect(() => {
+    const colRef = doc(collection(db, "run-outputs"), `${id}${stdId}`)
+    const unsub = onSnapshot(colRef, (doc) => {
+      console.log(doc.data())
+      const data = doc.data()
+      if (data) {
+        if (data.error) {
+          setError(data.error)
+          setRes("")
+        } else {
+          setRes(data.output)
+          setError("")
+          setGraderResult(data.graderResponse as GraderResult)
+        }
+      }
+    })
+    return () => {
+      if (unsub) {
+        unsub()
+      }
+    }
+  }, [])
+
   return (
     <div>
       <Header
@@ -169,7 +196,7 @@ export const StudentActivity = () => {
           />
         </div>
         <div className="flex w-1/2 flex-col justify-items-stretch gap-2">
-          <div className="flex-grow rounded border p-2">
+          <div className="h-1/2 flex-grow rounded border p-2">
             <Tabs>
               <TabList>
                 <Tab>Problem Statement</Tab>
@@ -181,48 +208,36 @@ export const StudentActivity = () => {
                   <div>{expData?.problemStatement} </div>
                 </TabPanel>
                 <TabPanel>
-                  <div className="flex">
-                    <div className="w-1/2 whitespace-pre-line border-r-2 border-gray-300 p-2">
-                      {testCase?.inputs &&
-                        testCase.inputs.map((inp) => {
-                          return (
-                            <>
-                              <div>{inp.content}</div>
-                              <br />
-                            </>
-                          )
-                        })}
-                    </div>
-                    <div className="w-1/2 px-4 py-2">
-                      {testCase?.outputs &&
-                        testCase.outputs.map((inp) => {
-                          return (
-                            <>
-                              <div>{inp.content}</div>
-                              <br />
-                            </>
-                          )
-                        })}
-                    </div>
-                  </div>
+                  <TestCaseViewer testCases={testCase} />
                 </TabPanel>
               </TabPanels>
             </Tabs>
           </div>
-          <div className="flex flex-grow flex-col">
-            <h1>Output:</h1>
-            <Textarea
-              readOnly
-              value={res ? res : error}
-              background="gray.800"
-              fontSize="sm"
-              padding="2"
-              className={
-                "flex-grow rounded border bg-gray-900 font-mono text-white" +
-                (error ? " text-red-500" : "")
-              }
-            />
-          </div>
+          <Tabs className="flex h-1/2 flex-grow flex-col p-2">
+            <TabList>
+              <Tab>Output</Tab>
+              <Tab>Grader Output</Tab>
+            </TabList>
+            <TabPanels className="h-[90%]">
+              <TabPanel padding="0" paddingTop="4" className="h-full">
+                <Textarea
+                  readOnly
+                  value={res ? res : error}
+                  background="gray.800"
+                  fontSize="sm"
+                  padding="2"
+                  height="100%"
+                  className={
+                    "min-h-full rounded border bg-gray-900 font-mono text-white" +
+                    (error ? " text-red-500" : "")
+                  }
+                />
+              </TabPanel>
+              <TabPanel className="h-full">
+                <GraderPanel gradeResult={graderResult} />
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
         </div>
       </div>
     </div>
