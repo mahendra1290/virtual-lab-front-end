@@ -33,6 +33,10 @@ const StudentRoutes = (
       />
       <Route path="/s/lab-session/:id" element={<StudentLabSessionPage />} />
       <Route
+        path="/s/practice-session/:id"
+        element={<StudentLabSessionPage practice />}
+      />
+      <Route
         path="/s/labs/:labId/experiments/:expId"
         element={<StudentExperimentPage />}
       />

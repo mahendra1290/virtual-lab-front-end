@@ -23,7 +23,7 @@ const TestCaseViewer = ({ testCases }: Props) => {
       {testCases?.inputs.map((inp, index) => {
         return (
           <>
-            <AccordionItem>
+            <AccordionItem key={inp.content}>
               <AccordionButton>Test case {index + 1}</AccordionButton>
               <AccordionPanel>
                 <HStack>

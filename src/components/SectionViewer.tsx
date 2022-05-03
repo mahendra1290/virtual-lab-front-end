@@ -6,6 +6,7 @@ import { RawDraftContentState } from "react-draft-wysiwyg"
 import { Experiment } from "../shared/types/Lab"
 import LabMenuPanel from "./labs/LabMenuPanel"
 import { Link, useNavigate, useParams } from "react-router-dom"
+import FileViewer from "./file-viewer/FileViewer"
 
 export interface SectionViewerItem {
   id: string
@@ -22,9 +23,14 @@ export interface SectionViewerComponentItem {
 interface SectionViewerProps {
   sections: SectionViewerItem[]
   otherComponents?: SectionViewerComponentItem[]
+  filesPath?: string
 }
 
-const SectionViewer = ({ sections, otherComponents }: SectionViewerProps) => {
+const SectionViewer = ({
+  sections,
+  otherComponents,
+  filesPath,
+}: SectionViewerProps) => {
   const [activeSection, setActiveSection] = useState("")
 
   const menus = useMemo(() => {
@@ -58,9 +64,17 @@ const SectionViewer = ({ sections, otherComponents }: SectionViewerProps) => {
     if (sectionData[activeSection]) {
       return (
         <div
-          className="reset-tailwindcss"
-          dangerouslySetInnerHTML={{ __html: sectionData[activeSection] }}
-        />
+          style={{ height: "calc(100% - 36px)" }}
+          className="flex flex-col justify-between overflow-auto"
+        >
+          <div
+            className="reset-tailwindcss"
+            dangerouslySetInnerHTML={{ __html: sectionData[activeSection] }}
+          />
+          {filesPath && (
+            <FileViewer collectionPath={filesPath} section={activeSection} />
+          )}
+        </div>
       )
     } else {
       const comp = otherComponents?.find((item) => item.name === activeSection)

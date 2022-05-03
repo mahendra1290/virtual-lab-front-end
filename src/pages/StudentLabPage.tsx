@@ -65,7 +65,11 @@ const StudentLabPage = () => {
         rightContent={lab.visibility === "private" && <Button>Leave</Button>}
       />
       <div className="mt-4 px-8">
-        <SectionViewer sections={sections} otherComponents={otherProps} />
+        <SectionViewer
+          filesPath={`lab-files-${lab.id}`}
+          sections={sections}
+          otherComponents={otherProps}
+        />
       </div>
     </>
   )

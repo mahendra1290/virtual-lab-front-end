@@ -38,6 +38,7 @@ import LabInviteModal from "../components/LabInviteModal"
 import TeacherSessions from "../components/Sessions/TeacherSessions"
 import { getDownloadURL, getMetadata, ref } from "firebase/storage"
 import LabLoadingSkeleton from "../components/skeletons/LabLoadingSkeleton"
+import FileViewer from "../components/file-viewer/FileViewer"
 
 interface LabFiles {
   sectionId: string
@@ -184,7 +185,9 @@ const LabPage = () => {
   }, [lab])
 
   const sections = useMemo(() => {
-    if (!labLoading && lab) {
+    if (lab) {
+      console.log("lbasects")
+
       const arr = Object.keys(sectionData).map((sectionName) => sectionName)
       arr.push("Experiments", "Students", "Settings", "Sessions")
       return arr
@@ -200,8 +203,8 @@ const LabPage = () => {
     if (activeSection === "Experiments") {
       return (
         <>
-          {expLoading && (
-            <div className="mt-4 flex flex-col items-center p-8 p-4">
+          {expLoading && (!experiments || experiments?.length == 0) && (
+            <div className="mt-4 flex flex-col items-center p-4">
               <Spinner />
               Fetching Experiments...Please wait
             </div>
@@ -256,7 +259,11 @@ const LabPage = () => {
             className="reset-tailwindcss"
             dangerouslySetInnerHTML={{ __html: sectionData[activeSection] }}
           />
-          {labFilesMap && labFilesMap[activeSection]?.length > 0 && (
+          <FileViewer
+            collectionPath={`lab-files-${lab?.id}`}
+            section={activeSection}
+          />
+          {/* {labFilesMap && labFilesMap[activeSection]?.length > 0 && (
             <div>
               <VStack align="flex-start">
                 <h1 className="mb-2 text-xl">Files</h1>
@@ -277,7 +284,7 @@ const LabPage = () => {
                 })}
               </VStack>
             </div>
-          )}
+          )} */}
         </div>
       )
     }

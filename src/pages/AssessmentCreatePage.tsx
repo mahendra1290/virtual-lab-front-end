@@ -142,7 +142,7 @@ const AssessmentCreatePage = () => {
           <h3 className="text-ld">Test Cases</h3>
           {fields.map((item, index) => {
             return (
-              <div className="mt-2 mb-4 border p-2">
+              <div key={item.id} className="mt-2 mb-4 border p-2">
                 <div className="flex gap-4" key={item.id}>
                   <FormControl
                     isInvalid={!!errors.testCases?.at(index)?.input}

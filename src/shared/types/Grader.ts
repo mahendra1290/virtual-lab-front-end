@@ -1,9 +1,10 @@
-import { Experiment } from './Lab';
+import { Experiment, LabSession } from './Lab';
 import { Timestamp } from 'firebase/firestore';
 export interface GraderResult {
   verdict: string
   verdictCode: number
   totalScore: number
+  scoreReceived: number
   result: {
     testCase: string
     score: string
@@ -16,6 +17,7 @@ export interface StudentWork {
   code: string,
   lang: string,
   sessionId: string,
+  session: LabSession
   expId: string,
   labId: string,
   runnedAt: Timestamp

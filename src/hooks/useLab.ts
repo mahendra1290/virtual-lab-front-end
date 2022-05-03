@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { db } from '../firebase';
 import { Experiment, Lab } from '../shared/types/Lab';
 import axios from 'axios';
+import { sortBy } from 'lodash';
 
 const useLab = (labId: string) => {
 
@@ -56,7 +57,9 @@ const useLab = (labId: string) => {
     try {
       setExpLoading(true)
       const result = await axios.get(`/labs/${labId}/experiments`);
-      setExperiments(result.data)
+      let exps = result.data as Experiment[]
+      exps = sortBy(exps, 'title')
+      setExperiments(exps)
       setExpLoading(false)
     } catch (err) {
       console.log(err);

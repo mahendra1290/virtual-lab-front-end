@@ -30,7 +30,6 @@ function Footer() {
           </li>
         </ul>
       </footer>
-      <CodeViewer code={"print('helo')"} lang="python" />
     </div>
   )
 }

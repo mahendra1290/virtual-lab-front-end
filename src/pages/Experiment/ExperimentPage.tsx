@@ -36,6 +36,7 @@ import { useConfirmationModal } from "../../hooks/useConfirmationModal"
 import ConfirmationModal from "../../components/modals/ConfirmationModal"
 import LabLoadingSkeleton from "../../components/skeletons/LabLoadingSkeleton"
 import TestCaseViewer from "../../components/TestCaseViewer"
+import FileViewer from "../../components/file-viewer/FileViewer"
 
 const ExperimentPage = () => {
   const { labId, expId } = useParams()
@@ -224,6 +225,10 @@ const ExperimentPage = () => {
                   dangerouslySetInnerHTML={{
                     __html: sectionData[activeSection],
                   }}
+                />
+                <FileViewer
+                  collectionPath={`experiment-files-${experiment.id}`}
+                  section={activeSection}
                 />
               </div>
             </div>

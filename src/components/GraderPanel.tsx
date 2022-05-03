@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid"
 import React from "react"
 import { GraderResult } from "../shared/types/Grader"
 
@@ -28,6 +29,7 @@ const GraderPanel = ({ gradeResult }: GraderPanelProps) => {
       <h2 className="text-lg font-bold">Score: {gradeResult.totalScore}</h2>
       {gradeResult.result.map((res) => (
         <div
+          key={nanoid()}
           className={`${
             res.correct ? "bg-green-100" : "bg-red-100"
           } mb-2 flex justify-between rounded border px-2 py-2`}

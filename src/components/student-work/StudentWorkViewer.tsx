@@ -41,7 +41,6 @@ const StudentWorkViewer = ({ studentUid, experiments }: StudentWorkProps) => {
         .then((docSnaps) => {
           const data = docSnaps.docs.map((doc) => doc.data())
           const studentWork = data as StudentWork[]
-          console.log(experiments, "expp")
 
           studentWork.forEach((work) => {
             work.experiment = experiments.find((exp) => exp.id === work.expId)
@@ -53,7 +52,6 @@ const StudentWorkViewer = ({ studentUid, experiments }: StudentWorkProps) => {
             return 0
           })
           const groupedBySession = groupBy(studentWork, "sessionId")
-          console.log(groupedBySession)
 
           setStudentWork(groupedBySession)
           setWorkLoading(false)
@@ -72,9 +70,15 @@ const StudentWorkViewer = ({ studentUid, experiments }: StudentWorkProps) => {
         <AccordionItem key={nanoid(4)}>
           <div className="flex items-center justify-between py-2">
             <AccordionButton>
-              <h1 className="text-lg">
+              <h1 className="text-lg capitalize">
                 {val.at(0)?.experiment?.title || key} Experiment
               </h1>
+              <p className="ml-4">
+                Started At{" "}
+                {moment(val.at(0)?.session.startedAt.toMillis() || 0).format(
+                  "DD-MM-YYYY"
+                )}
+              </p>
             </AccordionButton>
             <AccordionIcon />
           </div>
@@ -88,13 +92,17 @@ const StudentWorkViewer = ({ studentUid, experiments }: StudentWorkProps) => {
                         "DD-MM-YYYY hh:mm:A"
                       )}`}
                     </p>
-                    <p>Score: {work?.graderResult?.totalScore}</p>
+                    <p>
+                      {work?.graderResult?.totalScore
+                        ? `Score: ${work.graderResult.scoreReceived} / ${work.graderResult.totalScore}`
+                        : ""}
+                    </p>
                   </AccordionButton>
                   <AccordionButton />
                   <AccordionPanel>
                     <p>Lang: {work.lang}</p>
                     <CodeViewer code={work.code} lang={work.lang} />
-                    <p>Score: {work?.graderResult?.totalScore}</p>
+                    <p>Score: {work?.graderResult?.scoreReceived}</p>
                     <GraderPanel gradeResult={work.graderResult} />
                   </AccordionPanel>
                 </AccordionItem>

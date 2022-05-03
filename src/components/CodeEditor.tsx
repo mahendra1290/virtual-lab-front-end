@@ -33,9 +33,10 @@ interface Props {
   sessionId?: string
   expId?: string
   labId?: string
+  practice?: boolean
 }
 
-export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
+export const CodeEditor = ({ sessionId, expId, labId, practice }: Props) => {
   const { user } = useAuthContext()
 
   const editorRef = useRef<editor.IStandaloneCodeEditor>()
@@ -43,7 +44,7 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
   const [error, setError] = useState("")
   const { loading, startLoading, stopLoading } = useLoading()
   const [loadingSubmit, setLoadingSubmit] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] = useState("javascript")
+  const [selectedLanguage, setSelectedLanguage] = useState("python")
   const [graderResult, setGraderResult] = useState<GraderResult>()
   const [testCase, setTestCases] = useState<TestCase>()
   const [expData, setExpData] = useState<Experiment>()
@@ -115,6 +116,7 @@ export const CodeEditor = ({ sessionId, expId, labId }: Props) => {
         .post(`/code/submit`, {
           lang: selectedLanguage,
           code,
+          practice: !!practice,
           expId,
           sessionId,
           labId,

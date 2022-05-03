@@ -16,6 +16,7 @@ import { CodeEditor } from "../components/CodeEditor"
 import Header from "../components/header/header"
 import Loading from "../components/Loading"
 import SectionViewer from "../components/SectionViewer"
+import StudentMySubmissions from "../components/StudentMySubmissions"
 import useLoading from "../hooks/useLoading"
 import { useAuthContext } from "../providers/AuthProvider"
 import { Experiment, Lab, LabSession } from "../shared/types/Lab"
@@ -32,7 +33,11 @@ interface ILabSession {
   active: boolean
 }
 
-const StudentLabSessionPage = () => {
+const StudentLabSessionPage = ({
+  practice = false,
+}: {
+  practice?: boolean
+}) => {
   const { id } = useParams()
   const { user } = useAuthContext()
   const [session, setSession] = useState<ILabSession>()
@@ -44,7 +49,10 @@ const StudentLabSessionPage = () => {
     const fetchLabSessionDetails = async () => {
       try {
         setDataLoading(true)
-        const res = await axios.get(`/lab-sessions/${id}`)
+        let url = practice
+          ? `/lab-sessions/practice/${id}`
+          : `/lab-sessions/${id}`
+        const res = await axios.get(url)
         setSession(res.data as ILabSession)
         setDataLoading(false)
       } catch (err) {
@@ -105,13 +113,17 @@ const StudentLabSessionPage = () => {
             </TabPanel>
             <TabPanel>
               <CodeEditor
-                sessionId={session?.id}
+                practice={practice}
+                sessionId={id}
                 expId={session?.expId}
                 labId={session?.labId}
               />
             </TabPanel>
             <TabPanel>
-              <p>three!</p>
+              <StudentMySubmissions
+                experiment={session?.exp}
+                sessionId={id || ""}
+              />
             </TabPanel>
             <TabPanel>
               <div className="mx-auto">
