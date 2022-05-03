@@ -10,6 +10,7 @@ import {
   TabPanels,
   Tabs,
   Textarea,
+  useColorMode,
 } from "@chakra-ui/react"
 import Editor from "@monaco-editor/react"
 import axios from "axios"
@@ -28,6 +29,7 @@ import TestCaseViewer from "./TestCaseViewer"
 
 // const languageOptions = ["javascript", "typescript", "cpp", "java", "python"]
 const languageOptions = ["cpp", "python", "java"]
+const themeOptions = ["vs-dark", "vs-light"]
 
 interface Props {
   sessionId?: string
@@ -38,7 +40,8 @@ interface Props {
 
 export const CodeEditor = ({ sessionId, expId, labId, practice }: Props) => {
   const { user } = useAuthContext()
-
+  const { colorMode } = useColorMode()
+  const [theme, setTheme] = useState(`vs-${colorMode}`)
   const editorRef = useRef<editor.IStandaloneCodeEditor>()
   const [res, setRes] = useState("")
   const [error, setError] = useState("")
@@ -48,6 +51,10 @@ export const CodeEditor = ({ sessionId, expId, labId, practice }: Props) => {
   const [graderResult, setGraderResult] = useState<GraderResult>()
   const [testCase, setTestCases] = useState<TestCase>()
   const [expData, setExpData] = useState<Experiment>()
+
+  useEffect(() => {
+    setTheme(`vs-${colorMode}`)
+  }, [colorMode])
 
   useEffect(() => {
     socket.auth = { uid: user?.uid }
@@ -186,10 +193,14 @@ export const CodeEditor = ({ sessionId, expId, labId, practice }: Props) => {
             </FormControl>
             <FormControl className="flex items-center">
               <FormLabel htmlFor="theme">Theme</FormLabel>
-              <Select id="theme" size="sm">
-                <option value="js">Vs dark</option>
-                <option value="js">light</option>
-                <option value="js">C++</option>
+              <Select
+                id="theme"
+                size="sm"
+                onChange={(e) => setTheme(e.target.value)}
+              >
+                {themeOptions.map((opt) => (
+                  <option value={opt}>{opt}</option>
+                ))}
               </Select>
             </FormControl>
           </div>
@@ -216,8 +227,8 @@ export const CodeEditor = ({ sessionId, expId, labId, practice }: Props) => {
         <Editor
           height="70vh"
           language={selectedLanguage}
-          className="w-1/2"
-          theme="vs-light"
+          className=""
+          theme={theme}
           onChange={handleCodeChange}
           onMount={(editor, monaco) => {
             editorRef.current = editor

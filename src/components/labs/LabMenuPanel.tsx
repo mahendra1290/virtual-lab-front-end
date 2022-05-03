@@ -14,7 +14,7 @@ type LabMenuPanelProps = {
 }
 
 const activeMenuStyle =
-  "bg-slate-100 text-teal-700 dark:text-slate-50 dark:bg-gray-800 font-bold"
+  "bg-slate-100 text-teal-700 dark:text-slate-50 dark:bg-gray-500 font-bold"
 
 const unactiveMenuStyle =
   "bg-slate-50 text-black dark:text-slate-200 dark:bg-gray-700"

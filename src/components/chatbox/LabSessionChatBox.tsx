@@ -110,9 +110,9 @@ const LabSessionChatBox = ({
           <div
             className={`${
               msg.from === user?.uid
-                ? "self-end bg-teal-100"
-                : "self-start bg-blue-100"
-            } max-w-[80%] rounded-md px-2 py-1 text-sm ${
+                ? "self-end bg-teal-100 dark:bg-teal-200"
+                : "self-start bg-blue-100 dark:bg-blue-200"
+            } max-w-[80%] rounded-md px-2 py-1 text-sm dark:text-black ${
               messages.at(index - 1)?.from !== msg.from ? "mt-2" : ""
             }`}
             key={msg.id}

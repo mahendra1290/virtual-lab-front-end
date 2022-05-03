@@ -157,7 +157,7 @@ const LabSessionPage = () => {
               <div className="flex">
                 {students?.map((stud) => (
                   <div
-                    className="m-2 w-full rounded-lg bg-gray-100 p-4 lg:w-1/3 xl:w-1/4"
+                    className="m-2 w-full rounded-lg bg-gray-100 p-4 dark:bg-gray-600 lg:w-1/3 xl:w-1/4"
                     key={stud.uid}
                   >
                     <div className="flex justify-between align-middle">

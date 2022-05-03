@@ -32,7 +32,7 @@ export const Signup = () => {
     <div className="h-full p-2">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="mx-auto mt-12 flex w-full flex-col gap-4 rounded-lg border border-gray-100 p-8 shadow-lg sm:w-2/3 lg:w-1/4"
+        className="mx-auto mt-12 flex w-full flex-col gap-4 rounded-lg border p-8 shadow-lg sm:w-2/3 lg:w-1/4"
       >
         <h1 className="text-bold mb-1 text-xl">Sign up for Virtual Lab</h1>
 

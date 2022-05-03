@@ -316,15 +316,15 @@ const LabPage = () => {
           </div>
         }
       />
-      <div className="p-8">
-        <div className="flex gap-4">
+      <div className="mt-4 px-4 md:px-8">
+        <div className="flex flex-col gap-4 md:flex-row">
           <LabMenuPanel
             activeMenu={activeSection}
             onChange={setActiveSection}
-            className="w-1/4 rounded-md border p-4"
+            className="w-full rounded-md border p-4 md:w-1/4"
             menus={sections}
           />
-          <div className="w-3/4 rounded-md border p-4">
+          <div className="w-full rounded-md border p-4 md:w-3/4">
             <h1 className="mb-2 text-xl">{activeSection}</h1>
             <Divider />
             {RightSection}

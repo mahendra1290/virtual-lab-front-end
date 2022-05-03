@@ -95,7 +95,7 @@ const NotificationBox = () => {
                       return (
                         <Box key={nanoid()} className="rounded-lg border p-2">
                           <h1>{note.title}</h1>
-                          <h1 className="text-sm text-gray-600">
+                          <h1 className="text-sm text-gray-600 dark:text-slate-300">
                             {note.description}
                           </h1>
 
@@ -105,7 +105,7 @@ const NotificationBox = () => {
                                 className="flex justify-between"
                                 key={act.action}
                               >
-                                <div className="text-xs text-gray-400">
+                                <div className="text-xs text-gray-400 ">
                                   {moment(
                                     note.createdAt.seconds * 1000
                                   ).fromNow()}

@@ -33,7 +33,7 @@ export const Login = () => {
     <div className="h-full p-2">
       <form
         onSubmit={handleSubmit(handleSignIn)}
-        className="mx-auto mt-24 flex w-full flex-col gap-4 rounded-lg border border-gray-100 p-8 shadow-lg sm:w-2/3 lg:w-1/4"
+        className="mx-auto mt-24 flex w-full flex-col gap-4 rounded-lg border p-8 shadow-lg sm:w-2/3 lg:w-1/4"
       >
         <h1 className="text-bold mb-1 text-xl">Sign in to Virtual Lab</h1>
         <FormControl isInvalid={!!errors.email}>

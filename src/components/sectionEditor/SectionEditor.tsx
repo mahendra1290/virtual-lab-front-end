@@ -33,9 +33,11 @@ type LabMenuPanelProps = {
   extraRightContent?: React.Component | JSX.Element
 }
 
-const activeMenuStyle = "bg-slate-200 text-teal-700 font-bold"
+const activeMenuStyle =
+  "bg-slate-100 text-teal-700 dark:text-slate-50 dark:bg-gray-500 font-bold"
 
-const unactiveMenuStyle = "bg-slate-50 text-black"
+const unactiveMenuStyle =
+  "bg-slate-50 text-black dark:text-slate-200 dark:bg-gray-700"
 
 const SectionEditor = ({
   className,
@@ -139,7 +141,7 @@ const SectionEditor = ({
   return (
     <div className="flex h-[calc(100vh-130px)] gap-4">
       <div
-        className={`${className} flex w-1/4 flex-col gap-2 overflow-y-auto overflow-x-hidden rounded-md border border-slate-200 p-2 shadow-sm`}
+        className={`${className} flex w-1/4 flex-col gap-2 overflow-y-auto overflow-x-hidden rounded-md border p-2 shadow-sm`}
       >
         {menus.length === 0 && <h2 className="mx-auto">No sections added</h2>}
         {menus.map((menu) => (
@@ -149,7 +151,7 @@ const SectionEditor = ({
             onClick={handleMenuClick(menu.id)}
             className={
               (activeMenu === menu.id ? activeMenuStyle : unactiveMenuStyle) +
-              " group rounded-md p-2 hover:cursor-pointer hover:bg-slate-100"
+              " hover:cursor-pointe group rounded-md p-2"
             }
           >
             <div className="flex">
