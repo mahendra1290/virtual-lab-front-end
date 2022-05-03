@@ -21,12 +21,12 @@ function App() {
     return (
       <>
         <div className="absolute inset-0 z-50 flex min-h-screen flex-col items-center justify-center">
-          <div className="flex flex-col items-center justify-center rounded-md border-2 p-8 shadow-sm">
+          <div className="flex flex-col items-center justify-center rounded-md border-2 border-gray-400 p-8 shadow-sm">
             <Spinner colorScheme="blue" size="xl" />
             <h1 className="text-2xl">Loading...</h1>
           </div>
         </div>
-        <div className="absolute inset-0 z-40 bg-white/30 backdrop-blur-sm" />
+        <div className="absolute inset-0 z-40 bg-gray-800 backdrop-blur-sm" />
       </>
     )
 
