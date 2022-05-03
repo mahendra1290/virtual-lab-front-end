@@ -7,7 +7,6 @@ const CodeViewer = ({ code, lang }: { code: string; lang: string }) => {
       {code}
     </SyntaxHighlighter>
   )
-  // return <div></div>
 }
 
 export default CodeViewer

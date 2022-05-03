@@ -75,7 +75,7 @@ const StudentWorkViewer = ({ studentUid, experiments }: StudentWorkProps) => {
               </h1>
               <p className="ml-4">
                 Started At{" "}
-                {moment(val.at(0)?.session.startedAt.toMillis() || 0).format(
+                {moment(val.at(0)?.session?.startedAt.toMillis() || 0).format(
                   "DD-MM-YYYY"
                 )}
               </p>
