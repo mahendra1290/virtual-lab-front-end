@@ -1,3 +1,4 @@
+import { onSnapshot, Unsubscribe } from 'firebase/firestore';
 import { useCallback } from 'react';
 import { FirestoreError, getDoc } from 'firebase/firestore';
 import { collection, doc } from 'firebase/firestore';
@@ -21,14 +22,25 @@ const useLab = (labId: string) => {
   const [expLoading, setExpLoading] = useState(false);
 
   useEffect(() => {
-    const tempLab = sessionStorage.getItem(labId);
-    if (tempLab) {
-      setLab(JSON.parse(tempLab) as unknown as Lab)
-      fetchLabInBackground()
-      fetchExperiments(labId)
-    } else {
-      fetchLab(labId)
-      fetchExperiments(labId)
+    let unsub: Unsubscribe
+    if (labId) {
+      setLoading(true)
+      const labColRef = collection(db, "labs")
+      const labDocRef = doc(labColRef, labId)
+      unsub = onSnapshot(labDocRef, (docRef) => {
+        if (docRef.exists()) {
+          const data = docRef.data() as Lab
+          setLab(data)
+          sessionStorage.setItem(data.id, JSON.stringify(data))
+        }
+        setLoading(false)
+      })
+    }
+    fetchExperiments(labId)
+    return () => {
+      if (unsub) {
+        unsub()
+      }
     }
   }, [labId])
 
