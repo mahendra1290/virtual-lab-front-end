@@ -94,13 +94,13 @@ const LabSettings = ({ lab }: LabSettingsProps) => {
         {!loading && link && (
           <HStack>
             <Link
-              className="rounded-lg border px-4 py-2 text-lg text-blue-600"
+              className="rounded-lg border px-4 py-2 text-lg text-blue-600 dark:text-teal-300"
               to={"/" + link.url}
             >
               {link.url}
             </Link>
             {link.expiryTimestamp && (
-              <p className="rounded-lg border px-4 py-2 text-lg text-red-500">
+              <p className="rounded-lg border px-4 py-2 text-lg text-red-500 dark:text-red-200">
                 {/* {link.expiryTimestamp} */}
                 {moment(
                   Timestamp.fromMillis(

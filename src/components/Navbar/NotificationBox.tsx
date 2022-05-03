@@ -82,7 +82,7 @@ const NotificationBox = () => {
             />
           </PopoverTrigger>
           <Portal>
-            <PopoverContent width="500px">
+            <PopoverContent maxWidth="500px">
               <PopoverHeader>Notifications</PopoverHeader>
               <PopoverCloseButton />
               <PopoverBody>

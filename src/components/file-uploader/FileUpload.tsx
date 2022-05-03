@@ -64,7 +64,7 @@ const FileUpload = ({ onUploadSuccess, uploadUnderPath }: FileUploadProps) => {
   const filesList = files.map((file: FileWithPath) => (
     <li
       key={file.path}
-      className="mb-2 flex justify-between rounded border p-1"
+      className="dark:bg-dark-600 mb-2 flex justify-between rounded border p-1"
     >
       <span>
         {file.path} - {file.size} bytes
@@ -113,7 +113,7 @@ const FileUpload = ({ onUploadSuccess, uploadUnderPath }: FileUploadProps) => {
       <div
         {...getRootProps({
           className:
-            "mt-4 rounded-lg border-2 border-dashed bg-gray-100 p-4 text-center text-gray-400 hover:bg-gray-50 hover:text-gray-600",
+            "mt-4 rounded-lg border-2 border-dashed bg-gray-100 p-4 text-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 dark:bg-gray-700 hover:dark:text-slate-300",
         })}
       >
         <input {...getInputProps()} />

@@ -101,7 +101,7 @@ const reducer = (state: SectionEditorState, action: SectionEditorAction): Sectio
     case ACTIONS.SET_INIITAL_DATA:
       const initData = action.payload?.initialData
       if (initData) {
-        const tempMenus = initData.map((v) => ({ id: v.id, name: v.name, active: false }))
+        const tempMenus = initData.map((v) => ({ id: v.id || nanoid(), name: v.name, active: false }))
         // console.log(action.payload.initialData);
         const tempState = { ...state.sectionData };
         initData?.forEach(item => {

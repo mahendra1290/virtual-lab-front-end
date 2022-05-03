@@ -15,7 +15,7 @@ export const ExperimentCard = ({
 }: Props) => {
   return (
     <div>
-      <h1 className="text-lg text-blue-700 hover:text-blue-500">
+      <h1 className="text-lg text-teal-700 hover:text-teal-800 dark:text-teal-500 hover:dark:text-teal-200">
         {srNo}. {title}
       </h1>
     </div>

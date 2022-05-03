@@ -99,7 +99,7 @@ const Teacher = () => {
         pathList={["labs"]}
         rightContent={<Button onClick={handleCreateLab}>Create new lab</Button>}
       />
-      <div className="px-8">
+      <div className="px-4 lg:px-8">
         {!labs.length && !empty && (
           <div className="mt-12 flex flex-col items-center justify-center">
             <Spinner />
@@ -111,7 +111,11 @@ const Teacher = () => {
             No labs found. Please create new
           </div>
         )}
-        <Grid templateColumns="repeat(4, 1fr)" gap={4} marginTop={4}>
+        <Grid
+          templateColumns="repeat( auto-fill, minmax(300px, 1fr) )"
+          gap={4}
+          marginTop={4}
+        >
           {labs.map((item) => (
             <GridItem
               key={item.id}

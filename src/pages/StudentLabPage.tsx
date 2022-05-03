@@ -10,11 +10,12 @@ import { Link, useNavigate, useParams } from "react-router-dom"
 import { useAuthContext } from "../providers/AuthProvider"
 import { useLabContext } from "../providers/LabProvider"
 import { ExperimentCard } from "../components/experiment/ExperimentCard"
+import { useLab } from "../hooks/useLab"
 
 const StudentLabPage = () => {
   const { user } = useAuthContext()
   const { id } = useParams()
-  const { lab, experiments } = useLabContext()
+  const { lab, experiments } = useLab(id || "")
 
   const sections = useMemo(() => {
     const arr: SectionViewerItem[] = []

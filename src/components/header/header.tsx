@@ -34,7 +34,7 @@ const Header = ({
   }
 
   return (
-    <div className="flex items-center justify-between bg-gray-50 px-4 py-2 shadow-sm md:px-8">
+    <div className="flex items-center justify-between bg-gray-50 px-4 py-2 shadow-sm dark:bg-gray-700 dark:text-slate-200 md:px-8">
       <div>
         <div className="flex items-center gap-2">
           <HiArrowLeft
@@ -42,9 +42,11 @@ const Header = ({
             role="button"
             className="m-0 text-2xl"
           />
-          <h1 className="text-2xl capitalize text-gray-800">{title}</h1>
+          <h1 className="text-2xl capitalize text-gray-800 dark:text-slate-200">
+            {title}
+          </h1>
         </div>
-        <Breadcrumb className="text-sm capitalize text-gray-700">
+        <Breadcrumb className="text-sm capitalize text-gray-700 dark:text-slate-100">
           <BreadcrumbItem key="home-crumb">
             <Link to="/">home</Link>
           </BreadcrumbItem>

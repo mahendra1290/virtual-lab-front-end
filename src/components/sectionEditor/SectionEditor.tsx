@@ -139,7 +139,7 @@ const SectionEditor = ({
   return (
     <div className="flex h-[calc(100vh-130px)] gap-4">
       <div
-        className={`${className} flex w-1/5 flex-col gap-2 overflow-y-auto overflow-x-hidden rounded-md border border-slate-200 p-2 shadow-sm`}
+        className={`${className} flex w-1/4 flex-col gap-2 overflow-y-auto overflow-x-hidden rounded-md border border-slate-200 p-2 shadow-sm`}
       >
         {menus.length === 0 && <h2 className="mx-auto">No sections added</h2>}
         {menus.map((menu) => (
@@ -191,7 +191,7 @@ const SectionEditor = ({
           New Section
         </Button>
       </div>
-      <div className="flex-grow overflow-y-auto overflow-x-hidden rounded border py-2 px-4">
+      <div className="w-3/4 flex-grow overflow-y-auto overflow-x-hidden rounded border py-2 px-4">
         <h1 className="text-xl capitalize">{activeMenuItem?.name}</h1>
         <Divider />
         <div className="mt-4">
