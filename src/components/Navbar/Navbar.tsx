@@ -13,7 +13,7 @@ export const Navbar = () => {
 
   return (
     <>
-      <nav className="flex items-center justify-between bg-gray-100 p-4 shadow-sm dark:bg-gray-800 md:py-4 lg:px-8">
+      <nav className="flex items-center justify-between bg-gray-100 p-4 shadow-sm dark:bg-gray-900 md:py-4 lg:px-8">
         <Link to="/">
           <h1 className="font-mono text-xl font-bold first-letter:text-2xl first-letter:text-blue-600 dark:text-slate-200 dark:first-letter:text-blue-300">
             Virtual Lab

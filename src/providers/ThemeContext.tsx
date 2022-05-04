@@ -24,7 +24,7 @@ interface ContextValue {
 export const ThemeContext = React.createContext({} as ContextValue)
 
 interface Props {
-  initialTheme: string
+  initialTheme?: string
   children: React.ReactChild | React.ReactChildren
 }
 

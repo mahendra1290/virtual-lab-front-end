@@ -1,5 +1,6 @@
 import { useToast } from "@chakra-ui/react"
 import axios from "axios"
+import { FirebaseError } from "firebase/app"
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -9,10 +10,12 @@ import {
   onAuthStateChanged,
   getIdToken,
   getIdTokenResult,
+  onIdTokenChanged,
 } from "firebase/auth"
 import { doc, collection, getDoc, setDoc } from "firebase/firestore"
+import { duration } from "moment"
 import React, { useContext, useEffect, useMemo, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { auth, db, usersCol } from "../firebase"
 import { User } from "../shared/types/User"
 
@@ -25,7 +28,7 @@ interface AuthProviderValue {
   authLoading: boolean
   signInLoading: boolean
   signUpLoading: boolean
-  updateUser: (uid: string, name: string, role: string) => Promise<boolean>
+  updateUser: () => Promise<boolean>
   signInWithEmailPassword: (email: string, password: string) => Promise<boolean>
   signInWithGoogle: (login: boolean) => void
   signUpWithEmailPassword: (email: string, password: string) => Promise<boolean>
@@ -54,6 +57,7 @@ const useAuthContext = () => useContext(AuthContext)
 const AuthProvider = ({ children }: Props) => {
   const navigate = useNavigate()
   const toast = useToast()
+  const [searchParams] = useSearchParams()
 
   const [user, setUser] = useState<User | null>(null)
   const [loggedIn, setLoggedIn] = useState(false)
@@ -104,52 +108,67 @@ const AuthProvider = ({ children }: Props) => {
     }
   }
 
-  const updateUser = async (uid: string, name: string, role: string) => {
-    console.log(uid, name, role, "update")
-    try {
-      const docSnap = await getDoc(doc(db, "users", uid))
-      if (docSnap.exists()) {
-        await setDoc(
-          doc(usersCol, uid),
-          {
-            role,
-            name,
-          },
-          { merge: true }
-        )
-        return true
-      }
-      return false
-    } catch (err) {
-      console.log(err)
-      return false
-    }
+  const updateUser = async () => {
+    return true
   }
 
   useEffect(() => {
-    onAuthStateChanged(auth, async (user) => {
+    const authUnsub = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        const tokenRes = await getIdTokenResult(user)
+        const claims = tokenRes.claims
+        if (user) {
+          setUser({
+            ...(user as unknown as User),
+            name: user.displayName,
+            role: claims.role as string,
+          })
+        }
+        setLoggedIn(true)
+        setLoading(false)
+        if (!claims.role || !user.displayName) {
+          navigate("/initial-profile")
+        }
         const userDoc = await getDoc(doc(db, "users", user.uid))
         if (userDoc.exists()) {
           setUser({
             ...user,
             ...(userDoc.data() as User),
           })
-          if (!userDoc.data().role) {
-            navigate("/initial-profile")
-          }
         } else {
           navigate("/initial-profile")
-
         }
-        setLoggedIn(true)
-        setLoading(false)
       } else {
         setUser(null)
         setLoading(false)
         setLoggedIn(false)
       }
     })
+    const tokenUnsub = onIdTokenChanged(auth, async (user) => {
+      if (user) {
+        const tokenRes = await getIdTokenResult(user)
+        const claims = tokenRes.claims
+        if (user) {
+          setUser({
+            ...(user as unknown as User),
+            name: user.displayName,
+            role: claims.role as string,
+          })
+          navigate("/")
+        }
+        const userDoc = await getDoc(doc(db, "users", user.uid))
+        if (userDoc.exists()) {
+          setUser({
+            ...user,
+            ...(userDoc.data() as User),
+          })
+        }
+      }
+    })
+    return () => {
+      authUnsub()
+      tokenUnsub()
+    }
   }, [])
 
   const signUpWithEmailPassword = async (email: string, password: string) => {
@@ -160,14 +179,21 @@ const AuthProvider = ({ children }: Props) => {
         email,
         password
       )
-      const user = userCredential.user
-      if (user.email) {
-        await createUserInFirestore(user.uid, user.email, "email")
-      }
-      navigate("/initial-profile?password=true")
       setSignUpLoading(false)
       return true
     } catch (err) {
+      console.log(err)
+      const error = err as FirebaseError
+      if (error.code === "auth/email-already-in-use") {
+        toast({
+          title: "Email already registered",
+          duration: 3000,
+          isClosable: true,
+          status: "error",
+        })
+      }
+      console.log(error.code, error.name)
+
       setSignUpLoading(false)
       return false
     }
@@ -182,7 +208,12 @@ const AuthProvider = ({ children }: Props) => {
         password
       )
       setSignInLoading(false)
-      navigate("/")
+      const redirect = searchParams.get("redirectTo")
+      if (redirect) {
+        navigate(redirect)
+      } else {
+        navigate("/")
+      }
       return true
     } catch (err: any) {
       console.log(err)

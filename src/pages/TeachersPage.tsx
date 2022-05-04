@@ -71,11 +71,11 @@ const Teacher = () => {
           ),
         }))
       labDocs = sortBy(labDocs, "name")
-      sessionStorage.setItem("LABS", JSON.stringify(labDocs))
+      sessionStorage.setItem(`LABS-${user?.uid}`, JSON.stringify(labDocs))
       setLabs(labDocs)
     }
     if (user) {
-      const cachedLabs = sessionStorage.getItem("LABS")
+      const cachedLabs = sessionStorage.getItem(`LABS-${user.uid}`)
       if (cachedLabs) {
         setLabs(JSON.parse(cachedLabs))
       }

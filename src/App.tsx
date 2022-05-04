@@ -13,9 +13,26 @@ import PrivateRoute from "./routes/PrivateRoute"
 import StudentRoutes from "./routes/StudentRoutes"
 import Loading from "./components/Loading"
 import Footer from "./components/Footer"
+import { useMemo } from "react"
 
 function App() {
   const { authLoading, user } = useAuthContext()
+
+  const HomePage = useMemo(() => {
+    if (!user) {
+      return <Navigate to="/login" />
+    }
+    if (user && user.role) {
+      return user.role === "teacher" ? (
+        <Navigate to="/t" />
+      ) : (
+        <Navigate to="/s" />
+      )
+    }
+    if (user && !user.role) {
+      return <Navigate to="/initial-profile" />
+    }
+  }, [user])
 
   if (authLoading)
     return (
@@ -46,16 +63,7 @@ function App() {
                 </PrivateRoute>
               }
             />
-            <Route
-              path="/"
-              element={
-                user?.role === "teacher" ? (
-                  <Navigate to="/t" />
-                ) : (
-                  <Navigate to="/s" />
-                )
-              }
-            />
+            <Route path="/" element={HomePage} />
             <Route
               path="/login"
               element={user ? <Navigate to="/" /> : <Login />}

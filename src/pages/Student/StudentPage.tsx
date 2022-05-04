@@ -26,12 +26,12 @@ const StudentPage = () => {
     const fetchLabs = async () => {
       const res = await axios.get(`/labs?studentUid=${user?.uid}`)
       setLabs(res.data.labs)
-      setLoading(false)
       if (res.data.labs.length == 0) {
         setEmpty(true)
       } else {
         setEmpty(false)
       }
+      setLoading(false)
     }
 
     if (user) {
@@ -56,7 +56,7 @@ const StudentPage = () => {
             <h1>Fetching your labs...</h1>
           </div>
         )}
-        {empty && (
+        {empty && !loading && (
           <div>
             <h1>Sorry, no lab found</h1>
           </div>

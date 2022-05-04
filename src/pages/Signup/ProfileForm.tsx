@@ -13,6 +13,7 @@ import axios from "axios"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
+import { auth } from "../../firebase"
 import { useAuthContext } from "../../providers/AuthProvider"
 
 export const ProfileForm = () => {
@@ -52,11 +53,11 @@ export const ProfileForm = () => {
           role: role,
           displayName: data.displayName,
         })
+        await auth.currentUser?.getIdToken(true)
       } catch (err) {
         console.log(err)
       }
       setLoading(false)
-      navigate("/")
     }
     setLoading(false)
   }

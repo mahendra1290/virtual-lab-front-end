@@ -52,6 +52,11 @@ const StudentLabPage = () => {
       name: "Experiments",
       component: RightSection(),
     },
+    {
+      id: "My Sessions",
+      name: "My Sessions",
+      component: <h1>My session</h1>,
+    },
   ]
 
   if (!lab) {

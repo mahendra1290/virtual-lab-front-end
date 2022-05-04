@@ -1,5 +1,5 @@
 import React from "react"
-import { Navigate } from "react-router-dom"
+import { Navigate, useLocation } from "react-router-dom"
 import { useAuthContext } from "../providers/AuthProvider"
 
 type Props = {
@@ -10,11 +10,16 @@ type Props = {
 const PrivateRoute = ({ children, roles = [] }: Props) => {
   const { user, authLoading } = useAuthContext()
 
+  const location = useLocation()
+
   if (roles.includes(user?.role || "")) {
     return children as JSX.Element
   }
 
   if (!user && !authLoading) {
+    if (location.pathname) {
+      return <Navigate to={`/login?redirectTo=${location.pathname}`} />
+    }
     return <Navigate to="/login" />
   }
 
