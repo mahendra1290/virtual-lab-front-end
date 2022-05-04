@@ -199,7 +199,9 @@ export const CodeEditor = ({ sessionId, expId, labId, practice }: Props) => {
                 onChange={(e) => setTheme(e.target.value)}
               >
                 {themeOptions.map((opt) => (
-                  <option value={opt}>{opt}</option>
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
                 ))}
               </Select>
             </FormControl>

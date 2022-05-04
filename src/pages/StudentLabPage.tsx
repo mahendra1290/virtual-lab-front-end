@@ -11,17 +11,23 @@ import { useAuthContext } from "../providers/AuthProvider"
 import { useLabContext } from "../providers/LabProvider"
 import { ExperimentCard } from "../components/experiment/ExperimentCard"
 import { useLab } from "../hooks/useLab"
+import StudentPracticeSessions from "../components/StudentPracticeSessions"
 
 const StudentLabPage = () => {
   const { user } = useAuthContext()
   const { id } = useParams()
-  const { lab, experiments } = useLab(id || "")
+  const { lab, experiments, loading } = useLab(id || "")
 
   const sections = useMemo(() => {
     const arr: SectionViewerItem[] = []
     if (lab?.sectionData) {
       lab.sectionData.forEach((val) => {
-        arr.push({ id: nanoid(), name: val.name, editorState: val.editorState })
+        arr.push({
+          id: nanoid(),
+          name: val.name,
+          order: val.order,
+          editorState: val.editorState,
+        })
       })
     }
     return arr
@@ -55,24 +61,28 @@ const StudentLabPage = () => {
     {
       id: "My Sessions",
       name: "My Sessions",
-      component: <h1>My session</h1>,
+      component: <StudentPracticeSessions labId={id || ""} />,
     },
   ]
 
-  if (!lab) {
+  if (loading) {
     return <h1>Loading...</h1>
+  }
+
+  if (!loading && !lab) {
+    return <h1>Not found</h1>
   }
 
   return (
     <>
       <Header
-        title={lab.name}
-        pathList={["labs", lab.name]}
-        rightContent={lab.visibility === "private" && <Button>Leave</Button>}
+        title={lab?.name}
+        pathList={["labs", lab?.name || ""]}
+        rightContent={lab?.visibility === "private" && <Button>Leave</Button>}
       />
       <div className="mt-4 px-8">
         <SectionViewer
-          filesPath={`lab-files-${lab.id}`}
+          filesPath={`lab-files-${lab?.id}`}
           sections={sections}
           otherComponents={otherProps}
         />

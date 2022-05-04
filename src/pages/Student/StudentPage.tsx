@@ -61,24 +61,25 @@ const StudentPage = () => {
             <h1>Sorry, no lab found</h1>
           </div>
         )}
-
-        <Grid templateColumns="repeat(4, 1fr)" gap={4} marginTop={4}>
-          {labs.map((item) => (
-            <GridItem
-              key={item.id}
-              className="cursor-pointer rounded border p-4"
-              role="button"
-            >
-              <Link to={`/s/labs/${item.id}`}>
-                <h1 className="cursor-pointer text-2xl capitalize group-hover:underline">
-                  {item.name}
-                </h1>
-                {/* <p className="mt-2">Created At: {Timestamp.fromMillis(item.createdAt.seconds)}</p> */}
-                {item.visibility === "public" && <p>Public</p>}
-              </Link>
-            </GridItem>
-          ))}
-        </Grid>
+        {!loading && labs && (
+          <Grid templateColumns="repeat(4, 1fr)" gap={4} marginTop={4}>
+            {labs.map((item) => (
+              <GridItem
+                key={item.id}
+                className="cursor-pointer rounded border p-4"
+                role="button"
+              >
+                <Link to={`/s/labs/${item.id}`}>
+                  <h1 className="cursor-pointer text-2xl capitalize group-hover:underline">
+                    {item.name}
+                  </h1>
+                  {/* <p className="mt-2">Created At: {Timestamp.fromMillis(item.createdAt.seconds)}</p> */}
+                  {item.visibility === "public" && <p>Public</p>}
+                </Link>
+              </GridItem>
+            ))}
+          </Grid>
+        )}
       </div>
     </>
   )

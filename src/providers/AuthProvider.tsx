@@ -144,19 +144,18 @@ const AuthProvider = ({ children }: Props) => {
         setLoggedIn(false)
       }
     })
-    const tokenUnsub = onIdTokenChanged(auth, async (user) => {
-      if (user) {
-        const tokenRes = await getIdTokenResult(user)
+    const tokenUnsub = onIdTokenChanged(auth, async (authUser) => {
+      if (authUser) {
+        const tokenRes = await getIdTokenResult(authUser)
         const claims = tokenRes.claims
         if (user) {
           setUser({
             ...(user as unknown as User),
-            name: user.displayName,
+            name: authUser.displayName,
             role: claims.role as string,
           })
-          navigate("/")
         }
-        const userDoc = await getDoc(doc(db, "users", user.uid))
+        const userDoc = await getDoc(doc(db, "users", authUser.uid))
         if (userDoc.exists()) {
           setUser({
             ...user,

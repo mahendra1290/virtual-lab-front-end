@@ -1,24 +1,18 @@
 import {
   Accordion,
   AccordionButton,
-  AccordionIcon,
   AccordionItem,
   AccordionPanel,
-  Box,
-  Divider,
-  Textarea,
-  VStack,
 } from "@chakra-ui/react"
 import {
   collection,
-  getDocs,
   onSnapshot,
   query,
   Unsubscribe,
   where,
 } from "firebase/firestore"
 import { groupBy } from "lodash"
-import React, { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { db } from "../firebase"
 import { nanoid } from "nanoid"
 import moment from "moment"

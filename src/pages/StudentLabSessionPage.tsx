@@ -96,7 +96,14 @@ const StudentLabSessionPage = ({
     <>
       <Header
         title={`${exp?.title}`}
-        pathList={lab && exp ? [lab?.name, exp?.title] : []}
+        pathList={
+          lab && exp
+            ? [
+                [`/s/labs/${lab.id}`, lab.name],
+                [`/s/labs/${lab.id}/experiments/${exp.id}`, exp?.title],
+              ]
+            : []
+        }
       />
       <div className="py-4">
         <Tabs className="min-h-screen">

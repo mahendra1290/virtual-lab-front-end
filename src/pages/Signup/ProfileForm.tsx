@@ -18,7 +18,7 @@ import { useAuthContext } from "../../providers/AuthProvider"
 
 export const ProfileForm = () => {
   const [role, setRole] = useState("student")
-  const { user, updateUser } = useAuthContext()
+  const { user } = useAuthContext()
   const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate()
@@ -39,6 +39,9 @@ export const ProfileForm = () => {
     if (user) {
       setValue("email", user.email)
       setValue("displayName", user.name)
+    }
+    if (user?.role) {
+      navigate("/")
     }
   }, [user])
 

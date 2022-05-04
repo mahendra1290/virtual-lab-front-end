@@ -127,7 +127,14 @@ const LabSessionPage = () => {
     <>
       <Header
         title={`${exp?.title}`}
-        pathList={lab && exp ? [lab?.name, exp?.title] : []}
+        pathList={
+          lab && exp
+            ? [
+                [`/t/labs/${lab.id}`, lab.name],
+                [`/t/labs/${lab.id}/experiments/${exp.id}`, exp?.title],
+              ]
+            : []
+        }
         rightContent={
           <Button
             onClick={handleEndSession}
@@ -146,7 +153,6 @@ const LabSessionPage = () => {
             <Tab>Experiment</Tab>
             <Tab>Students</Tab>
             <Tab>Submission</Tab>
-            <Tab>Stats</Tab>
           </TabList>
 
           <TabPanels>
