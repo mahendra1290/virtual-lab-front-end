@@ -6,6 +6,7 @@ import {
   HStack,
   Textarea,
 } from "@chakra-ui/react"
+import { nanoid } from "nanoid"
 import React from "react"
 import { TestCase } from "../shared/types/Lab"
 
@@ -23,7 +24,7 @@ const TestCaseViewer = ({ testCases }: Props) => {
       {testCases?.inputs.map((inp, index) => {
         return (
           <>
-            <AccordionItem key={inp.content}>
+            <AccordionItem key={inp.content + nanoid(2)}>
               <AccordionButton>Test case {index + 1}</AccordionButton>
               <AccordionPanel>
                 <HStack>
