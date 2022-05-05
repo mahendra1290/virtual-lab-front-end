@@ -11,6 +11,7 @@ import { AuthProvider } from "./providers/AuthProvider"
 
 import { extendTheme } from "@chakra-ui/react"
 import { auth } from "./firebase"
+import { ThemeProvider } from "./providers/ThemeContext"
 
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL
 
@@ -48,7 +49,9 @@ ReactDOM.render(
     <ChakraProvider theme={theme}>
       <BrowserRouter>
         <AuthProvider>
-          <App />
+          <ThemeProvider>
+            <App />
+          </ThemeProvider>
         </AuthProvider>
       </BrowserRouter>
     </ChakraProvider>

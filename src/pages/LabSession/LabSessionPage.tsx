@@ -127,7 +127,14 @@ const LabSessionPage = () => {
     <>
       <Header
         title={`${exp?.title}`}
-        pathList={lab && exp ? [lab?.name, exp?.title] : []}
+        pathList={
+          lab && exp
+            ? [
+                [`/t/labs/${lab.id}`, lab.name],
+                [`/t/labs/${lab.id}/experiments/${exp.id}`, exp?.title],
+              ]
+            : []
+        }
         rightContent={
           <Button
             onClick={handleEndSession}
@@ -146,7 +153,6 @@ const LabSessionPage = () => {
             <Tab>Experiment</Tab>
             <Tab>Students</Tab>
             <Tab>Submission</Tab>
-            <Tab>Stats</Tab>
           </TabList>
 
           <TabPanels>
@@ -157,7 +163,7 @@ const LabSessionPage = () => {
               <div className="flex">
                 {students?.map((stud) => (
                   <div
-                    className="m-2 w-full rounded-lg bg-gray-100 p-4 lg:w-1/3 xl:w-1/4"
+                    className="m-2 w-full rounded-lg bg-gray-100 p-4 dark:bg-gray-600 lg:w-1/3 xl:w-1/4"
                     key={stud.uid}
                   >
                     <div className="flex justify-between align-middle">

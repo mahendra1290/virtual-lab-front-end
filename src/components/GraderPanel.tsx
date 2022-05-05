@@ -24,14 +24,16 @@ const GraderPanel = ({ gradeResult }: GraderPanelProps) => {
   }
 
   return (
-    <div className="h-full space-y-2 rounded-md bg-gray-50 p-2 ">
+    <div className="h-full space-y-2 rounded-md bg-gray-50 p-2 dark:bg-gray-800 ">
       <h1 className={`${color} text-xl font-bold`}>{gradeResult.verdict}</h1>
       <h2 className="text-lg font-bold">Score: {gradeResult.totalScore}</h2>
       {gradeResult.result.map((res) => (
         <div
           key={nanoid()}
           className={`${
-            res.correct ? "bg-green-100" : "bg-red-100"
+            res.correct
+              ? "bg-green-100 dark:bg-green-600"
+              : "bg-red-100 dark:bg-red-500"
           } mb-2 flex justify-between rounded border px-2 py-2`}
         >
           <p>Test {res.testCase}</p>

@@ -94,6 +94,8 @@ const StudentExperimentPage = () => {
     const res = await axios.post("/lab-sessions/practice", {
       expId,
       labId,
+      expName: experiment?.title,
+      labName: lab?.name,
     })
     setLoading(false)
     setSessionData(res.data)

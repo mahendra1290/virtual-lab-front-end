@@ -54,17 +54,25 @@ const TeacherSessions = ({ lab, experiments }: TeacherSessionProps) => {
     <>
       <div className="py-4">
         {sessionData?.map((sess) => (
-          <div className="mb-4 rounded-lg bg-gray-100 p-4" key={sess.id}>
+          <div
+            className="mb-4 rounded-lg bg-gray-100 p-4 dark:bg-gray-700 dark:text-slate-200"
+            key={sess.id}
+          >
             <Link to={`/t/lab-session/${sess.id}`}>
               <div className="mb-2 flex justify-between align-middle">
                 <h1 className="text-lg capitalize">
                   {experiments.find((exp) => exp.id == sess.expId)?.title}
                 </h1>
                 <GoPrimitiveDot
-                  style={{ fontSize: 24, color: sess.active ? "green" : "red" }}
+                  className={`${
+                    sess.active
+                      ? "text-green-400 dark:text-green-300"
+                      : "text-red-400 dark:text-red-300"
+                  }`}
+                  style={{ fontSize: 24 }}
                 />
               </div>
-              <h2 className="text-gray-500">
+              <h2 className="text-gray-500 dark:text-slate-300">
                 {sess.active ? (
                   <div>
                     {moment(sess.startedAt._seconds * 1000).format(

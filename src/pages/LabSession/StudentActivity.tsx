@@ -10,6 +10,8 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  useColorModeValue,
+  useColorMode,
 } from "@chakra-ui/react"
 import Editor from "@monaco-editor/react"
 import axios from "axios"
@@ -32,8 +34,12 @@ import { GraderResult } from "../../shared/types/Grader"
 
 const languageOptions = ["cpp", "java", "python"]
 
+const themeOptions = ["vs-dark", "vs-light"]
+
 export const StudentActivity = () => {
   const { user } = useAuthContext()
+  const { colorMode } = useColorMode()
+  const [theme, setTheme] = useState(`vs-${colorMode}`)
   const { stdId, id } = useParams()
   const editorRef = useRef<editor.IStandaloneCodeEditor>()
   const [res, setRes] = useState("")
@@ -49,6 +55,10 @@ export const StudentActivity = () => {
 
   const studName = localStorage.getItem("stdName")
   const expId = localStorage.getItem("expId")
+
+  useEffect(() => {
+    setTheme(`vs-${colorMode}`)
+  }, [colorMode])
 
   useEffect(() => {
     socket.auth = { uid: stdId }
@@ -174,10 +184,14 @@ export const StudentActivity = () => {
               </FormControl>
               <FormControl className="flex items-center">
                 <FormLabel htmlFor="theme">Theme</FormLabel>
-                <Select id="theme" size="sm">
-                  <option value="js">Vs dark</option>
-                  <option value="js">light</option>
-                  <option value="js">C++</option>
+                <Select
+                  id="theme"
+                  size="sm"
+                  onChange={(e) => setTheme(e.target.value)}
+                >
+                  {themeOptions.map((opt) => (
+                    <option value={opt}>{opt}</option>
+                  ))}
                 </Select>
               </FormControl>
             </div>
@@ -186,9 +200,8 @@ export const StudentActivity = () => {
           <Editor
             height="70vh"
             language={selectedLanguage}
-            className="w-1/2"
             // value={codeData}
-            theme="vs-light"
+            theme={theme}
             // onChange={handleCodeChange}
             onMount={(editor, monaco) => {
               editorRef.current = editor

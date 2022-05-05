@@ -24,14 +24,11 @@ const StudentPage = () => {
     let unsubscribe: Unsubscribe
     setLoading(true)
     const fetchLabs = async () => {
+      console.log("fetching", user?.uid)
+
       const res = await axios.get(`/labs?studentUid=${user?.uid}`)
       setLabs(res.data.labs)
       setLoading(false)
-      if (res.data.labs.length == 0) {
-        setEmpty(true)
-      } else {
-        setEmpty(false)
-      }
     }
 
     if (user) {
@@ -56,29 +53,30 @@ const StudentPage = () => {
             <h1>Fetching your labs...</h1>
           </div>
         )}
-        {empty && (
+        {labs.length == 0 && !loading && (
           <div>
             <h1>Sorry, no lab found</h1>
           </div>
         )}
-
-        <Grid templateColumns="repeat(4, 1fr)" gap={4} marginTop={4}>
-          {labs.map((item) => (
-            <GridItem
-              key={item.id}
-              className="cursor-pointer rounded border p-4"
-              role="button"
-            >
-              <Link to={`/s/labs/${item.id}`}>
-                <h1 className="cursor-pointer text-2xl capitalize group-hover:underline">
-                  {item.name}
-                </h1>
-                {/* <p className="mt-2">Created At: {Timestamp.fromMillis(item.createdAt.seconds)}</p> */}
-                {item.visibility === "public" && <p>Public</p>}
-              </Link>
-            </GridItem>
-          ))}
-        </Grid>
+        {!loading && labs.length > 0 && (
+          <Grid templateColumns="repeat(4, 1fr)" gap={4} marginTop={4}>
+            {labs.map((item) => (
+              <GridItem
+                key={item.id}
+                className="cursor-pointer rounded border p-4"
+                role="button"
+              >
+                <Link to={`/s/labs/${item.id}`}>
+                  <h1 className="cursor-pointer text-2xl capitalize group-hover:underline">
+                    {item.name}
+                  </h1>
+                  {/* <p className="mt-2">Created At: {Timestamp.fromMillis(item.createdAt.seconds)}</p> */}
+                  {item.visibility === "public" && <p>Public</p>}
+                </Link>
+              </GridItem>
+            ))}
+          </Grid>
+        )}
       </div>
     </>
   )

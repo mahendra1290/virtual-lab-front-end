@@ -39,6 +39,7 @@ export interface LabSession {
   id: string
   labId: string
   expId: string
+  expName?: string
   uid: string
   active: boolean
   startedAt: Timestamp,

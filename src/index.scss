@@ -13,7 +13,26 @@
  * Eric Meyer's Reset CSS, YUI 3 Reset CSS, HTML5 Reset Stylesheet of HTML5
  * Doctor, or Tim Murtaugh's HTML5 Reset.
  */
+
+ .dark .reset-tailwindcss * :not(.rdw-editor-toolbar) {
+  //  @apply text-white bg-transparent;
+   color: rgb(226 232 240) !important;
+   background-color: transparent !important;
+
+ }
+
+ .dark .reset-tailwindcss .rdw-editor-toolbar {
+  //  @apply text-white bg-transparent;
+  @apply bg-slate-500 border-none;
+
+  &  * {
+    @apply border-slate-400;
+  }
+ }
+
 .reset-tailwindcss {
+
+
   html {
     box-sizing: content-box;
   }

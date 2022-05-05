@@ -97,8 +97,6 @@ const CreateLab = ({ edit = false }: { edit?: boolean }) => {
             })
           })
           sectionData.sort((a, b) => a.order - b.order)
-          console.log(data, "data")
-
           setValue("name", data.name)
           setValue("visibility", data.visibility)
           setInitValue(sectionData)

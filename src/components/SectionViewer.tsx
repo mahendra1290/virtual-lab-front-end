@@ -7,10 +7,12 @@ import { Experiment } from "../shared/types/Lab"
 import LabMenuPanel from "./labs/LabMenuPanel"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import FileViewer from "./file-viewer/FileViewer"
+import { sortBy } from "lodash"
 
 export interface SectionViewerItem {
   id: string
   name: string
+  order?: number
   editorState: RawDraftContentState
 }
 
@@ -34,7 +36,8 @@ const SectionViewer = ({
   const [activeSection, setActiveSection] = useState("")
 
   const menus = useMemo(() => {
-    const secMenus = sections.map((section) => section.name)
+    let tempSections = sortBy(sections, "order")
+    const secMenus = tempSections.map((section) => section.name)
     if (otherComponents && otherComponents.length > 0) {
       otherComponents.forEach((comp) => {
         secMenus.push(comp.name)
