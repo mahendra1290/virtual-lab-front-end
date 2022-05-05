@@ -24,13 +24,10 @@ const StudentPage = () => {
     let unsubscribe: Unsubscribe
     setLoading(true)
     const fetchLabs = async () => {
+      console.log("fetching", user?.uid)
+
       const res = await axios.get(`/labs?studentUid=${user?.uid}`)
       setLabs(res.data.labs)
-      if (res.data.labs.length == 0) {
-        setEmpty(true)
-      } else {
-        setEmpty(false)
-      }
       setLoading(false)
     }
 
@@ -56,12 +53,12 @@ const StudentPage = () => {
             <h1>Fetching your labs...</h1>
           </div>
         )}
-        {empty && !loading && (
+        {labs.length == 0 && !loading && (
           <div>
             <h1>Sorry, no lab found</h1>
           </div>
         )}
-        {!loading && labs && (
+        {!loading && labs.length > 0 && (
           <Grid templateColumns="repeat(4, 1fr)" gap={4} marginTop={4}>
             {labs.map((item) => (
               <GridItem

@@ -11,6 +11,7 @@ import {
   getIdToken,
   getIdTokenResult,
   onIdTokenChanged,
+  User as FireUser,
 } from "firebase/auth"
 import { doc, collection, getDoc, setDoc } from "firebase/firestore"
 import { duration } from "moment"
@@ -60,6 +61,7 @@ const AuthProvider = ({ children }: Props) => {
   const [searchParams] = useSearchParams()
 
   const [user, setUser] = useState<User | null>(null)
+  const [fireUser, setFireUser] = useState<FireUser | null>(null)
   const [loggedIn, setLoggedIn] = useState(false)
   const [role, setRole] = useState("")
   const [loading, setLoading] = useState(true)
@@ -131,10 +133,10 @@ const AuthProvider = ({ children }: Props) => {
         }
         const userDoc = await getDoc(doc(db, "users", user.uid))
         if (userDoc.exists()) {
-          setUser({
-            ...user,
-            ...(userDoc.data() as User),
-          })
+          // setUser({
+          //   ...user,
+          //   ...(userDoc.data() as User),
+          // })
         } else {
           navigate("/initial-profile")
         }
@@ -148,17 +150,18 @@ const AuthProvider = ({ children }: Props) => {
       if (authUser) {
         const tokenRes = await getIdTokenResult(authUser)
         const claims = tokenRes.claims
-        if (user) {
+        if (!user || user.role !== claims.role) {
           setUser({
-            ...(user as unknown as User),
+            ...(authUser as unknown as User),
             name: authUser.displayName,
             role: claims.role as string,
           })
         }
         const userDoc = await getDoc(doc(db, "users", authUser.uid))
-        if (userDoc.exists()) {
+
+        if (!user?.name && userDoc.exists()) {
           setUser({
-            ...user,
+            ...authUser,
             ...(userDoc.data() as User),
           })
         }
